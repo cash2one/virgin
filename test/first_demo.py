@@ -33,8 +33,10 @@ def get_task(task_id):
     return jsonify({'task': task[0]})
 
 
-@firstdemo_api.route('/foodmap/merchant/api/v1.0/tasks', methods=['POST'])
+@firstdemo_api.route('/foodmap/merchant/api/v1.0/tasks1', methods=['POST'])
 def create_task():
+    # b = request.form['data']
+    print request.get_json(force=True)
     if not request.json or not 'title' in request.json:
         abort(400)
     task = {
@@ -44,4 +46,5 @@ def create_task():
         'done': False
     }
     tasks.append(task)
-    return jsonify({'task': task}), 201
+    # return jsonify(b)
+
