@@ -4,9 +4,19 @@ from flask import Blueprint,render_template
 import requests
 import urllib2
 import json
+from flask import  jsonify
+from connect import conn
+from bson import ObjectId,json_util
 
+mongo=conn.mongo_conn()
 
 test_api = Blueprint('test_api', __name__, template_folder='templates')
+
+@test_api.route('/mongoconn')
+def mongoconn():
+    list = mongo.restaurant.find_one({"_id":ObjectId("572af8f48831ac19d4e4f282")})
+    return  json_util.dumps(list)
+
 
 @test_api.route('/ttt')
 def ttt():
