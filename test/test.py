@@ -1,11 +1,12 @@
 #--coding:utf-8--#
 _author_='hcy'
 from flask import Blueprint,render_template
+import requests
 import urllib2
 import json
-from flask import  jsonify
 from connect import conn
 from bson import ObjectId,json_util
+import tools.public_vew as tool
 
 mongo=conn.mongo_conn()
 
@@ -26,11 +27,10 @@ def ttt():
 @test_api.route('/test')
 def test():
     try:
-        print 1
-        # values="{'title':'Read a book'}";
-        # headers = {'content-type': 'application/json',"Accept": "application/json"};
-        # r = requests.post('http://127.0.0.1:5000/foodmap/merchant/api/v1.0/tasks1/',json.dumps(values),headers);
-        # print r.text;
+        values="{'title':'Read a book'}";
+        headers = {'content-type': 'application/json',"Accept": "application/json"};
+        r = requests.post('http://127.0.0.1:5000/foodmap/merchant/api/v1.0/tasks1/',json.dumps(values),headers);
+        print r.text;
     except Exception,e:
         print e.message
     # url='http://127.0.0.1:5000/foodmap/merchant/api/v1.0/tasks1'
@@ -40,3 +40,8 @@ def test():
     # response = urllib2.urlopen(req)       # 发送页面请求
     # return response.read()
     # return  render_template('/test.html')
+
+@test_api.route('/getroomslist', methods=['GET'])
+def getroomslist():
+    list = tool.getroomslist("572af8f48831ac19d4e4f282")
+    return json_util.dumps(list)
