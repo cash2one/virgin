@@ -1,5 +1,5 @@
 #--coding:utf-8--#
-import jwt
+# import jwt
 from flask import Flask,make_response,jsonify
 from flask_jwt import JWT, jwt_required, current_identity
 from werkzeug.security import safe_str_cmp
