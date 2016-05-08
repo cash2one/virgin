@@ -1,7 +1,6 @@
 #--coding:utf-8--#
 _author_='hcy'
 from flask import Blueprint,render_template
-import requests
 import urllib2
 import json
 from flask import  jsonify
@@ -27,10 +26,11 @@ def ttt():
 @test_api.route('/test')
 def test():
     try:
-        values="{'title':'Read a book'}";
-        headers = {'content-type': 'application/json',"Accept": "application/json"};
-        r = requests.post('http://127.0.0.1:5000/foodmap/merchant/api/v1.0/tasks1/',json.dumps(values),headers);
-        print r.text;
+        print 1
+        # values="{'title':'Read a book'}";
+        # headers = {'content-type': 'application/json',"Accept": "application/json"};
+        # r = requests.post('http://127.0.0.1:5000/foodmap/merchant/api/v1.0/tasks1/',json.dumps(values),headers);
+        # print r.text;
     except Exception,e:
         print e.message
     # url='http://127.0.0.1:5000/foodmap/merchant/api/v1.0/tasks1'
