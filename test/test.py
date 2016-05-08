@@ -4,9 +4,12 @@ from flask import Blueprint,render_template
 import requests
 import urllib2
 import json
+from connect import  conn
 
 
 test_api = Blueprint('test_api', __name__, template_folder='templates')
+
+mongo=conn.mongo_conn()
 
 @test_api.route('/ttt')
 def ttt():
@@ -30,3 +33,7 @@ def test():
     # response = urllib2.urlopen(req)       # 发送页面请求
     # return response.read()
     # return  render_template('/test.html')
+
+
+
+
