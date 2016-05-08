@@ -2,10 +2,6 @@
 _author_='hcy'
 from flask import Blueprint,jsonify,abort,render_template,request,json
 import requests
-from connect import  conn
-from bson import ObjectId
-
-mongo = conn.mongo_conn()
 
 firstdemo_api = Blueprint('firstdemo_api', __name__, template_folder='templates')
 
@@ -82,10 +78,3 @@ def update_task(task_id):
 @firstdemo_api.route('/aaa')
 def aaa():
     return render_template("/test/posttest.html")
-
-
-@firstdemo_api.route('/mongoconn')
-def mongoconn():
-    list = mongo.restaurant.find_one({"_id":ObjectId("572af8f48831ac19d4e4f282")})
-    print list
-    return jsonify({'task':1})
