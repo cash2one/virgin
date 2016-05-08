@@ -1,7 +1,6 @@
 #--coding:utf-8--#
 _author_='hcy'
 from flask import Blueprint,jsonify,abort,render_template,request,json
-import requests
 
 firstdemo_api = Blueprint('firstdemo_api', __name__, template_folder='templates')
 
