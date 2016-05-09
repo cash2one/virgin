@@ -28,19 +28,6 @@ def getroomslist(restaurant_id):
         room["room_count"]=rooms
         list.append(room)
 
-    print json_util.dumps(list)
-    return rooms
+    print list
+    return list
 
-# {
-#     "name": "2-4人包房",
-#     "rooms": [
-#         {
-#             "room_name": "123",
-#             "room_id": "201605060916175013",
-#         },
-#         {
-#             "room_name": "123",
-#             "room_id": "201605060916175013",
-#         }
-#     ]
-# }

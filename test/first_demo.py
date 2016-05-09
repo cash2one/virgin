@@ -36,7 +36,7 @@ def get_task(task_id):
 @firstdemo_api.route('/fm/merchant/api/v1.0/tasks1', methods=['POST'])
 def create_task():
     print request.data
-    jsonstr = eval(request.data)
+    jsonstr = request.data
     print jsonstr['title']
     if not jsonstr or not 'title' in jsonstr:
         abort(400)
