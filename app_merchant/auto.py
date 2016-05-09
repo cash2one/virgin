@@ -1,10 +1,16 @@
 __author__ = 'hcy'
 import jwt
+from bson import json_util
+from connect import conn
+from flask import Blueprint,jsonify,abort,render_template,request,json
 import base64
 import hashlib
 import time
 import datetime
-from bson import json_util
+
+mongo=conn.mongo_conn()
+
+order_api = Blueprint('order_api', __name__, template_folder='templates')
 
 def encodejwt():
     payload = {
@@ -15,7 +21,7 @@ def encodejwt():
     print secret
     msg = jwt.encode(payload, secret, algorithm='HS256')
     print type(msg)
-    return msg
+    return json_util.dumps(msg)
 
 
 def decodejwt(msg):
@@ -25,7 +31,16 @@ def decodejwt(msg):
     a = str(msg)
     # secret =str(time.time() % 600)+"secretmhj"
     secret ="secretmhj"
-    # msg ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImNsaWVudDEifQ.eyJ1c2VyX2lkIjoic2Rmc2ZzIn0.7QhkauxwO6YKD3_oopD7z_bDViWUUU7C9Z-x2DdlLAE"
     demsg= jwt.decode(msg, secret, algorithms=['HS256'])
-    # return json_util.dumps(demsg)
-    return  demsg
+    return  json_util.dumps(demsg)
+
+
+# @order_api.route('/auto/<string:user>')
+# def auto():
+
+
+
+
+
+
+

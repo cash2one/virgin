@@ -35,22 +35,22 @@ def addorder():
         dis_message=request.form['dis_message']
         preset_dishs=[]
     json = {
-        "username": username,
-        "phone": phone,
-        "numpeople": int(numpeople),
-        "is_room": bool(is_room),
-        "preset_time":  preset_time,
-        "add_time":datetime.datetime.now(),
-        "demand": demand,
-        "status": 0,
-        "source": int(source),
-        "restaurant_id": ObjectId(restaurant_id),
+        "username": username, #1
+        "phone": phone,#1
+        "numpeople": int(numpeople),#1
+        "is_room": bool(is_room),#1
+        "preset_time":  preset_time,#1
+        "add_time":datetime.datetime.now(),#1
+        "demand": demand,#1
+        "status": 0,#1
+        "source": int(source),#1
+        "restaurant_id": ObjectId(restaurant_id),#1
         "room_id": room_id,
-        "webuser_id": ObjectId(webuser_id),
+        "webuser_id": ObjectId(webuser_id),#1
         "deposit": float(deposit),
-        "dis_message": dis_message,
-        "type": int(type),
-        "preset_dishs":preset_dishs
+        "dis_message": dis_message,#1
+        "type": int(type),#1
+        "preset_dishs":preset_dishs#1
     }
     mongo.order.insert_one(json)
     result=tool.return_json(0,"success",json_util.dumps(json))
@@ -63,12 +63,12 @@ def addorder():
 def onedishsorder(order_id,order_type):
     item = mongo.order.find_one({"_id":ObjectId(order_id)})
     item = json_util.loads(json_util.dumps(item))
-    if order_type==0:#²ÍÎ»¶©µ¥
+    if order_type==0:#ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½
         json = {
             "demand":item["demand"],
             "roomlist":list(public.getroomslist(str(item["restaurant_id"])))
         }
-    else:#²ËÆ·¶©µ¥
+    else:#ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ï¿½
         amount=0.0
         for i in item["preset_dishs"]:
             if i["discount_price"]=="":
@@ -85,3 +85,64 @@ def onedishsorder(order_id,order_type):
     return json_util.dumps(result,ensure_ascii=False,indent=2)
 
 
+
+
+@order_api.route('/fm/merchant/1.0/order/dispose/<string:order_id>', methods=['GET'])
+def onedishsorder(order_id):
+    item = mongo.order.find_one({"_id":ObjectId(order_id)})
+    item = json_util.loads(json_util.dumps(item))
+    json = {
+            "username": item["username"],
+            "phone": item["phone"],
+            "numpeople": int(item["numpeople"]),
+            "is_room": bool(item["is_room"]),
+            "preset_time":  item["preset_time"],
+            "demand": item["demand"],
+            "preset_dishs":item["preset_dishs"]
+        }
+    result=tool.return_json(0,"success",json)
+    return json_util.dumps(result,ensure_ascii=False,indent=2)
+
+
+
+
+
+
+@order_api.route('/fm/merchant/1.0/order/accept/<string:order_id>', methods=['PUT'])
+def onedishsorder(order_id):
+    room_id = request.form["room_id"]
+    deposit = request.form["deposit"]  # è®¢é‡‘ï¼šä¹‹åéœ€è¦æ ¹æ®æŒ‡å®šè§„åˆ™è¿›è¡Œä¿®æ”¹
+    item = mongo.order.update_one({"_id":ObjectId(order_id)},{"$set":{"room_id":room_id,"deposit":deposit,"status":1}})
+    json = {
+            "order_id": item,
+            "status": 1,
+            "msg":""
+    }
+    result=tool.return_json(0,"success",json)
+    return json_util.dumps(result,ensure_ascii=False,indent=2)
+
+
+
+
+@order_api.route('/fm/merchant/1.0/order/decline/<string:order_id>', methods=['PUT'])
+def onedishsorder(order_id):
+    item = mongo.order.update_one({"_id":ObjectId(order_id)},{"$set":{"status":2}})
+    json = {
+            "order_id": item,
+            "status": 2,
+            "msg":""
+    }
+    result=tool.return_json(0,"success",json)
+    return json_util.dumps(result,ensure_ascii=False,indent=2)
+
+
+@order_api.route('/fm/merchant/1.0/order/notification/<string:order_id>', methods=['PUT'])
+def onedishsorder(order_id):
+    item = mongo.order.update_one({"_id":ObjectId(order_id)},{"$set":{"status":2}})
+    json = {
+            "order_id": item,
+            "status": 2,
+            "msg":""
+    }
+    result=tool.return_json(0,"success",json)
+    return json_util.dumps(result,ensure_ascii=False,indent=2)

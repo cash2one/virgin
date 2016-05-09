@@ -1,13 +1,14 @@
 #--coding:utf-8--#
 _author_='hcy'
-from flask import Blueprint,render_template,request
-import requests
-import urllib2
 import json
-from connect import conn
-from bson import ObjectId,json_util
-import tools.public_vew as tool
+
+import requests
 import tools.auto as auto
+from bson import ObjectId,json_util
+from flask import Blueprint,render_template,request
+
+import tools.public_vew as tool
+from connect import conn
 
 mongo=conn.mongo_conn()
 

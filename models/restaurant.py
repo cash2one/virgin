@@ -30,7 +30,6 @@ class R_format:
 
 
 class get_Room:
-
      @staticmethod
      def db_room(id):
          rooms = mongo.restaurant.find_one({"_id": ObjectId(id)}, {"rooms": 1})
