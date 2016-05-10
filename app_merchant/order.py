@@ -1,4 +1,6 @@
 #--coding:utf-8--#
+from tools import tools
+
 __author__ = 'hcy'
 from flask import Blueprint,jsonify,abort,render_template,request,json
 from connect import conn
@@ -7,6 +9,7 @@ import tools.tools as tool
 import tools.public_vew as public
 import datetime
 import time
+import json
 
 
 mongo=conn.mongo_conn()
@@ -88,7 +91,7 @@ def onedishsorder(order_id,order_type):
 
 
 @order_api.route('/fm/merchant/1.0/order/dispose/<string:order_id>', methods=['GET'])
-def onedishsorder(order_id):
+def dispose(order_id):
     item = mongo.order.find_one({"_id":ObjectId(order_id)})
     item = json_util.loads(json_util.dumps(item))
     json = {
@@ -109,7 +112,7 @@ def onedishsorder(order_id):
 
 
 @order_api.route('/fm/merchant/1.0/order/accept/<string:order_id>', methods=['PUT'])
-def onedishsorder(order_id):
+def accept(order_id):
     room_id = request.form["room_id"]
     deposit = request.form["deposit"]  # 订金：之后需要根据指定规则进行修改
     item = mongo.order.update_one({"_id":ObjectId(order_id)},{"$set":{"room_id":room_id,"deposit":deposit,"status":1}})
@@ -125,7 +128,7 @@ def onedishsorder(order_id):
 
 
 @order_api.route('/fm/merchant/1.0/order/decline/<string:order_id>', methods=['PUT'])
-def onedishsorder(order_id):
+def decline(order_id):
     item = mongo.order.update_one({"_id":ObjectId(order_id)},{"$set":{"status":2}})
     json = {
             "order_id": item,
@@ -137,7 +140,7 @@ def onedishsorder(order_id):
 
 
 @order_api.route('/fm/merchant/1.0/order/notification/<string:order_id>', methods=['PUT'])
-def onedishsorder(order_id):
+def notification(order_id):
     item = mongo.order.update_one({"_id":ObjectId(order_id)},{"$set":{"status":2}})
     json = {
             "order_id": item,
@@ -145,4 +148,25 @@ def onedishsorder(order_id):
             "msg":""
     }
     result=tool.return_json(0,"success",json)
+    return json_util.dumps(result,ensure_ascii=False,indent=2)
+
+@order_api.route('/fm/merchant/1.0/order/allorder', methods=['POST'])
+def allorder():
+    pdict = {
+        'restaurant_id':request.form["restaurant_id"],
+        'status':request.form["status"],
+        'type':request.form["type"]
+    }
+    item = mongo.order.find(tools.orderformate(pdict))
+    data=[]
+    for i in item:
+        json = {}
+        for key in i.keys():
+            if key == '_id':
+                json['id'] = i[key]
+            else:
+                json[key] = i[key]
+        data.append(json)
+
+    result=tool.return_json(0,"success",data)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
