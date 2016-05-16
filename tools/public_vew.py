@@ -1,12 +1,15 @@
 #--coding:utf-8--#
+from flask import request
+import datetime
 _author_='hcy'
 from connect import conn
 from bson import ObjectId,json_util
-# import json
-
+import time
 mongo=conn.mongo_conn()
 
-def getroomslist(restaurant_id):
+def getroomslist(restaurant_id, preset_time):
+    start=datetime.datetime(*time.strptime(preset_time,'%Y-%m-%d')[:6])
+    end = datetime.datetime(*time.strptime(preset_time,'%Y-%m-%d')[:6])+datetime.timedelta(days = 1)
     rooms=mongo.restaurant.find_one({"_id":ObjectId(restaurant_id)},{"rooms":1})
     a=json_util.loads(json_util.dumps(rooms))
     b = a["rooms"]
@@ -24,10 +27,57 @@ def getroomslist(restaurant_id):
                 item={}
                 item["room_id"]=i1["room_id"]
                 item["room_name"]=i1["room_name"]
+                pdict = {'room_id':i1['room_id'],'preset_time': {'$gte': start, '$lt': end}}
+                orderbyroom = mongo.order.find(pdict)
+                orderdict = {}
+                for order in orderbyroom:
+                    for inorder in order.keys():
+                        if inorder == '_id':
+                            orderdict['id'] = str(order[inorder])
+                        elif inorder == 'preset_time':
+                            orderdict['preset_time'] = order[inorder].strftime('%H:%M')
+                        elif inorder == 'numpeople':
+                            orderdict['preset_time'] = int(order[inorder])
+                item['orderinfo'] = orderdict
                 rooms.append(item)
         room["room_count"]=rooms
         list.append(room)
 
-    print list
+    # print list
     return list
 
+def getroomorderlist(restaurant_id,preset_time):
+    rooms=mongo.restaurant.find_one({"_id":ObjectId(restaurant_id)},{"rooms":1})
+    start=datetime.datetime(*time.strptime(preset_time,'%Y-%m-%d')[:6])
+    end = datetime.datetime(*time.strptime(preset_time,'%Y-%m-%d')[:6])+datetime.timedelta(days = 1)
+    data=[]
+    for i in rooms['rooms']:
+        json = {}
+        for key in i.keys():
+            if key == 'room_id':
+                json['room_id'] = str(i[key])
+            elif key == 'room_name':
+                json['room_name'] = i[key]
+        #此处查询order表 条件是：i['room_id']和preset_time区间
+        pdict = {'room_id':i['room_id'],'preset_time': {'$gte': start, '$lt': end}}
+        orderbyroom = mongo.order.find(pdict)
+        orderdict = {}
+        orderlist = []
+        for order in orderbyroom:
+            for inorder in order.keys():
+                if inorder == '_id':
+                    orderdict['id'] = str(order[inorder])
+                elif inorder == 'preset_time':
+                    orderdict['preset_time'] = order[inorder].strftime('%H:%M')
+                elif inorder == 'numpeople':
+                    orderdict['preset_time'] = int(order[inorder])
+        if orderdict:
+            orderlist.append(orderdict)
+            print orderdict
+            json['orderlist'] = orderlist
+        else:
+            json['orderlist'] = []
+        #此处请查询assortment表 条件是i['room_people_id']
+        jsontitle = {i['room_people_name']:json}
+        data.append(jsontitle)
+    print json_util.dumps(data,ensure_ascii=False,indent=2)

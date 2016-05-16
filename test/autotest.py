@@ -1,5 +1,4 @@
 from flask import Flask, Blueprint
-from flask_jwt import JWT, jwt_required, current_identity
 from werkzeug.security import safe_str_cmp
 
 autotest_api = Blueprint('autotest_api', __name__, template_folder='templates')

@@ -38,6 +38,40 @@
     <input type="submit" value="提交">
 </form>
  </fieldset>
-
+<fieldset><legend>1.1.0和1.1.3JPG订单测试</legend>
+<form action="/fm/merchant/1.0/order/allorder" method="post">
+    <input type="text"  name="restaurant_id" />
+     <input type="text"  name="status" />
+     <input type="text"  name="type" />
+    <input type="text"  name="pageindex" />
+    <input type="submit" value="提交">
+</form>
+ </fieldset>
+<fieldset><legend>1.1.4JPG订单测试</legend>
+<form action="/fm/merchant/1.0/order/orderinfos" method="post">
+    <input type="text"  name="id" />
+    <input type="submit" value="提交">
+</form>
+ </fieldset>
+<fieldset><legend>1.1.4JPG菜品测试</legend>
+<form action="/fm/merchant/1.0/restaurant/restaurant_discount" method="post">
+    <input type="text"  name="id" />
+    <input type="text"  name="dish_type" />
+    <input type="submit" value="提交">
+</form>
+ </fieldset>
+<fieldset><legend>1.4JPG菜品优惠测试</legend>
+<form action="/fm/merchant/1.0/restaurant/updaterestaurant" method="post">
+    <input type="text"  name="id" />
+    <input type="text"  name="discount" />
+    <input type="text"  name="message" />
+    <input type="text"  name="end_time" />
+    <input type="text"  name="start_time" />
+    <input type="text"  name="desc" /><br>
+    <input type="text"  name="dish_id" /><br>
+    <input type="text"  name="discount_price" /><br>
+    <input type="submit" value="提交">
+</form>
+ </fieldset>
 </body>
 </html>

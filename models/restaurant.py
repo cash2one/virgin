@@ -36,6 +36,43 @@ class get_Room:
          return R_format.getroomslist(rooms)
 
 
+
+
+
+
+
+
+
+ff = {'status': 'int',
+      'type': 'int',
+      'restaurant_id': 'obj'
+      }
+
+def orderformate(pdict={}):
+    pdict = dict(filter(lambda x:x[1]!='', pdict.items()))
+    data = formatp(pdict)
+    return data
+    pass
+
+def formatp(data):
+    for key in data.keys():
+        data[key]=format_type(data[key], ff[key])
+    return data
+
+def format_type(data, type):
+    if type == 'str':
+        return str(data)
+    elif type == 'int':
+        return int(data)
+    elif type == 'obj':
+        return ObjectId(data)
+    pass
+
 if __name__ == '__main__':
-    get_Room.db_room(123)
+    # get_Room.db_room(123)
+    pdict = {'status': '',
+         'type': '2',
+         'restaurant_id': '572ff4f6ed222e1e28b56056'
+        }
+    print orderformate(pdict)
     pass

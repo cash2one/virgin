@@ -1,6 +1,10 @@
 #--coding:utf-8--#
+import pymongo
+import sys
 from tools import tools
-
+import time
+reload(sys)
+sys.setdefaultencoding('utf8')
 __author__ = 'hcy'
 from flask import Blueprint,jsonify,abort,render_template,request,json
 from connect import conn
@@ -8,10 +12,11 @@ from bson import ObjectId,json_util
 import tools.tools as tool
 import tools.public_vew as public
 import datetime
-import time
-import json
-
-
+table = {'status': 'int',
+      'type': 'int',
+      'restaurant_id': 'obj',
+      '_id': 'obj'
+      }
 mongo=conn.mongo_conn()
 
 order_api = Blueprint('order_api', __name__, template_folder='templates')
@@ -149,24 +154,138 @@ def notification(order_id):
     }
     result=tool.return_json(0,"success",json)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
-
+#1.1.3.jpg全部订单和1.1.0.jpg订单form:restaurant_id,status,type
 @order_api.route('/fm/merchant/1.0/order/allorder', methods=['POST'])
 def allorder():
-    pdict = {
-        'restaurant_id':request.form["restaurant_id"],
-        'status':request.form["status"],
-        'type':request.form["type"]
-    }
-    item = mongo.order.find(tools.orderformate(pdict))
-    data=[]
-    for i in item:
-        json = {}
-        for key in i.keys():
-            if key == '_id':
-                json['id'] = i[key]
-            else:
-                json[key] = i[key]
-        data.append(json)
+    if request.method=='POST':
+        pdict = {
+            'restaurant_id':request.form["restaurant_id"],
+            'status':request.form["status"],
+            'type':request.form["type"]
+        }
+        second = {
+            "_id" : 1,
+            "username" :1,
+            "status" : 1,
+            "type" : 1,
+            "restaurant_id" : 1,
+            "numpeople" : 1,
+            "preset_time" : 1,
+            "add_time" : 1
+        }
+        pageindex = request.form["pageindex"]
+        pagenum = 10
+        star = (int(pageindex)-1)*pagenum
+        end = (pagenum*int(pageindex))
+        # print tools.orderformate(pdict, table)
+        item = mongo.order.find(tools.orderformate(pdict, table),second).sort("add_time", pymongo.DESCENDING)[star:end]
+        allcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"])}).count()
+        newcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":0}).count()
+        waitecount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":2}).count()
+        redocount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":6}).count()
+        # print json_util.dumps(item,ensure_ascii=False,indent=2)
+        data=[]
+        for i in item:
+            json = {}
+            for key in i.keys():
+                if key == '_id':
+                    json['id'] = str(i[key])
+                elif key == 'restaurant_id':
+                    json['restaurant_id'] = str(i[key])
+                elif key == 'preset_time':
+                    json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                elif key == 'add_time':
+                    json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                else:
+                    json[key] = i[key]
+            print json
+            data.append(json)
+        data.append({'allcount':allcount,'newcount':newcount,'waitecount':waitecount,'redocount':redocount})
 
-    result=tool.return_json(0,"success",data)
-    return json_util.dumps(result,ensure_ascii=False,indent=2)
+        result=tool.return_json(0,"success",data)
+        return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+         return abort(403)
+#1.1.4.jpg订单详细信息form:id
+@order_api.route('/fm/merchant/1.0/order/orderinfos', methods=['POST'])
+def orderinfos():
+    if request.method=='POST':
+        pdict = {
+            '_id':request.form["id"]
+        }
+        item = mongo.order.find(tools.orderformate(pdict, table))
+        data=[]
+        for i in item:
+            json = {}
+            for key in i.keys():
+                if key == '_id':
+                    json['id'] = str(i[key])
+                elif key == 'restaurant_id':
+                    json['restaurant_id'] = str(i[key])
+                elif key == 'preset_time':
+                    json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                elif key == 'add_time':
+                    json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                else:
+                    json[key] = i[key]
+            data.append(json)
+
+        result=tool.return_json(0,"success",data)
+        return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#1.2.jpg订单-统计|restaurant_id:饭店id|start_time:开始时间|end_time：结束时间|
+@order_api.route('/fm/merchant/1.0/order/ordercounts', methods=['POST'])
+def ordercounts():
+    if request.method == 'POST':
+        start=datetime.datetime(*time.strptime(request.form['start_time'],'%Y-%m-%d')[:6])
+        end = datetime.datetime(*time.strptime(request.form['end_time'],'%Y-%m-%d')[:6])+datetime.timedelta(days = 1)
+        pdict = {'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
+        allcount = mongo.order.find(pdict).count()
+        anumpeoples = mongo.order.aggregate([{ '$match' : pdict}, { '$group' : { '_id' : "$restaurant_id", 'numpeople' : {'$sum' : "$numpeople"} }}])
+        json = {}
+        for i in anumpeoples:
+                for key in i.keys():
+                    if key == '_id':
+                        json['id'] = str(i[key])
+                    else:
+                        json[key] = i[key]
+        pdict['source'] = 1
+        ycount = mongo.order.find(pdict).count()
+        pdict['source'] = 2
+        mcount = mongo.order.find(pdict).count()
+        data={'allcount':allcount,'anumpeoples':json,'ycount':ycount,'mcount':mcount}
+        result=tools.return_json(0,"success",data)
+        return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#1.3.0.jpg餐位管理restaurant_id, preset_time
+@order_api.route('/fm/merchant/1.0/order/orderbypreset', methods=['POST'])
+def orderbypreset():
+    if request.method=='POST':
+        data = public.getroomslist(ObjectId(request.form['restaurant_id']),request.form['preset_time'])
+        result=tool.return_json(0,"success",data)
+        return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#1.3.2餐位管理修改订单
+@order_api.route('/fm/merchant/1.0/members/updateorder', methods=['POST'])
+def updateorder():
+    if request.method=='POST':
+            pdict = {
+                '_id':request.form["id"],
+                'username':request.form["username"],
+                'phone':request.form["phone"],
+                'demand':request.form["demand"],
+                'numpeople':request.form["numpeople"],
+                'preset_time':request.form["preset_time"]
+            }
+            mongo.order.update_one({'_id':ObjectId(request.form['id'])},{"$set":tools.orderformate(pdict, table)})
+            json = {
+                    "status": 1,
+                    "msg":""
+            }
+            result=tool.return_json(0,"success",json)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
