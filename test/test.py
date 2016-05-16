@@ -3,7 +3,7 @@ _author_='hcy'
 import json
 
 # import requests
-import tools.auto as auto
+import app_merchant.auto as auto
 from bson import ObjectId,json_util
 from flask import Blueprint,render_template,request
 
