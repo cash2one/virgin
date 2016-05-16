@@ -25,7 +25,7 @@ mongo=conn.mongo_conn()
 restaurant_api = Blueprint('restaurant_api', __name__, template_folder='templates')
 
 #1.4菜品优惠查询form:id
-@restaurant_api.route('/fm/merchant/1.0/restaurant/restaurant_discount', methods=['POST'])
+@restaurant_api.route('/fm/merchant/v1/restaurant/restaurant_discount', methods=['POST'])
 def restaurant_discount():
     pdict = {
         '_id':request.form["id"],
@@ -49,7 +49,7 @@ def restaurant_discount():
     result=tool.return_json(0,"success",data)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
 
-@restaurant_api.route('/fm/merchant/1.0/restaurant/updaterestaurant', methods=['POST'])
+@restaurant_api.route('/fm/merchant/v1/restaurant/updaterestaurant', methods=['POST'])
 def updaterestaurant():
     pdict = {
         "dishes_discount.discount":request.form['discount'],
