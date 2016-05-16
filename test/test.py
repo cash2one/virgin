@@ -2,7 +2,7 @@
 _author_='hcy'
 import json
 
-import requests
+# import requests
 import tools.auto as auto
 from bson import ObjectId,json_util
 from flask import Blueprint,render_template,request
@@ -45,8 +45,9 @@ def test():
     try:
         values="{'title':'Read a book'}";
         headers = {'content-type': 'application/json',"Accept": "application/json"};
-        r = requests.post('http://127.0.0.1:5000/foodmap/merchant/api/v1.0/tasks1/',json.dumps(values),headers);
-        print r.text;
+        # r = requests.post('http://127.0.0.1:5000/foodmap/merchant/api/v1.0/tasks1/',json.dumps(values),headers);
+        # print r.text;
+        print 1
     except Exception,e:
         print e.message
     # url='http://127.0.0.1:5000/foodmap/merchant/api/v1.0/tasks1'
