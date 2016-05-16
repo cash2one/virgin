@@ -11,6 +11,7 @@ from app_merchant.order import order_api
 from app_merchant.restaurant import restaurant_api
 from app_merchant.members import members_api
 from app_merchant.other import other_api
+from app_merchant.auto import auto_api
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -23,6 +24,7 @@ app.register_blueprint(order_api)
 app.register_blueprint(restaurant_api)
 app.register_blueprint(members_api)
 app.register_blueprint(other_api)
+app.register_blueprint(auto_api)
 
 @app.route('/protected', methods=['POST'])
 
