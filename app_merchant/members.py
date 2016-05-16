@@ -37,7 +37,6 @@ def allmembers():
         end = (pagenum*int(pageindex))
         if request.form['user_tpye']==0:
             item = mongo.members.find(tools.orderformate(pdict, table))[star:end]
-            allcount = mongo.members.find(tools.orderformate(pdict, table)).count()
             data=[]
             for i in item:
                 json = {}
@@ -47,17 +46,16 @@ def allmembers():
                     else:
                         json[key] = i[key]
                 data.append(json)
-            data.append({'allcount':allcount})
             data.append({'user_type':0})
             result=tool.return_json(0,"success",data)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             idlist = []
             concern = mongo.concern.find(tools.orderformate(pdict, table))
-            for i in concern.keys():
-                idlist.append(ObjectId(concern[i]))
+            for i in concern:
+                for j in i.keys():
+                    idlist.append(ObjectId(i[j]))
             item = mongo.webuser.find({'_id': {'$in': idlist}})[star:end]
-            allcount = mongo.webuser.find({'_id': {'$in': idlist}}).count()
             data=[]
             for i in item:
                 json = {}
@@ -75,7 +73,6 @@ def allmembers():
                     else:
                         json[key] = i[key]
                 data.append(json)
-            data.append({'allcount':allcount})
             data.append({'user_type':1})
             result=tool.return_json(0,"success",data)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
@@ -206,10 +203,38 @@ def membersbyname():
         end = (pagenum*int(pageindex))
         data = []
         listall = []
+        dictmembers = {}
+        dictwebusers = {}
         members = mongo.members.find({"restaurant_id" : ObjectId(r_id),"nickname":{'$regex':name}})
         for i in members:
-            pass
+            for j in i.keys():
+                if j == '_id':
+                    dictmembers['id'] = str(i[j])
+                elif j == 'nickname':
+                    dictmembers['nickname'] = i[j]
+                elif j == 'headimage':
+                    dictmembers['headimage'] = i[j]
+                dictmembers['user_type'] = 0
+        listall.append(dictmembers)
+        idlist = []
+        concern = mongo.concern.find({"restaurant_id" : ObjectId(r_id)})
+        for i in concern:
+            for j in i.keys():
+                if j == 'webuser_id':
+                    idlist.append(ObjectId(i[j]))
+        webusers = mongo.webuser.find({'_id': {'$in': idlist},"nickname":{'$regex':name}})
+        for i in webusers:
+            for j in i.keys():
+                if j == '_id':
+                    dictwebusers['id'] = str(i[j])
+                elif j == 'nickname':
+                    dictwebusers['nickname'] = i[j]
+                elif j == 'headimage':
+                    dictwebusers['headimage'] = i[j]
+                dictwebusers['user_type'] = 1
+        listall.append(dictwebusers)
+        data.append(listall[star:end])
         result=tool.return_json(0,"success",data)
-        return json_util.dumps(result,ensure_ascii=False,indent=2)
+        print json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
