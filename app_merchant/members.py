@@ -54,7 +54,8 @@ def allmembers():
             concern = mongo.concern.find(tools.orderformate(pdict, table))
             for i in concern:
                 for j in i.keys():
-                    idlist.append(ObjectId(i[j]))
+                    if j == 'webuser_id':
+                        idlist.append(ObjectId(i[j]))
             item = mongo.webuser.find({'_id': {'$in': idlist}})[star:end]
             data=[]
             for i in item:
