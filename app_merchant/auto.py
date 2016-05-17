@@ -10,7 +10,25 @@ import datetime
 
 mongo=conn.mongo_conn()
 
-order_api = Blueprint('order_api', __name__, template_folder='templates')
+auto_api = Blueprint('auto_api', __name__, template_folder='templates')
+
+@auto_api.route('/fm/merchant/v1/auto/', methods=['POST'])
+def auto():
+    baoming = request.form["baoming"]
+    ident = request.form["ident"]
+    payload = {
+        "baoming":baoming,
+        "ident":ident
+    }
+    secret = "b4e6a2808fbbc5d0f6451675e18fa37d"
+    msg = jwt.encode(payload,secret,algorithm='HS256')
+    print type(msg)
+    return  json_util.dumps(msg)
+
+
+
+
+
 
 def encodejwt():
     payload = {
