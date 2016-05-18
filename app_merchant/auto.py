@@ -9,10 +9,7 @@ import time
 import datetime
 import hashlib
 
-
-
-
-mongo=conn.mongo_conn_user()
+mongo=conn.mongo_conn()
 
 auto_api = Blueprint('auto_api', __name__, template_folder='templates')
 
