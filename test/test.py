@@ -24,6 +24,7 @@ def mongoconn():
 def ttt():
     return render_template("/test/posttest.html")
 
+
 @test_api.route('/jwt')
 def jwt():
     a = auto.encodejwt()

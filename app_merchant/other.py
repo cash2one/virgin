@@ -8,7 +8,7 @@ from bson import  json_util
 other_api=Blueprint("other_api",__name__,template_folder='templates')
 mongo=conn.mongo_conn()
 
-@other_api.route('/fm/merchant/v1/appversion/')
+@other_api.route('/fm/merchant/v1/appversion/', methods=['GET'])
 def appversion():
     item=mongo.android_version.find().sort("addtime",pymongo.DESCENDING)[0]
     json = {

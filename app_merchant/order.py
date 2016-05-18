@@ -12,6 +12,7 @@ from bson import ObjectId,json_util
 import tools.tools as tool
 import tools.public_vew as public
 import datetime
+import auto
 table = {'status': 'int',
       'type': 'int',
       'restaurant_id': 'obj',
@@ -41,7 +42,10 @@ def addorder():
         room_id=request.form['room_id']
         webuser_id=request.form['webuser_id']
         dis_message=request.form['dis_message']
-        preset_dishs=[]
+    jwtmsg = auto.decodejwt(jwtstr)
+    print jwtmsg
+
+    preset_dishs=[]
     json = {
         "username": username, #1
         "phone": phone,#1
@@ -155,9 +159,12 @@ def notification(order_id):
     result=tool.return_json(0,"success",json)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
 #1.1.3.jpg全部订单和1.v1.jpg订单form:restaurant_id,status,type
-@order_api.route('/fm/merchant/v1/order/allorder', methods=['POST'])
+@order_api.route('/fm/merchant/v1/order/allorder/', methods=['POST'])
 def allorder():
     if request.method=='POST':
+        jwtstr = request.form['jwtstr']
+        jwtmsg = auto.decodejwt(jwtstr)
+        print jwtmsg
         pdict = {
             'restaurant_id':request.form["restaurant_id"],
             'status':request.form["status"],
