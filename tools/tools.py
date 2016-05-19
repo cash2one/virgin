@@ -10,8 +10,7 @@ def return_json(code,message,jwt,data):
     if jwt:
         data = data
     else:
-        # data = {"auto":jwt}
-        data = data
+        data = {"auto":jwt}
     json={
         "code":code,
         "message":message,
