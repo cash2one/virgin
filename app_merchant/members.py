@@ -46,6 +46,10 @@ def allmembers():
                 for key in i.keys():
                     if key == '_id':
                         json['id'] = str(i[key])
+                    elif key == 'restaurant_id':
+                        json['restaurant_id'] = str(i[key])
+                    elif key == 'addtime':
+                        json['addtime'] = i[key].strftime('%Y年%m月%d日 %H:%M')
                     else:
                         json[key] = i[key]
                 data.append(json)
@@ -72,7 +76,7 @@ def allmembers():
                     elif key == 'addtime':
                         json['addtime'] = i[key].strftime('%Y年%m月%d日 %H:%M')
                     elif key == 'birthday':
-                        json['birthday'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                        json['birthday'] = i[key]
                     elif key == 'gender':
                         json['gender'] = int(i[key])
                     else:
@@ -85,7 +89,7 @@ def allmembers():
     else:
         return abort(403)
 #2.1.jpg店粉儿详情查询|restaurant_id:饭店id |_id webuser_id:用户id | user_tpye:用户类型线下0线上1|
-@members_api.route('/fm/merchant/v1/members/membersinfo', methods=['POST'])
+@members_api.route('/fm/merchant/v1/members/membersinfo/', methods=['POST'])
 def membersinfo():
     if request.method=='POST':
         pdict = {
@@ -147,7 +151,7 @@ def membersinfo():
     else:
         return abort(403)
 #2.0店粉添加
-@members_api.route('/fm/merchant/v1/members/insertmembers', methods=['POST'])
+@members_api.route('/fm/merchant/v1/members/insertmembers/', methods=['POST'])
 def insertmembers():
     if request.method=='POST':
             pdict = {
@@ -170,7 +174,7 @@ def insertmembers():
     else:
         return abort(403)
 #2.0店粉修改id:用户id
-@members_api.route('/fm/merchant/v1/members/updatemembers', methods=['POST'])
+@members_api.route('/fm/merchant/v1/members/updatemembers/', methods=['POST'])
 def updatemembers():
     if request.method=='POST':
             pdict = {
@@ -193,7 +197,7 @@ def updatemembers():
         return abort(403)
 
 #2.0店粉删除 id:用户id
-@members_api.route('/fm/merchant/v1/members/deletemembers', methods=['POST'])
+@members_api.route('/fm/merchant/v1/members/deletemembers/', methods=['POST'])
 def deletemembers():
     if request.method=='POST':
         idlist = request.form['idlist'].split('_')
@@ -211,7 +215,7 @@ def deletemembers():
     else:
         return abort(403)
 #2.0.jpg店粉儿模糊查询！模糊查询！模糊查询！！！|restaurant_id：饭店id |pageindex:页数 |nickname:用户名|
-@members_api.route('/fm/merchant/v1/members/membersbyname', methods=['POST'])
+@members_api.route('/fm/merchant/v1/members/membersbyname/', methods=['POST'])
 def membersbyname():
     if request.method=='POST':
         r_id = request.form["restaurant_id"],

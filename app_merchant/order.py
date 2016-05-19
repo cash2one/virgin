@@ -28,7 +28,7 @@ mongo=conn.mongo_conn()
 
 order_api = Blueprint('order_api', __name__, template_folder='templates')
 
-@order_api.route('/fm/merchant/v1/order/addorder',methods=['POST'])
+@order_api.route('/fm/merchant/v1/order/addorder/',methods=['POST'])
 def addorder():
     if request.method == 'POST':
         username=request.form['username']
@@ -75,7 +75,7 @@ def addorder():
 
 
 
-@order_api.route('/fm/merchant/v1/order/onedishsorder/<string:order_id>/<int:order_type>', methods=['GET'])
+@order_api.route('/fm/merchant/v1/order/onedishsorder/<string:order_id>/<int:order_type>/', methods=['GET'])
 def onedishsorder(order_id,order_type):
     item = mongo.order.find_one({"_id":ObjectId(order_id)})
     item = json_util.loads(json_util.dumps(item))
@@ -129,7 +129,7 @@ def dispose():
 
 
 
-@order_api.route('/fm/merchant/v1/order/accept/<string:order_id>', methods=['PUT'])
+@order_api.route('/fm/merchant/v1/order/accept/<string:order_id>/', methods=['PUT'])
 def accept(order_id):
     room_id = request.form["room_id"]
     deposit = request.form["deposit"]  # 订金：之后需要根据指定规则进行修改
@@ -146,7 +146,7 @@ def accept(order_id):
 
 
 
-@order_api.route('/fm/merchant/v1/order/decline/<string:order_id>', methods=['PUT'])
+@order_api.route('/fm/merchant/v1/order/decline/<string:order_id>/', methods=['PUT'])
 def decline(order_id):
     item = mongo.order.update_one({"_id":ObjectId(order_id)},{"$set":{"status":2}})
     json = {
@@ -159,7 +159,7 @@ def decline(order_id):
     return json_util.dumps(result,ensure_ascii=False,indent=2)
 
 
-@order_api.route('/fm/merchant/v1/order/notification/<string:order_id>', methods=['PUT'])
+@order_api.route('/fm/merchant/v1/order/notification/<string:order_id>/', methods=['PUT'])
 def notification(order_id):
     item = mongo.order.update_one({"_id":ObjectId(order_id)},{"$set":{"status":2}})
     json = {
@@ -171,7 +171,7 @@ def notification(order_id):
     result=tool.return_json(0,"success",jwtmsg,json)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
 #1.1.3.jpg全部订单和1.v1.jpg订单restaurant_id,status,type
-@order_api.route('/fm/merchant/v1/order/allorder', methods=['POST'])
+@order_api.route('/fm/merchant/v1/order/allorder/', methods=['POST'])
 def allorder():
     if request.method=='POST':
         pdict = {
@@ -223,7 +223,7 @@ def allorder():
     else:
          return abort(403)
 #1.1.4.jpg订单详细信息form:id
-@order_api.route('/fm/merchant/v1/order/orderinfos', methods=['POST'])
+@order_api.route('/fm/merchant/v1/order/orderinfos/', methods=['POST'])
 def orderinfos():
     if request.method=='POST':
         pdict = {
@@ -252,7 +252,7 @@ def orderinfos():
     else:
         return abort(403)
 #1.2.jpg订单-统计|restaurant_id:饭店id|start_time:开始时间|end_time：结束时间|
-@order_api.route('/fm/merchant/v1/order/ordercounts', methods=['POST'])
+@order_api.route('/fm/merchant/v1/order/ordercounts/', methods=['POST'])
 def ordercounts():
     if request.method == 'POST':
         start=datetime.datetime(*time.strptime(request.form['start_time'],'%Y-%m-%d')[:6])
@@ -278,7 +278,7 @@ def ordercounts():
     else:
         return abort(403)
 #1.3.0.jpg餐位管理restaurant_id, preset_time
-@order_api.route('/fm/merchant/v1/order/orderbypreset', methods=['POST'])
+@order_api.route('/fm/merchant/v1/order/orderbypreset/', methods=['POST'])
 def orderbypreset():
     if request.method=='POST':
         data = public.getroomslist(ObjectId(request.form['restaurant_id']),request.form['preset_time'])
@@ -288,7 +288,7 @@ def orderbypreset():
     else:
         return abort(403)
 #1.3.2餐位管理修改订单
-@order_api.route('/fm/merchant/v1/members/updateorder', methods=['POST'])
+@order_api.route('/fm/merchant/v1/members/updateorder/', methods=['POST'])
 def updateorder():
     if request.method=='POST':
             pdict = {
