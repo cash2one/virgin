@@ -9,8 +9,8 @@ other_api=Blueprint("other_api",__name__,template_folder='templates')
 mongo=conn.mongo_conn_user()
 
 @other_api.route('/usercenter/v1/register/')
-def appversion():
-    item=mongo.android_version.find().sort("addtime",pymongo.DESCENDING)[0]
+def register():
+    item=mongo.user_web.find().sort("addtime",pymongo.DESCENDING)[0]
     json = {
             "url": item["url"],
             "version": item["version"],
@@ -18,3 +18,4 @@ def appversion():
     }
     result=tool.return_json(0,"success",json)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
+
