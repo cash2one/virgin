@@ -20,7 +20,6 @@ def return_json(code,message,jwt,data):
     return json
 
 
-
 def orderformate(pdict={},table={}):
     pdict = dict(filter(lambda x:x[1]!='', pdict.items()))
     data = formatp(pdict,table)
