@@ -38,7 +38,7 @@ def allmembers():
         pagenum = 10
         star = (int(pageindex)-1)*pagenum
         end = (pagenum*int(pageindex))
-        if request.form['user_tpye']==0:
+        if int(request.form['user_tpye'])==0:
             item = mongo.members.find(tools.orderformate(pdict, table))[star:end]
             data=[]
             for i in item:
@@ -95,7 +95,7 @@ def membersinfo():
             'restaurant_id':request.form["restaurant_id"],
             'webuser_id':request.form['id']
         }
-        if request.form['user_tpye']==0:
+        if int(request.form['user_tpye'])==0:
             item = mongo.members.find_one(tools.orderformate(pdict, table))
             data=[]
             json = {}
