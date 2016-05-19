@@ -1,6 +1,7 @@
 #--coding:utf-8--#
 import time
 
+from app_merchant import auto
 from tools import tools
 import sys
 from flask import Blueprint,abort,request
@@ -47,7 +48,8 @@ def allmembers():
                         json[key] = i[key]
                 data.append(json)
             data.append({'user_type':0})
-            result=tool.return_json(0,"success",data)
+            jwtmsg = auto.decodejwt(request.form["jwtstr"])
+            result=tool.return_json(0,"success",jwtmsg,data)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             idlist = []
@@ -75,7 +77,8 @@ def allmembers():
                         json[key] = i[key]
                 data.append(json)
             data.append({'user_type':1})
-            result=tool.return_json(0,"success",data)
+            jwtmsg = auto.decodejwt(request.form["jwtstr"])
+            result=tool.return_json(0,"success",jwtmsg,data)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
@@ -109,7 +112,8 @@ def membersinfo():
                         json[key] = i[key]
                 data.append(json)
             data.append(total)
-            result=tool.return_json(0,"success",data)
+            jwtmsg = auto.decodejwt(request.form["jwtstr"])
+            result=tool.return_json(0,"success",jwtmsg,data)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             item = mongo.webuser.find_one(tools.orderformate(pdict, table))
@@ -128,7 +132,8 @@ def membersinfo():
                     else:
                         json[key] = i[key]
                 data.append(json)
-            result=tool.return_json(0,"success",data)
+            jwtmsg = auto.decodejwt(request.form["jwtstr"])
+            result=tool.return_json(0,"success",jwtmsg,data)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
@@ -150,7 +155,8 @@ def insertmembers():
                     "status": 1,
                     "msg":""
             }
-            result=tool.return_json(0,"success",json)
+            jwtmsg = auto.decodejwt(request.form["jwtstr"])
+            result=tool.return_json(0,"success",jwtmsg,json)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
@@ -171,7 +177,8 @@ def updatemembers():
                     "status": 1,
                     "msg":""
             }
-            result=tool.return_json(0,"success",json)
+            jwtmsg = auto.decodejwt(request.form["jwtstr"])
+            result=tool.return_json(0,"success",jwtmsg,json)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
@@ -189,7 +196,8 @@ def deletemembers():
                 "status": 1,
                 "msg":""
         }
-        result=tool.return_json(0,"success",json)
+        jwtmsg = auto.decodejwt(request.form["jwtstr"])
+        result=tool.return_json(0,"success",jwtmsg,json)
         return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
@@ -247,7 +255,8 @@ def membersbyname():
                 dictwebusers['user_type'] = 1
         listall.append(dictwebusers)
         data.append(listall[star:end])
-        result=tool.return_json(0,"success",data)
+        jwtmsg = auto.decodejwt(request.form["jwtstr"])
+        result=tool.return_json(0,"success",jwtmsg,data)
         print json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)

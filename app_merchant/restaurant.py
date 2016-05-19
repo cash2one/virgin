@@ -1,4 +1,5 @@
 #--coding:utf-8--#
+from app_merchant import auto
 from tools import tools
 
 from flask import Blueprint,request
@@ -46,9 +47,10 @@ def restaurant_discount():
         print json
         data.append(json)
 
-    result=tool.return_json(0,"success",data)
+    jwtmsg = auto.decodejwt(request.form["jwtstr"])
+    result=tool.return_json(0,"success",jwtmsg,data)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
-
+#修改菜品价格
 @restaurant_api.route('/fm/merchant/v1/restaurant/updaterestaurant', methods=['POST'])
 def updaterestaurant():
     pdict = {
@@ -72,5 +74,6 @@ def updaterestaurant():
             "status": 1,
             "msg":""
     }
-    result=tool.return_json(0,"success",json)
+    jwtmsg = auto.decodejwt(request.form["jwtstr"])
+    result=tool.return_json(0,"success",jwtmsg,json)
     return json_util.dumps(result,ensure_ascii=False,indent=2)

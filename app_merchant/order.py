@@ -1,6 +1,8 @@
 #--coding:utf-8--#
 import pymongo
 import sys
+
+from app_merchant import auto
 from tools import tools
 import time
 reload(sys)
@@ -61,7 +63,8 @@ def addorder():
         "preset_dishs":preset_dishs#1
     }
     mongo.order.insert_one(json)
-    result=tool.return_json(0,"success",json_util.dumps(json))
+    jwtmsg = auto.decodejwt(request.form["jwtstr"])
+    result=tool.return_json(0,"success",jwtmsg,json_util.dumps(json))
     return result
 
 
@@ -89,7 +92,8 @@ def onedishsorder(order_id,order_type):
             "amount":amount,
             "roomlist":public.getroomslist(str(item["_id"]))
         }
-    result=tool.return_json(0,"success",json)
+    jwtmsg = auto.decodejwt(request.form["jwtstr"])
+    result=tool.return_json(0,"success",jwtmsg,json)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
 
 
@@ -108,7 +112,8 @@ def dispose(order_id):
             "demand": item["demand"],
             "preset_dishs":item["preset_dishs"]
         }
-    result=tool.return_json(0,"success",json)
+    jwtmsg = auto.decodejwt(request.form["jwtstr"])
+    result=tool.return_json(0,"success",jwtmsg,json)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
 
 
@@ -126,7 +131,8 @@ def accept(order_id):
             "status": 1,
             "msg":""
     }
-    result=tool.return_json(0,"success",json)
+    jwtmsg = auto.decodejwt(request.form["jwtstr"])
+    result=tool.return_json(0,"success",jwtmsg,json)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
 
 
@@ -140,7 +146,8 @@ def decline(order_id):
             "status": 2,
             "msg":""
     }
-    result=tool.return_json(0,"success",json)
+    jwtmsg = auto.decodejwt(request.form["jwtstr"])
+    result=tool.return_json(0,"success",jwtmsg,json)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
 
 
@@ -152,7 +159,8 @@ def notification(order_id):
             "status": 2,
             "msg":""
     }
-    result=tool.return_json(0,"success",json)
+    jwtmsg = auto.decodejwt(request.form["jwtstr"])
+    result=tool.return_json(0,"success",jwtmsg,json)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
 #1.1.3.jpg全部订单和1.v1.jpg订单restaurant_id,status,type
 @order_api.route('/fm/merchant/v1/order/allorder', methods=['POST'])
@@ -202,7 +210,8 @@ def allorder():
             data.append(json)
         data.append({'allcount':allcount,'newcount':newcount,'waitecount':waitecount,'redocount':redocount})
 
-        result=tool.return_json(0,"success",data)
+        jwtmsg = auto.decodejwt(request.form["jwtstr"])
+        result=tool.return_json(0,"success",jwtmsg,data)
         return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
          return abort(403)
@@ -230,7 +239,8 @@ def orderinfos():
                     json[key] = i[key]
             data.append(json)
 
-        result=tool.return_json(0,"success",data)
+        jwtmsg = auto.decodejwt(request.form["jwtstr"])
+        result=tool.return_json(0,"success",jwtmsg,data)
         return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
@@ -255,7 +265,8 @@ def ordercounts():
         pdict['source'] = 2
         mcount = mongo.order.find(pdict).count()
         data={'allcount':allcount,'anumpeoples':json,'ycount':ycount,'mcount':mcount}
-        result=tools.return_json(0,"success",data)
+        jwtmsg = auto.decodejwt(request.form["jwtstr"])
+        result=tool.return_json(0,"success",jwtmsg,data)
         return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
@@ -264,7 +275,8 @@ def ordercounts():
 def orderbypreset():
     if request.method=='POST':
         data = public.getroomslist(ObjectId(request.form['restaurant_id']),request.form['preset_time'])
-        result=tool.return_json(0,"success",data)
+        jwtmsg = auto.decodejwt(request.form["jwtstr"])
+        result=tool.return_json(0,"success",jwtmsg,data)
         return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
@@ -285,7 +297,8 @@ def updateorder():
                     "status": 1,
                     "msg":""
             }
-            result=tool.return_json(0,"success",json)
+            jwtmsg = auto.decodejwt(request.form["jwtstr"])
+            result=tool.return_json(0,"success",jwtmsg,json)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
