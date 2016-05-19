@@ -77,7 +77,8 @@
 <fieldset><legend>认证测试(返回jwt字符串)</legend>
 <form action=" /fm/merchant/v1/auto/" method="post">
     <input type="text"  name="baoming" /><br>
-    <input type="text"  name="ident" />
+    <input type="text"  name="ident" /><br>
+    <input type="text"  name="type" /><br>
     <input type="submit" value="提交">
 </form>
 </fieldset>
@@ -89,6 +90,13 @@
     <input type="text"  name="code" />
     <input type="text"  name="tel" />
     <input type="text"  name="ex" />
+    <input type="submit" value="提交">
+</form>
+ </fieldset>
+<fieldset><legend>订单详情</legend>
+<form action="/fm/merchant/v1/order/dispose/" method="post">
+    jwtstr：<input type="text"  name="jwtstr" />
+    order_id：<input type="text"  name="order_id" />
     <input type="submit" value="提交">
 </form>
  </fieldset>
