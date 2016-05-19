@@ -10,7 +10,8 @@ def return_json(code,message,jwt,data):
     if jwt:
         data = data
     else:
-        data = {"auto":jwt}
+        # data = {"auto":jwt}
+        data = data
     json={
         "code":code,
         "message":message,
@@ -42,6 +43,8 @@ def format_type(data, type):
         return bool(data)
     elif type == 'flo':
         return float(data)
+    else:
+        return data
     pass
 def json_value(json_data, key_name, dump=False):
     if json_data is None:
@@ -74,14 +77,17 @@ class Foormat:
                 if key == 'dishs':
                     dishs = []
                     for dish in menu['dishs']:
-                        if dish['id'] in self.dish_data.keys():
-                            dish_new = {}
-                            for key_name in dish.keys():
-                                if key_name in self.dish_data[dish['id']].keys():
-                                    dish_new[key_name] = self.dish_data[dish['id']][key_name]
-                                else:
-                                    dish_new[key_name] = dish[key_name]
-                            dishs.append(dish_new)
+                        if 'id' in dish.keys():
+                            if dish['id'] in self.dish_data.keys():
+                                dish_new = {}
+                                for key_name in dish.keys():
+                                    if key_name in self.dish_data[dish['id']].keys():
+                                        dish_new[key_name] = self.dish_data[dish['id']][key_name]
+                                    else:
+                                        dish_new[key_name] = dish[key_name]
+                                dishs.append(dish_new)
+                            else:
+                                dishs.append(dish)
                         else:
                             dishs.append(dish)
                     new_menu['dishs'] = dishs

@@ -39,9 +39,9 @@ def encodejwt(payload):
 
 
 def decodejwt(msg):
-    print msg
-    print type(msg)
-    print type(str(msg))
+    # print msg
+    # print type(msg)
+    # print type(str(msg))
     a = str(msg)
     # secret =str(time.time() % 600)+"secretmhj"
     secret = "b4e6a2808fbbc5d0f6451675e18fa37d"
@@ -50,12 +50,12 @@ def decodejwt(msg):
     m2 = hashlib.md5()
     m2.update(demsg["baoming"]+demsg["ident"])
     md5str = m2.hexdigest()
-    print "baoming"
-    print demsg["baoming"]
-    print "ident"
-    print demsg["ident"]
-    print "md5"
-    print md5str
+    # print "baoming"
+    # print demsg["baoming"]
+    # print "ident"
+    # print demsg["ident"]
+    # print "md5"
+    # print md5str
     if demsg["type"]==1:
         identity = mongo.auto_user.find_one({"android_ident":md5str})
     else:

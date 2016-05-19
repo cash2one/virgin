@@ -1,6 +1,8 @@
 #--coding:utf-8--#
 import time
 
+import datetime
+
 from app_merchant import auto
 from tools import tools
 import sys
@@ -18,7 +20,7 @@ table = {
         'nickname':'str',
         'birthday':'str',
         'phone':'str',
-        'addtime':'str',
+        'addtime':'',
         'status':'int',
         'headimage':'str'
       }
@@ -95,43 +97,50 @@ def membersinfo():
         }
         if request.form['user_tpye']==0:
             item = mongo.members.find_one(tools.orderformate(pdict, table))
-            total = mongo.order.find(tools.orderformate(odict, table),{'preset_time':1,'total':1})
             data=[]
-            for i in item:
-                json = {}
-                for key in i.keys():
-                    if key == '_id':
-                        json['id'] = str(i[key])
-                    elif key == 'restaurant_id':
-                        json['restaurant_id'] = str(i[key])
-                    elif key == 'addtime':
-                        json['addtime'] = i[key].strftime('%Y年%m月%d日 %H:%M')
-                    elif key == 'birthday':
-                        json['birthday'] = i[key].strftime('%Y年%m月%d日 %H:%M')
-                    else:
-                        json[key] = i[key]
-                data.append(json)
-            data.append(total)
+            json = {}
+            for key in item.keys():
+                if key == '_id':
+                    json['id'] = str(item[key])
+                elif key == 'restaurant_id':
+                    json['restaurant_id'] = str(item[key])
+                elif key == 'addtime':
+                    json['addtime'] = item[key].strftime('%Y年%m月%d日 %H:%M')
+                elif key == 'birthday':
+                    json['birthday'] = item[key]
+                else:
+                    json[key] = item[key]
+            data.append(json)
             jwtmsg = auto.decodejwt(request.form["jwtstr"])
             result=tool.return_json(0,"success",jwtmsg,data)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             item = mongo.webuser.find_one(tools.orderformate(pdict, table))
-            data=[]
-            for i in item:
-                json = {}
-                for key in i.keys():
-                    if key == '_id':
-                        json['id'] = str(i[key])
-                    elif key == 'automembers_id':
-                        json['automembers_id'] = str(i[key])
-                    elif key == 'addtime':
-                        json['addtime'] = i[key].strftime('%Y年%m月%d日 %H:%M')
-                    elif key == 'birthday':
-                        json['birthday'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+            totals = mongo.order.find(tools.orderformate(odict, table),{'preset_time':1,'total':1})
+            total = {}
+            for i in totals:
+                for t in i.keys():
+                    if t == '_id':
+                        total['id'] = str(i[t])
+                    elif t == 'preset_time':
+                        total['preset_time'] = str(i[t])
                     else:
-                        json[key] = i[key]
-                data.append(json)
+                        total[t] = i[t]
+            data=[]
+            json = {}
+            for key in item.keys():
+                if key == '_id':
+                    json['id'] = str(item[key])
+                elif key == 'restaurant_id':
+                    json['restaurant_id'] = str(item[key])
+                elif key == 'addtime':
+                    json['addtime'] = item[key].strftime('%Y年%m月%d日 %H:%M')
+                elif key == 'birthday':
+                    json['birthday'] = item[key]
+                else:
+                    json[key] = item[key]
+            data.append(json)
+            data.append(total)
             jwtmsg = auto.decodejwt(request.form["jwtstr"])
             result=tool.return_json(0,"success",jwtmsg,data)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
@@ -145,7 +154,7 @@ def insertmembers():
                 'nickname':request.form["nickname"],
                 'birthday':request.form["birthday"],
                 'phone':request.form["phone"],
-                'addtime':time.strftime('%Y-%m-%d %H:%M'),
+                'addtime':datetime.datetime.now(),
                 'status':request.form["status"],
                 'restaurant_id':request.form["restaurant_id"],
                 'headimage':request.form["headimage"]
@@ -201,17 +210,6 @@ def deletemembers():
         return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
-def updatemessage(self, idlist=[], status=1):
-    try:
-        #以后修改为session中取id
-        id='57396ec17c1f31a9cce960f4'
-        midlist = []
-        for mid in idlist:
-            midlist.append(ObjectId(mid))
-        mongo.message.update({"_id":{'$in': midlist}},{"$set":{"infoto."+id:int(status)}},multi=True)
-    except Exception, e:
-        print e
-        return False
 #2.0.jpg店粉儿模糊查询！模糊查询！模糊查询！！！|restaurant_id：饭店id |pageindex:页数 |nickname:用户名|
 @members_api.route('/fm/merchant/v1/members/membersbyname', methods=['POST'])
 def membersbyname():
@@ -222,12 +220,10 @@ def membersbyname():
         pagenum = 10
         star = (int(pageindex)-1)*pagenum
         end = (pagenum*int(pageindex))
-        data = []
         listall = []
-        dictmembers = {}
-        dictwebusers = {}
         members = mongo.members.find({"restaurant_id" : ObjectId(r_id),"nickname":{'$regex':name}})
         for i in members:
+            dictmembers = {}
             for j in i.keys():
                 if j == '_id':
                     dictmembers['id'] = str(i[j])
@@ -236,7 +232,8 @@ def membersbyname():
                 elif j == 'headimage':
                     dictmembers['headimage'] = i[j]
                 dictmembers['user_type'] = 0
-        listall.append(dictmembers)
+            if dictmembers:
+                listall.append(dictmembers)
         idlist = []
         concern = mongo.concern.find({"restaurant_id" : ObjectId(r_id)})
         for i in concern:
@@ -245,6 +242,7 @@ def membersbyname():
                     idlist.append(ObjectId(i[j]))
         webusers = mongo.webuser.find({'_id': {'$in': idlist},"nickname":{'$regex':name}})
         for i in webusers:
+            dictwebusers = {}
             for j in i.keys():
                 if j == '_id':
                     dictwebusers['id'] = str(i[j])
@@ -253,10 +251,10 @@ def membersbyname():
                 elif j == 'headimage':
                     dictwebusers['headimage'] = i[j]
                 dictwebusers['user_type'] = 1
-        listall.append(dictwebusers)
-        data.append(listall[star:end])
+            if dictwebusers:
+                listall.append(dictwebusers)
         jwtmsg = auto.decodejwt(request.form["jwtstr"])
-        result=tool.return_json(0,"success",jwtmsg,data)
+        result=tool.return_json(0,"success",jwtmsg,listall[star:end])
         print json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)

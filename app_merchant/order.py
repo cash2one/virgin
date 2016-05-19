@@ -15,9 +15,14 @@ import tools.tools as tool
 import tools.public_vew as public
 import datetime
 table = {'status': 'int',
-      'type': 'int',
-      'restaurant_id': 'obj',
-      '_id': 'obj'
+         'type': 'int',
+         'restaurant_id': 'obj',
+         '_id': 'obj',
+         'username':'str',
+         'phone':'str',
+         'demand':'str',
+         'numpeople':'int',
+          'preset_time':''
       }
 mongo=conn.mongo_conn()
 
@@ -206,7 +211,6 @@ def allorder():
                     json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
                 else:
                     json[key] = i[key]
-            print json
             data.append(json)
         data.append({'allcount':allcount,'newcount':newcount,'waitecount':waitecount,'redocount':redocount})
 
