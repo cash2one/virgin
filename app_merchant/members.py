@@ -28,7 +28,7 @@ mongo=conn.mongo_conn()
 
 members_api = Blueprint('members_api', __name__, template_folder='templates')
 #2.0.jpg店粉儿查询|restaurant_id：饭店id |pageindex:页数 |user_tpye:用户类型线下0线上1|
-@members_api.route('/fm/merchant/v1/members/allmembers', methods=['POST'])
+@members_api.route('/fm/merchant/v1/members/allmembers/', methods=['POST'])
 def allmembers():
     if request.method=='POST':
         pdict = {
