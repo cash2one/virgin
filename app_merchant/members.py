@@ -180,19 +180,31 @@ def updatemembers():
 @members_api.route('/fm/merchant/v1/members/deletemembers', methods=['POST'])
 def deletemembers():
     if request.method=='POST':
-            pdict = {
-                '_id':request.form['id']
-            }
-            mongo.members.delete(tools.orderformate(pdict, table))
-            json = {
-                    "status": 1,
-                    "msg":""
-            }
-            result=tool.return_json(0,"success",json)
-            return json_util.dumps(result,ensure_ascii=False,indent=2)
+        idlist = request.form['idlist'].split('_')
+        midlist = []
+        for mid in idlist:
+            midlist.append(ObjectId(mid))
+        mongo.members.update({"_id":{'$in': midlist}},{"$set":{"status":1}},multi=True)
+        json = {
+                "status": 1,
+                "msg":""
+        }
+        result=tool.return_json(0,"success",json)
+        return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
-#2.0.jpg店粉儿模糊查询！模糊查询！模糊查询！！！|restaurant_id：饭店id |pageindex:页数 |username:用户名|
+def updatemessage(self, idlist=[], status=1):
+    try:
+        #以后修改为session中取id
+        id='57396ec17c1f31a9cce960f4'
+        midlist = []
+        for mid in idlist:
+            midlist.append(ObjectId(mid))
+        mongo.message.update({"_id":{'$in': midlist}},{"$set":{"infoto."+id:int(status)}},multi=True)
+    except Exception, e:
+        print e
+        return False
+#2.0.jpg店粉儿模糊查询！模糊查询！模糊查询！！！|restaurant_id：饭店id |pageindex:页数 |nickname:用户名|
 @members_api.route('/fm/merchant/v1/members/membersbyname', methods=['POST'])
 def membersbyname():
     if request.method=='POST':

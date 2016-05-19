@@ -154,7 +154,7 @@ def notification(order_id):
     }
     result=tool.return_json(0,"success",json)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
-#1.1.3.jpg全部订单和1.v1.jpg订单form:restaurant_id,status,type
+#1.1.3.jpg全部订单和1.v1.jpg订单restaurant_id,status,type
 @order_api.route('/fm/merchant/v1/order/allorder', methods=['POST'])
 def allorder():
     if request.method=='POST':
