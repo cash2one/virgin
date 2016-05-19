@@ -6,7 +6,11 @@ from connect import conn
 from bson import ObjectId,json_util
 mongo=conn.mongo_conn()
 
-def return_json(code,message,data):
+def return_json(code,message,jwt,data):
+    if jwt:
+        data = data
+    else:
+        data = {"auto":jwt}
     json={
         "code":code,
         "message":message,
