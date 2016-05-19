@@ -99,8 +99,11 @@ def onedishsorder(order_id,order_type):
 
 
 
-@order_api.route('/fm/merchant/v1/order/dispose/<string:order_id>', methods=['GET'])
-def dispose(order_id):
+@order_api.route('/fm/merchant/v1/order/dispose/', methods=['POST'])
+def dispose():
+    if request.method == "POST":
+        jwtstr = request.form["jwtstr"]
+        order_id = request.form["order_id"]
     item = mongo.order.find_one({"_id":ObjectId(order_id)})
     item = json_util.loads(json_util.dumps(item))
     json = {
@@ -112,7 +115,7 @@ def dispose(order_id):
             "demand": item["demand"],
             "preset_dishs":item["preset_dishs"]
         }
-    jwtmsg = auto.decodejwt(request.form["jwtstr"])
+    jwtmsg = auto.decodejwt(jwtstr)
     result=tool.return_json(0,"success",jwtmsg,json)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
 
