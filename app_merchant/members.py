@@ -225,7 +225,7 @@ def membersbyname():
         star = (int(pageindex)-1)*pagenum
         end = (pagenum*int(pageindex))
         listall = []
-        members = mongo.members.find({"restaurant_id" : ObjectId(r_id),"nickname":{'$regex':name}})
+        members = mongo.members.find({"restaurant_id" : ObjectId(request.form["restaurant_id"]),"nickname":{'$regex':name}})
         for i in members:
             dictmembers = {}
             for j in i.keys():
@@ -239,7 +239,7 @@ def membersbyname():
             if dictmembers:
                 listall.append(dictmembers)
         idlist = []
-        concern = mongo.concern.find({"restaurant_id" : ObjectId(r_id)})
+        concern = mongo.concern.find({"restaurant_id" : ObjectId(request.form["restaurant_id"])})
         for i in concern:
             for j in i.keys():
                 if j == 'webuser_id':
