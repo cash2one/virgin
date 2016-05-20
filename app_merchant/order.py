@@ -222,7 +222,7 @@ def allorder():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
         except Exception,e:
             print e
-            result=tool.return_json(0,"success",False,None)
+            result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
          return abort(403)
