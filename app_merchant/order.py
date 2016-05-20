@@ -174,52 +174,56 @@ def notification(order_id):
 @order_api.route('/fm/merchant/v1/order/allorder/', methods=['POST'])
 def allorder():
     if request.method=='POST':
-        pdict = {
-            'restaurant_id':request.form["restaurant_id"],
-            'status':request.form["status"],
-            'type':request.form["type"]
-        }
-        second = {
-            "_id" : 1,
-            "username" :1,
-            "status" : 1,
-            "type" : 1,
-            "restaurant_id" : 1,
-            "numpeople" : 1,
-            "preset_time" : 1,
-            "add_time" : 1
-        }
-        pageindex = request.form["pageindex"]
-        pagenum = 10
-        star = (int(pageindex)-1)*pagenum
-        end = (pagenum*int(pageindex))
-        # print tools.orderformate(pdict, table)
-        item = mongo.order.find(tools.orderformate(pdict, table),second).sort("add_time", pymongo.DESCENDING)[star:end]
-        allcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"])}).count()
-        newcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":0}).count()
-        waitecount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":2}).count()
-        redocount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":6}).count()
-        # print json_util.dumps(item,ensure_ascii=False,indent=2)
-        data=[]
-        for i in item:
-            json = {}
-            for key in i.keys():
-                if key == '_id':
-                    json['id'] = str(i[key])
-                elif key == 'restaurant_id':
-                    json['restaurant_id'] = str(i[key])
-                elif key == 'preset_time':
-                    json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
-                elif key == 'add_time':
-                    json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
-                else:
-                    json[key] = i[key]
-            data.append(json)
-        data.append({'allcount':allcount,'newcount':newcount,'waitecount':waitecount,'redocount':redocount})
+        try:
+            pdict = {
+                'restaurant_id':request.form["restaurant_id"],
+                'status':request.form["status"],
+                'type':request.form["type"]
+            }
+            second = {
+                "_id" : 1,
+                "username" :1,
+                "status" : 1,
+                "type" : 1,
+                "restaurant_id" : 1,
+                "numpeople" : 1,
+                "preset_time" : 1,
+                "add_time" : 1
+            }
+            pageindex = request.form["pageindex"]
+            pagenum = 10
+            star = (int(pageindex)-1)*pagenum
+            end = (pagenum*int(pageindex))
+            # print tools.orderformate(pdict, table)
+            item = mongo.order.find(tools.orderformate(pdict, table),second).sort("add_time", pymongo.DESCENDING)[star:end]
+            allcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"])}).count()
+            newcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":0}).count()
+            waitecount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":2}).count()
+            redocount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":6}).count()
+            data=[]
+            for i in item:
+                json = {}
+                for key in i.keys():
+                    if key == '_id':
+                        json['id'] = str(i[key])
+                    elif key == 'restaurant_id':
+                        json['restaurant_id'] = str(i[key])
+                    elif key == 'preset_time':
+                        json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                    elif key == 'add_time':
+                        json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                    else:
+                        json[key] = i[key]
+                data.append(json)
+            data.append({'allcount':allcount,'newcount':newcount,'waitecount':waitecount,'redocount':redocount})
 
-        jwtmsg = auto.decodejwt(request.form["jwtstr"])
-        result=tool.return_json(0,"success",jwtmsg,data)
-        return json_util.dumps(result,ensure_ascii=False,indent=2)
+            jwtmsg = auto.decodejwt(request.form["jwtstr"])
+            result=tool.return_json(0,"success",jwtmsg,data)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+        except Exception,e:
+            print e
+            result=tool.return_json(0,"success",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
          return abort(403)
 #1.1.4.jpg订单详细信息form:id

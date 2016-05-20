@@ -32,7 +32,7 @@ def restaurant_discount():
         '_id':request.form["id"],
         'menu.dish_type':request.form['dish_type']
     }
-    item = mongo.restaurant.find(tools.orderformate(pdict, table))
+    item = mongo.restaurant.find(tools.orderformate(pdict, table),{})
     data=[]
     for i in item:
         json = {}
