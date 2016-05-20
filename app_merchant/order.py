@@ -238,6 +238,8 @@ def orderinfos():
                     json['id'] = str(i[key])
                 elif key == 'restaurant_id':
                     json['restaurant_id'] = str(i[key])
+                elif key == 'webuser_id':
+                    json['webuser_id'] = str(i[key])
                 elif key == 'preset_time':
                     json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
                 elif key == 'add_time':
