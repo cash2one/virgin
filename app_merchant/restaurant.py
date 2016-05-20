@@ -28,48 +28,58 @@ restaurant_api = Blueprint('restaurant_api', __name__, template_folder='template
 #1.4菜品优惠查询form:id
 @restaurant_api.route('/fm/merchant/v1/restaurant/restaurant_discount/', methods=['POST'])
 def restaurant_discount():
-    pdict = {
-        '_id':request.form["id"],
-        'menu.dish_type':request.form['dish_type']
-    }
-    item = mongo.restaurant.find(tools.orderformate(pdict, table),{})
-    data=[]
-    for i in item:
-        json = {}
-        for key in i.keys():
-            if key == '_id':
-                json['id'] = i[key]
-            else:
-                json[key] = i[key]
-        data.append(json)
+    try:
+        pdict = {
+            '_id':request.form["id"],
+            'menu.dish_type':request.form['dish_type']
+        }
+        item = mongo.restaurant.find(tools.orderformate(pdict, table),{})
+        data=[]
+        for i in item:
+            json = {}
+            for key in i.keys():
+                if key == '_id':
+                    json['id'] = i[key]
+                else:
+                    json[key] = i[key]
+            data.append(json)
 
-    jwtmsg = auto.decodejwt(request.form["jwtstr"])
-    result=tool.return_json(0,"success",jwtmsg,data)
-    return json_util.dumps(result,ensure_ascii=False,indent=2)
+        jwtmsg = auto.decodejwt(request.form["jwtstr"])
+        result=tool.return_json(0,"success",jwtmsg,data)
+        return json_util.dumps(result,ensure_ascii=False,indent=2)
+    except Exception,e:
+        print e
+        result=tool.return_json(0,"field",False,None)
+        return json_util.dumps(result,ensure_ascii=False,indent=2)
 #修改菜品价格
 @restaurant_api.route('/fm/merchant/v1/restaurant/updaterestaurant/', methods=['POST'])
 def updaterestaurant():
-    pdict = {
-        "dishes_discount.discount":request.form['discount'],
-        "dishes_discount.message":request.form['message'],
-        "dishes_discount.end_time":request.form['end_time'],
-        "dishes_discount.start_time":request.form['start_time'],
-        "dishes_discount.desc":request.form['desc']
-    }
-    objid = {"_id":ObjectId(request.form["id"])}
-    first = tools.orderformate(pdict,dishes_discount)
-    second = {"$set":first}
-    mongo.restaurant.update_one(objid,second)
+    try:
+        pdict = {
+            "dishes_discount.discount":request.form['discount'],
+            "dishes_discount.message":request.form['message'],
+            "dishes_discount.end_time":request.form['end_time'],
+            "dishes_discount.start_time":request.form['start_time'],
+            "dishes_discount.desc":request.form['desc']
+        }
+        objid = {"_id":ObjectId(request.form["id"])}
+        first = tools.orderformate(pdict,dishes_discount)
+        second = {"$set":first}
+        mongo.restaurant.update_one(objid,second)
 
-    dish = {
-        request.form['dish_id']: {'discount_price': float(request.form['discount_price'])}
-    }
-    redish = tool.Foormat(request.form["id"]).re_dish(dish)
-    redish.submit2db()
-    json = {
-            "status": 1,
-            "msg":""
-    }
-    jwtmsg = auto.decodejwt(request.form["jwtstr"])
-    result=tool.return_json(0,"success",jwtmsg,json)
-    return json_util.dumps(result,ensure_ascii=False,indent=2)
+        dish = {
+            request.form['dish_id']: {'discount_price': float(request.form['discount_price'])}
+        }
+        redish = tool.Foormat(request.form["id"]).re_dish(dish)
+        redish.submit2db()
+        json = {
+                "status": 1,
+                "msg":""
+        }
+        jwtmsg = auto.decodejwt(request.form["jwtstr"])
+        result=tool.return_json(0,"success",jwtmsg,json)
+        return json_util.dumps(result,ensure_ascii=False,indent=2)
+    except Exception,e:
+        print e
+        result=tool.return_json(0,"field",False,None)
+        return json_util.dumps(result,ensure_ascii=False,indent=2)

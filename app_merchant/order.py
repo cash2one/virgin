@@ -175,11 +175,14 @@ def notification(order_id):
 def allorder():
     if request.method=='POST':
         try:
+
             pdict = {
-                'restaurant_id':request.form["restaurant_id"],
-                'status':request.form["status"],
-                'type':request.form["type"]
+                'restaurant_id':request.form["restaurant_id"]
             }
+            if int(request.form["status"]) != -1:
+                pdict['status'] = request.form["status"]
+            elif int(request.form["type"]) != -1:
+                pdict['type'] = request.form["type"]
             second = {
                 "_id" : 1,
                 "username" :1,
@@ -230,73 +233,89 @@ def allorder():
 @order_api.route('/fm/merchant/v1/order/orderinfos/', methods=['POST'])
 def orderinfos():
     if request.method=='POST':
-        pdict = {
-            '_id':request.form["id"]
-        }
-        item = mongo.order.find(tools.orderformate(pdict, table))
-        data=[]
-        for i in item:
-            json = {}
-            for key in i.keys():
-                if key == '_id':
-                    json['id'] = str(i[key])
-                elif key == 'restaurant_id':
-                    json['restaurant_id'] = str(i[key])
-                elif key == 'webuser_id':
-                    json['webuser_id'] = str(i[key])
-                elif key == 'preset_time':
-                    json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
-                elif key == 'add_time':
-                    json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
-                else:
-                    json[key] = i[key]
-            data.append(json)
+        try:
+            pdict = {
+                '_id':request.form["id"]
+            }
+            item = mongo.order.find(tools.orderformate(pdict, table))
+            data=[]
+            for i in item:
+                json = {}
+                for key in i.keys():
+                    if key == '_id':
+                        json['id'] = str(i[key])
+                    elif key == 'restaurant_id':
+                        json['restaurant_id'] = str(i[key])
+                    elif key == 'webuser_id':
+                        json['webuser_id'] = str(i[key])
+                    elif key == 'preset_time':
+                        json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                    elif key == 'add_time':
+                        json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                    else:
+                        json[key] = i[key]
+                data.append(json)
 
-        jwtmsg = auto.decodejwt(request.form["jwtstr"])
-        result=tool.return_json(0,"success",jwtmsg,data)
-        return json_util.dumps(result,ensure_ascii=False,indent=2)
+            jwtmsg = auto.decodejwt(request.form["jwtstr"])
+            result=tool.return_json(0,"success",jwtmsg,data)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+        except Exception,e:
+            print e
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
 #1.2.jpg订单-统计|restaurant_id:饭店id|start_time:开始时间|end_time：结束时间|
 @order_api.route('/fm/merchant/v1/order/ordercounts/', methods=['POST'])
 def ordercounts():
     if request.method == 'POST':
-        start=datetime.datetime(*time.strptime(request.form['start_time'],'%Y-%m-%d')[:6])
-        end = datetime.datetime(*time.strptime(request.form['end_time'],'%Y-%m-%d')[:6])+datetime.timedelta(days = 1)
-        pdict = {'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
-        allcount = mongo.order.find(pdict).count()
-        anumpeoples = mongo.order.aggregate([{ '$match' : pdict}, { '$group' : { '_id' : "$restaurant_id", 'numpeople' : {'$sum' : "$numpeople"} }}])
-        json = {}
-        for i in anumpeoples:
-                for key in i.keys():
-                    if key == '_id':
-                        json['id'] = str(i[key])
-                    else:
-                        json[key] = i[key]
-        pdict['source'] = 1
-        ycount = mongo.order.find(pdict).count()
-        pdict['source'] = 2
-        mcount = mongo.order.find(pdict).count()
-        data={'allcount':allcount,'anumpeoples':json,'ycount':ycount,'mcount':mcount}
-        jwtmsg = auto.decodejwt(request.form["jwtstr"])
-        result=tool.return_json(0,"success",jwtmsg,data)
-        return json_util.dumps(result,ensure_ascii=False,indent=2)
+        try:
+            start=datetime.datetime(*time.strptime(request.form['start_time'],'%Y-%m-%d')[:6])
+            end = datetime.datetime(*time.strptime(request.form['end_time'],'%Y-%m-%d')[:6])+datetime.timedelta(days = 1)
+            pdict = {'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
+            allcount = mongo.order.find(pdict).count()
+            anumpeoples = mongo.order.aggregate([{ '$match' : pdict}, { '$group' : { '_id' : "$restaurant_id", 'numpeople' : {'$sum' : "$numpeople"} }}])
+            json = {}
+            for i in anumpeoples:
+                    for key in i.keys():
+                        if key == '_id':
+                            json['id'] = str(i[key])
+                        else:
+                            json[key] = i[key]
+            pdict['source'] = 1
+            ycount = mongo.order.find(pdict).count()
+            pdict['source'] = 2
+            mcount = mongo.order.find(pdict).count()
+            data={'allcount':allcount,'anumpeoples':json,'ycount':ycount,'mcount':mcount}
+            jwtmsg = auto.decodejwt(request.form["jwtstr"])
+            result=tool.return_json(0,"success",jwtmsg,data)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+        except Exception,e:
+            print e
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
 #1.3.0.jpg餐位管理restaurant_id, preset_time
 @order_api.route('/fm/merchant/v1/order/orderbypreset/', methods=['POST'])
 def orderbypreset():
     if request.method=='POST':
-        data = public.getroomslist(ObjectId(request.form['restaurant_id']),request.form['preset_time'])
-        jwtmsg = auto.decodejwt(request.form["jwtstr"])
-        result=tool.return_json(0,"success",jwtmsg,data)
-        return json_util.dumps(result,ensure_ascii=False,indent=2)
+        try:
+            data = public.getroomslist(ObjectId(request.form['restaurant_id']),request.form['preset_time'])
+            jwtmsg = auto.decodejwt(request.form["jwtstr"])
+            result=tool.return_json(0,"success",jwtmsg,data)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+        except Exception,e:
+            print e
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
 #1.3.2餐位管理修改订单
 @order_api.route('/fm/merchant/v1/members/updateorder/', methods=['POST'])
 def updateorder():
     if request.method=='POST':
+        try:
             pdict = {
                 '_id':request.form["id"],
                 'username':request.form["username"],
@@ -312,6 +331,10 @@ def updateorder():
             }
             jwtmsg = auto.decodejwt(request.form["jwtstr"])
             result=tool.return_json(0,"success",jwtmsg,json)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+        except Exception,e:
+            print e
+            result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
