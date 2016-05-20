@@ -4,18 +4,39 @@ from connect import conn
 import pymongo
 import tools.tools as tool
 from bson import  json_util
+import datetime
 
-other_api=Blueprint("other_api",__name__,template_folder='templates')
+user_api=Blueprint("user_api",__name__,template_folder='templates')
 mongo=conn.mongo_conn_user()
 
-@other_api.route('/usercenter/v1/register/')
+@user_api.route('/usercenter/v1/register/', methods=['POST'])
 def register():
-    item=mongo.user_web.find().sort("addtime",pymongo.DESCENDING)[0]
-    json = {
-            "url": item["url"],
-            "version": item["version"],
-            "describe": item["describe"]
-    }
-    result=tool.return_json(0,"success",json)
-    return json_util.dumps(result,ensure_ascii=False,indent=2)
+    if request.method == "POST":
+        phone = request.form["phone"]
+        password = request.form["password"]
+        json = {
+            "status" : 1,
+            "identification" : "",
+            "registeruser" : {
+                "nick" : "",
+                "password" : password,
+                "headimage" : "",
+                "name" : ""
+            },
+            "lastlogin" : {
+                "ident" : "",
+                "time" : datetime.datetime.now()
+            },
+            "thirdIds" : [
+            ],
+            "phone" : phone,
+            "addtime" : datetime.datetime.now(),
+            "type" : 3,
+            "identype" : "0",
+            "appid":2
+        }
+        item=mongo.user_web.insert(json)
+    print str(item)
+    r = {"id":str(item)}
+    return json_util.dumps(r,ensure_ascii=False,indent=2)
 
