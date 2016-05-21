@@ -53,8 +53,8 @@ def allmembers():
                             json['addtime'] = i[key].strftime('%Y年%m月%d日 %H:%M')
                         else:
                             json[key] = i[key]
+                        json['user_type'] = 1
                     data.append(json)
-                data.append({'user_type':0})
                 jwtmsg = auto.decodejwt(request.form["jwtstr"])
                 result=tool.return_json(0,"success",jwtmsg,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
@@ -82,8 +82,8 @@ def allmembers():
                             json['gender'] = int(i[key])
                         else:
                             json[key] = i[key]
+                        json['user_type'] = 1
                     data.append(json)
-                data.append({'user_type':1})
                 jwtmsg = auto.decodejwt(request.form["jwtstr"])
                 result=tool.return_json(0,"success",jwtmsg,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
