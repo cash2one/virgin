@@ -67,13 +67,41 @@ def addorder():
         "type": int(type),#1
         "preset_dishs":preset_dishs#1
     }
+    json = dict(
+        username=request.form['username']
+    )
+    for key in request.form.keys():
+        print request.form[key]
     mongo.order.insert_one(json)
     jwtmsg = auto.decodejwt(request.form["jwtstr"])
     result=tool.return_json(0,"success",jwtmsg,json_util.dumps(json))
     return result
 
+ff = {'user': 'str',
+      'id': 'int'}
 
+def get_param(json_data):
 
+    return data
+
+class Setup:
+    Biao_one = {}
+    Biao_two = {}
+
+Setup.Biao_one
+
+def format_lala(data):
+
+    for key in data.keys():
+        data[key] = format_type(data, ff[key])
+    pass
+
+def format_type(data, type):
+    if type == 'str':
+        return str(data)
+    elif type == 'int':
+        return int(data)
+    pass
 
 @order_api.route('/fm/merchant/v1/order/onedishsorder/<string:order_id>/<int:order_type>/', methods=['GET'])
 def onedishsorder(order_id,order_type):

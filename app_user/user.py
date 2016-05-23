@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, abort, json
 from connect import conn
+from connect.mongotool import MongoAPI
 import tools.tools as tool
 from bson import json_util, ObjectId
 import pymongo
@@ -10,7 +11,7 @@ __author__ = 'hcy'
 
 user_api = Blueprint("user_api", __name__, template_folder='templates')
 # mongo = conn.mongo_conn_user()
-mongo = conn.MongoAPI(conn.mongo_conn_user().user_web)
+mongo = MongoAPI(conn.mongo_conn_user().user_web)
 
 
 @user_api.route('/usercenter/v1/register/', methods=['POST'])
@@ -57,8 +58,11 @@ def verify_login():
     if request.method == "POST":
         phone = request.form["phone"]
         password = request.form["password"]
-        found = mongo.find({'phone': phone, 'appid': {'2': True}})[0]
+        found = mongo.find({'phone': phone, 'appid': {'2': True}})
+        if 'seller' in request.form:
+            print 'is seller'
         if found:
+            found = found[0]
             if found['registeruser']['password'] == hashlib.md5(password).hexdigest().upper():
                 found['_id'] = str(found['_id']['$oid'])
                 return json.dumps({'success': True, '_id': found['_id']})
@@ -72,6 +76,27 @@ def verify_login():
     pass
 
 
+@user_api.route('/usercenter/v1/reset/', methods=['POST', 'PATCH'])
+def password_reset():
+    if request.method in ['POST', 'PATCH']:
+        phone = request.form["phone"]
+        password = request.form["password"]
+        found = mongo.find({'phone': phone, 'appid': {'2': True}})
+        if found:
+            found = found[0]
+            fix_psw = {'registeruser.password': hashlib.md5(password).hexdigest().upper()}
+            is_fix = mongo.fix({'_id': str(found['_id']['$oid']), 'fix_data': fix_psw})
+            is_fix['_id'] = found['_id']
+            return json.dumps(is_fix)
+            pass
+        else:
+            return json.dumps({'success': False, 'info': 'Not Found'})
+        pass
+    else:
+        pass
+    pass
+
+
 class Test:
 
     @staticmethod
@@ -82,19 +107,61 @@ class Test:
 
     @staticmethod
     def login():
-        phone = '15546226998'
-        password = '123456'
-        found = mongo.find({'phone': phone, 'appid': 1})[0]
+        phone = '18504513506'
+        password = '123'
+        found = mongo.find({'phone': phone, 'appid': 2})
+        if found:
+            found = found[0]
         if found:
             print hashlib.md5(password).hexdigest().upper()
             if found['registeruser']['password'] == hashlib.md5(password).hexdigest().upper():
                 found['_id'] = str(found['_id']['$oid'])
+                print found['registeruser']['password']
                 print json.dumps({'success': True, 'info': found})
             else:
                 print json.dumps({'success': False, 'info': 'Password Not Match'})
         else:
             print json.dumps({'success': False, 'info': 'Not Found'})
 
+    @staticmethod
+    def fix_password():
+        password = '123'
+        fix_psw = {'registeruser.password': hashlib.md5(password).hexdigest().upper()}
+        print fix_psw
+        is_fix = mongo.fix({'_id': '573e5c00dcc88e6873eab9ad', 'fix_data': fix_psw})
+        print is_fix
+        pass
+
+    @staticmethod
+    def add_user():
+        phone = '123134134'
+        password = 'asdfasdf'
+        data = {
+            "status": 1,
+            "identification": "",
+            "registeruser": {
+                "nick": "",
+                "password": hashlib.md5(password).hexdigest().upper(),
+                "headimage": "",
+                "name": ""
+            },
+            "lastlogin": {
+                "ident": "",
+                "time": datetime.datetime.now()
+            },
+            "thirdIds": [
+            ],
+            "phone": phone,
+            "addtime": datetime.datetime.now(),
+            "type": 3,
+            "identype": "0",
+            "appid": {'2': True}
+        }
+        item = mongo.add(data)
+        print item
+
 
 if __name__ == '__main__':
+    # Test.login()
+    # Test.add_user()
     pass
