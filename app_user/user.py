@@ -86,7 +86,7 @@ def password_reset():
             found = found[0]
             fix_psw = {'registeruser.password': hashlib.md5(password).hexdigest().upper()}
             is_fix = mongo.fix({'_id': str(found['_id']['$oid']), 'fix_data': fix_psw})
-            is_fix['_id'] = found['_id']
+            is_fix['_id'] = str(found['_id']['$oid'])
             return json.dumps(is_fix)
             pass
         else:
