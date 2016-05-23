@@ -213,9 +213,9 @@ def allorder():
                     elif key == 'restaurant_id':
                         json['restaurant_id'] = str(i[key])
                     elif key == 'preset_time':
-                        json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                        json['preset_time'] = i[key].strftime(u'%Y年%m月%d日 %H:%M')
                     elif key == 'add_time':
-                        json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                        json['add_time'] = i[key].strftime(u'%Y年%m月%d日 %H:%M')
                     else:
                         json[key] = i[key]
                 list.append(json)
