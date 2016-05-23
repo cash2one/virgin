@@ -41,7 +41,8 @@ def allmembers():
             end = (pagenum*int(pageindex))
             if int(request.form['user_tpye'])==0:
                 item = mongo.members.find(tools.orderformate(pdict, table))[star:end]
-                data=[]
+                data={}
+                list = []
                 for i in item:
                     json = {}
                     for key in i.keys():
@@ -53,8 +54,9 @@ def allmembers():
                             json['addtime'] = i[key].strftime('%Y年%m月%d日 %H:%M')
                         else:
                             json[key] = i[key]
-                        json['user_type'] = 1
-                    data.append(json)
+                        json['user_type'] = 0
+                    list.append(json)
+                data['list'] = list
                 jwtmsg = auto.decodejwt(request.form["jwtstr"])
                 result=tool.return_json(0,"success",jwtmsg,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
@@ -66,7 +68,8 @@ def allmembers():
                         if j == 'webuser_id':
                             idlist.append(ObjectId(i[j]))
                 item = mongo.webuser.find({'_id': {'$in': idlist}})[star:end]
-                data=[]
+                data = {}
+                list = []
                 for i in item:
                     json = {}
                     for key in i.keys():
@@ -83,7 +86,8 @@ def allmembers():
                         else:
                             json[key] = i[key]
                         json['user_type'] = 1
-                    data.append(json)
+                    list.append(json)
+                data['list'] = list
                 jwtmsg = auto.decodejwt(request.form["jwtstr"])
                 result=tool.return_json(0,"success",jwtmsg,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
@@ -107,7 +111,6 @@ def membersinfo():
             }
             if int(request.form['user_tpye'])==0:
                 item = mongo.members.find_one(tools.orderformate(pdict, table))
-                data=[]
                 json = {}
                 for key in item.keys():
                     if key == '_id':
@@ -120,9 +123,8 @@ def membersinfo():
                         json['birthday'] = item[key]
                     else:
                         json[key] = item[key]
-                data.append(json)
                 jwtmsg = auto.decodejwt(request.form["jwtstr"])
-                result=tool.return_json(0,"success",jwtmsg,data)
+                result=tool.return_json(0,"success",jwtmsg,json)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             else:
                 item = mongo.webuser.find_one(tools.orderformate(pdict, table))
@@ -136,7 +138,7 @@ def membersinfo():
                             total['preset_time'] = str(i[t])
                         else:
                             total[t] = i[t]
-                data=[]
+                data = {}
                 json = {}
                 for key in item.keys():
                     if key == '_id':
@@ -149,8 +151,8 @@ def membersinfo():
                         json['birthday'] = item[key]
                     else:
                         json[key] = item[key]
-                data.append(json)
-                data.append(total)
+                data['info'] = json
+                data['total'] = total
                 jwtmsg = auto.decodejwt(request.form["jwtstr"])
                 result=tool.return_json(0,"success",jwtmsg,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
@@ -264,6 +266,7 @@ def membersbyname():
                 if dictmembers:
                     listall.append(dictmembers)
             idlist = []
+            data = {}
             concern = mongo.concern.find({"restaurant_id" : ObjectId(request.form["restaurant_id"])})
             for i in concern:
                 for j in i.keys():
@@ -283,7 +286,8 @@ def membersbyname():
                 if dictwebusers:
                     listall.append(dictwebusers)
             jwtmsg = auto.decodejwt(request.form["jwtstr"])
-            result=tool.return_json(0,"success",jwtmsg,listall[star:end])
+            data['list'] = listall[star:end]
+            result=tool.return_json(0,"success",jwtmsg,data)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
         except Exception,e:
             print e

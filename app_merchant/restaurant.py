@@ -34,7 +34,8 @@ def restaurant_discount():
             'menu.dish_type':request.form['dish_type']
         }
         item = mongo.restaurant.find(tools.orderformate(pdict, table),{})
-        data=[]
+        data={}
+        list = []
         for i in item:
             json = {}
             for key in i.keys():
@@ -42,8 +43,8 @@ def restaurant_discount():
                     json['id'] = i[key]
                 else:
                     json[key] = i[key]
-            data.append(json)
-
+            list.append(json)
+        data['list'] = list
         jwtmsg = auto.decodejwt(request.form["jwtstr"])
         result=tool.return_json(0,"success",jwtmsg,data)
         return json_util.dumps(result,ensure_ascii=False,indent=2)

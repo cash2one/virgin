@@ -239,7 +239,6 @@ def orderinfos():
                 '_id':request.form["id"]
             }
             item = mongo.order.find(tools.orderformate(pdict, table))
-            data=[]
             for i in item:
                 json = {}
                 for key in i.keys():
@@ -255,10 +254,9 @@ def orderinfos():
                         json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
                     else:
                         json[key] = i[key]
-                data.append(json)
 
             jwtmsg = auto.decodejwt(request.form["jwtstr"])
-            result=tool.return_json(0,"success",jwtmsg,data)
+            result=tool.return_json(0,"success",jwtmsg,json)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
         except Exception,e:
             print e

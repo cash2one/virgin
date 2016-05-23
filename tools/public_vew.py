@@ -17,7 +17,6 @@ def getroomslist(restaurant_id, preset_time):
     for i in b:
         if i["room_people_name"] not in type_list:
             type_list.append(i["room_people_name"])
-    list=[]
     for a in type_list:
         room={}
         room["room_people_num"]=a
@@ -35,16 +34,15 @@ def getroomslist(restaurant_id, preset_time):
                         if inorder == '_id':
                             orderdict['id'] = str(order[inorder])
                         elif inorder == 'preset_time':
-                            orderdict['preset_time'] = order[inorder].strftime('%H:%M')
+                            orderdict['preset_time'] = order[inorder].strftime('%Y-%m-%d %H:%M')
                         elif inorder == 'numpeople':
                             orderdict['preset_time'] = int(order[inorder])
                 item['orderinfo'] = orderdict
                 rooms.append(item)
         room["room_count"]=rooms
-        list.append(room)
 
     # print list
-    return list
+    return room
 
 def getroomorderlist(restaurant_id,preset_time):
     rooms=mongo.restaurant.find_one({"_id":ObjectId(restaurant_id)},{"rooms":1})
