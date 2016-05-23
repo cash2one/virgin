@@ -45,7 +45,7 @@ def getroomslist(restaurant_id, preset_time):
         list.append(room)
     data['list'] = list
     # print list
-    return list
+    return data
 
 def getroomorderlist(restaurant_id,preset_time):
     rooms=mongo.restaurant.find_one({"_id":ObjectId(restaurant_id)},{"rooms":1})
