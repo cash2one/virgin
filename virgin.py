@@ -1,6 +1,6 @@
-#--coding:utf-8--#
+# --coding:utf-8--#
 # import jwt
-from flask import Flask,make_response,jsonify
+from flask import Flask, make_response, jsonify
 from werkzeug.security import safe_str_cmp
 
 from tools.error_warning import error_api
@@ -13,7 +13,6 @@ from app_merchant.members import members_api
 from app_merchant.other import other_api
 from app_merchant.auto import auto_api
 from app_user.user import user_api
-
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -29,11 +28,11 @@ app.register_blueprint(other_api)
 app.register_blueprint(auto_api)
 app.register_blueprint(user_api)
 
-@app.route('/protected', methods=['POST'])
 
+@app.route('/protected', methods=['POST'])
 @app.errorhandler(404)
 def not_found(error):
-    return  make_response(jsonify({'error':'Not found'}),404)
+    return make_response(jsonify({'error': 'Not found'}), 404)
 
 
 if __name__ == '__main__':

@@ -25,11 +25,20 @@ def auto():
         "type":type
     }
     msg = encodejwt(payload)
-    json = {
-        "jwt":str(msg)
-    }
-    result=tool.return_json(0,"success",True,json)
+    decodejwt(msg)
+    if decodejwt(msg):
+        json = {
+            "jwt":str(msg)
+        }
+        result=tool.return_json(0,"success",True,json)
+    else:
+        json = {
+            "jwt":""
+        }
+        result=tool.return_json(0,"success",False,json)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
+
+
 
 
 def encodejwt(payload):
@@ -73,7 +82,17 @@ def decodejwt(msg):
 
 
 
+@auto_api.route('/fm/merchant/v1/getmd5/', methods=['POST'])
+def getmd5():
+    baoming = request.form["baoming"]
+    ident = request.form["ident"]
 
+    m2 = hashlib.md5()
+    m2.update(baoming.strip()+ident.strip())
+    md5str = m2.hexdigest()
 
-
-
+    json = {
+        "md5":md5str
+    }
+    result=tool.return_json(0,"success",True,json)
+    return json_util.dumps(result,ensure_ascii=False,indent=2)
