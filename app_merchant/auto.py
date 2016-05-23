@@ -39,6 +39,8 @@ def auto():
     return json_util.dumps(result,ensure_ascii=False,indent=2)
 
 
+
+
 def encodejwt(payload):
     secret = "b4e6a2808fbbc5d0f6451675e18fa37d"
     msg = jwt.encode(payload,secret,algorithm='HS256')
@@ -80,7 +82,17 @@ def decodejwt(msg):
 
 
 
+@auto_api.route('/fm/merchant/v1/getmd5/', methods=['POST'])
+def getmd5():
+    baoming = request.form["baoming"]
+    ident = request.form["ident"]
 
+    m2 = hashlib.md5()
+    m2.update(baoming.strip()+ident.strip())
+    md5str = m2.hexdigest()
 
-
-
+    json = {
+        "md5":md5str
+    }
+    result=tool.return_json(0,"success",True,json)
+    return json_util.dumps(result,ensure_ascii=False,indent=2)
