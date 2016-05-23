@@ -32,13 +32,12 @@ def jwt():
 
 @test_api.route('/dejwt', methods=['POST'])
 def dejwt():
-    print 'adshjfgjahsgjihsalkjghlkadshglkh'
+    # print 'adshjfgjahsgjihsalkjghlkadshglkh'
     jsonstr = request.form["msg"]
-    print jsonstr
-
+    # print jsonstr
     a = auto.decodejwt(jsonstr)
-    print a
-    return a
+    # print a
+    return "%s" % a
 
 
 @test_api.route('/test')
