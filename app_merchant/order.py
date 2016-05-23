@@ -203,7 +203,8 @@ def allorder():
             newcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":0}).count()
             waitecount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":2}).count()
             redocount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":6}).count()
-            data=[]
+            data = {}
+            list=[]
             for i in item:
                 json = {}
                 for key in i.keys():
@@ -217,9 +218,9 @@ def allorder():
                         json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
                     else:
                         json[key] = i[key]
-                data.append(json)
-            data.append({'allcount':allcount,'newcount':newcount,'waitecount':waitecount,'redocount':redocount})
-
+                list.append(json)
+            data['list'] = list
+            data['count'] = {'allcount':allcount,'newcount':newcount,'waitecount':waitecount,'redocount':redocount}
             jwtmsg = auto.decodejwt(request.form["jwtstr"])
             result=tool.return_json(0,"success",jwtmsg,data)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
