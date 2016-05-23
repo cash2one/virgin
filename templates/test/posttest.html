@@ -55,5 +55,20 @@
     <input type="submit" value="提交">
 </form>
  </fieldset>
+<fieldset><legend>获取md5</legend>
+<form action="/fm/merchant/v1/getmd5/" method="post">
+    包名：<input type="text"  name="baoming" />
+    签名：<input type="text"  name="ident" />
+    <input type="submit" value="提交">
+</form>
+ </fieldset>
+<fieldset><legend>auto</legend>
+<form action="/fm/merchant/v1/auto/" method="post">
+    包名：<input type="text"  name="baoming" />
+    签名：<input type="text"  name="ident" />
+    类型：<input type="text"  name="type" />
+    <input type="submit" value="提交">
+</form>
+ </fieldset>
 </body>
 </html>
