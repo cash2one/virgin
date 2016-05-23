@@ -25,10 +25,17 @@ def auto():
         "type":type
     }
     msg = encodejwt(payload)
-    json = {
-        "jwt":str(msg)
-    }
-    result=tool.return_json(0,"success",True,json)
+    decodejwt(msg)
+    if decodejwt(msg):
+        json = {
+            "jwt":str(msg)
+        }
+        result=tool.return_json(0,"success",True,json)
+    else:
+        json = {
+            "jwt":""
+        }
+        result=tool.return_json(0,"success",False,json)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
 
 
