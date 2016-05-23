@@ -19,8 +19,8 @@ def mongo_conn():
 
 
 conn_user = 'mongodb://UserCenter_admin:UserCenter_admin_(*)@'
-ip_port0_user='125.211.222.237:27638'
-# ip_port0_user = '192.168.22.101:27638'
+# ip_port0_user='125.211.222.237:27638'
+ip_port0_user = '192.168.22.101:27638'
 auth_user = '/db_UserCenter?authmechanism=SCRAM-SHA-1'
 db_name_user = 'db_UserCenter'
 
