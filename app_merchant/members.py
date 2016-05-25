@@ -1,7 +1,9 @@
 #--coding:utf-8--#
 import time
-
+#3d7fcc68a276303e08563437fd5a87e9
 import datetime
+
+import pymongo
 
 from app_merchant import auto
 from tools import tools
@@ -128,9 +130,10 @@ def membersinfo():
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             else:
                 item = mongo.webuser.find_one(tools.orderformate(pdict, table))
-                totals = mongo.order.find(tools.orderformate(odict, table),{'preset_time':1,'total':1})
-                total = {}
+                totals = mongo.order.find(tools.orderformate(odict, table),{'preset_time':1,'total':1}).sort('add_time', pymongo.DESCENDING)[0:2]
+                totallist = []
                 for i in totals:
+                    total = {}
                     for t in i.keys():
                         if t == '_id':
                             total['id'] = str(i[t])
@@ -138,6 +141,7 @@ def membersinfo():
                             total['preset_time'] = str(i[t])
                         else:
                             total[t] = i[t]
+                    totallist.append(total)
                 data = {}
                 json = {}
                 for key in item.keys():
@@ -152,7 +156,7 @@ def membersinfo():
                     else:
                         json[key] = item[key]
                 data['info'] = json
-                data['total'] = total
+                data['total'] = totallist
                 jwtmsg = auto.decodejwt(request.form["jwtstr"])
                 result=tool.return_json(0,"success",jwtmsg,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)

@@ -7,6 +7,9 @@ from connect import conn
 from bson import ObjectId,json_util
 import tools.tools as tool
 
+
+import connect
+
 table = {'status': 'int',
          'type': 'int',
          'restaurant_id': 'obj',

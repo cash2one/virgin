@@ -1,12 +1,13 @@
 #--coding:utf-8--#
 import pymongo
-import sys
+
 
 from app_merchant import auto
 from tools import tools
 import time
-# reload(sys)
-# sys.setdefaultencoding('utf8')
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
 __author__ = 'hcy'
 from flask import Blueprint,jsonify,abort,render_template,request,json
 from connect import conn
@@ -213,9 +214,9 @@ def allorder():
                     elif key == 'restaurant_id':
                         json['restaurant_id'] = str(i[key])
                     elif key == 'preset_time':
-                        json['preset_time'] = i[key].strftime(u'%Y年%m月%d日 %H:%M')
+                        json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
                     elif key == 'add_time':
-                        json['add_time'] = i[key].strftime(u'%Y年%m月%d日 %H:%M')
+                        json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
                     else:
                         json[key] = i[key]
                 list.append(json)
