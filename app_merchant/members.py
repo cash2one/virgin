@@ -43,6 +43,7 @@ def allmembers():
             end = (pagenum*int(pageindex))
             if int(request.form['user_tpye'])==0:
                 item = mongo.members.find(tools.orderformate(pdict, table))[star:end]
+                count = mongo.members.find(tools.orderformate(pdict, table)).count()
                 data={}
                 list = []
                 for i in item:
@@ -59,6 +60,7 @@ def allmembers():
                         json['user_type'] = 0
                     list.append(json)
                 data['list'] = list
+                data['count'] = count
                 jwtmsg = auto.decodejwt(request.form["jwtstr"])
                 result=tool.return_json(0,"success",jwtmsg,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
@@ -70,6 +72,7 @@ def allmembers():
                         if j == 'webuser_id':
                             idlist.append(ObjectId(i[j]))
                 item = mongo.webuser.find({'_id': {'$in': idlist}})[star:end]
+                count = mongo.webuser.find({'_id': {'$in': idlist}}).count()
                 data = {}
                 list = []
                 for i in item:
@@ -90,6 +93,7 @@ def allmembers():
                         json['user_type'] = 1
                     list.append(json)
                 data['list'] = list
+                data['count'] = count
                 jwtmsg = auto.decodejwt(request.form["jwtstr"])
                 result=tool.return_json(0,"success",jwtmsg,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
@@ -131,6 +135,18 @@ def membersinfo():
             else:
                 item = mongo.webuser.find_one(tools.orderformate(pdict, table))
                 totals = mongo.order.find(tools.orderformate(odict, table),{'preset_time':1,'total':1}).sort('add_time', pymongo.DESCENDING)[0:2]
+                comment = mongo.comment.find({"restaurant_id":ObjectId(request.form["restaurant_id"]), "user_id":ObjectId(request.form['id'])},{"post_date":1, "user_info.user_name":1,"comment_text":1}).sort('post_date', pymongo.DESCENDING)[0:2]
+                commentlist = []
+                for c in comment:
+                    commentdict = {}
+                    for d in c.keys():
+                        if d == 'post_date':
+                            commentdict['post_date'] = c[d].strftime('%Y年%m月%d日 %H:%M')
+                        elif d == 'comment_text':
+                            commentdict['comment_text'] = c[d]
+                        elif d == 'user_info':
+                            commentdict['user_name'] = c['user_info']['user_name']
+                    commentlist.append(commentdict)
                 totallist = []
                 for i in totals:
                     total = {}
@@ -157,6 +173,7 @@ def membersinfo():
                         json[key] = item[key]
                 data['info'] = json
                 data['total'] = totallist
+                data['comment'] = commentlist
                 jwtmsg = auto.decodejwt(request.form["jwtstr"])
                 result=tool.return_json(0,"success",jwtmsg,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
