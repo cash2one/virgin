@@ -35,7 +35,7 @@ def appversion():
 #测试上传图片的接口
 @other_api.route('/fm/merchant/v1/uploadimg/', methods=['POST'])
 def up():
- # try:
+ try:
     if request.method == 'POST':
         file = request.files['topImage']
         fname, fext = os.path.splitext(file.filename)
@@ -49,6 +49,6 @@ def up():
             os.remove(osstr)
             print u1
             return Response(u1)
- # except Exception, e:\PycharmProjects\virgin\app_merchant
- #        pass
+ except Exception , e:
+     print e
 

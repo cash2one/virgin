@@ -1,7 +1,13 @@
 #--coding:utf-8--#
 import json
+import os
+from poster.encode import multipart_encode
+from poster.streaminghttp import StreamingHTTPHandler, StreamingHTTPRedirectHandler, StreamingHTTPSHandler
+import urllib2
+import re
+from flask import request, Response
 
-
+import connect
 from connect import conn
 from bson import ObjectId,json_util
 mongo=conn.mongo_conn()
@@ -119,8 +125,26 @@ class Foormat:
             return True
         except Exception, e:
             return False
-
-
+def pimg(uu):
+  try:
+    #创建一个请求
+    handlers = [StreamingHTTPHandler, StreamingHTTPRedirectHandler, StreamingHTTPSHandler]
+    opener = urllib2.build_opener(*handlers)
+    urllib2.install_opener(opener)
+    # 打开图片
+    cc = open(uu, "rb")
+    datagen, headers = multipart_encode({"image": cc })
+    #发送请求
+    request = urllib2.Request(connect.conn.imageIP , datagen, headers)
+    #获取返回中的内容
+    re1 = r"<h1>MD5:(?P<md5>.*?)</h1>"
+    match5 = re.findall(re1,urllib2.urlopen(request).read())
+    a = match5[0]
+    cc.close()
+    print str(a).replace(" ","")
+    return str(a).replace(" ","")
+  except Exception, e:
+        print e
 if __name__ == '__main__':
     dish = {
                     "is_enabled" : 'str',

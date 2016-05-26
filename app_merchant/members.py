@@ -42,6 +42,7 @@ def allmembers():
             star = (int(pageindex)-1)*pagenum
             end = (pagenum*int(pageindex))
             if int(request.form['user_tpye'])==0:
+                pdict["status"] = 0
                 item = mongo.members.find(tools.orderformate(pdict, table))[star:end]
                 count = mongo.members.find(tools.orderformate(pdict, table)).count()
                 data={}
@@ -274,7 +275,7 @@ def membersbyname():
             star = (int(pageindex)-1)*pagenum
             end = (pagenum*int(pageindex))
             listall = []
-            members = mongo.members.find({"restaurant_id" : ObjectId(request.form["restaurant_id"]),"nickname":{'$regex':name}})
+            members = mongo.members.find({"restaurant_id" : ObjectId(request.form["restaurant_id"]),"nickname":{'$regex':name}, "status":0})
             for i in members:
                 dictmembers = {}
                 for j in i.keys():
