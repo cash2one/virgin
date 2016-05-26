@@ -247,7 +247,8 @@ def deletemembers():
             idlist = request.form['idlist'].split('_')
             midlist = []
             for mid in idlist:
-                midlist.append(ObjectId(mid))
+                if mid != '' and mid != None:
+                    midlist.append(ObjectId(mid))
             mongo.members.update({"_id":{'$in': midlist}},{"$set":{"status":1}},multi=True)
             json = {
                     "status": 1,
