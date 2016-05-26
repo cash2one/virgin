@@ -32,23 +32,26 @@ def appversion():
         }
     result=tool.return_json(0,"success",jwtmsg,json)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
-#测试上传图片的接口
+#上传图片的接口   参数：topImage
 @other_api.route('/fm/merchant/v1/uploadimg/', methods=['POST'])
 def up():
- try:
-    if request.method == 'POST':
-        file = request.files['topImage']
-        fname, fext = os.path.splitext(file.filename)
-        if file:
-            filename = '%s%s' % ('test', fext)
-            osstr = os.path.dirname(__file__).replace("\\PycharmProjects\\virgin\\app_merchant","/PycharmProjects/virgin")  +'/static/upload/'+filename
-            print osstr
-            file.save(osstr)
-            uu = tool.pimg(osstr)
-            u1 = connect.conn.imageIP + uu
-            os.remove(osstr)
-            print u1
-            return Response(u1)
- except Exception , e:
-     print e
-
+     if request.method=='POST':
+            try:
+                file = request.files['topImage']
+                fname, fext = os.path.splitext(file.filename)
+                if file:
+                    filename = '%s%s' % ('test', fext)
+                    osstr = os.path.dirname(__file__).replace("\\PycharmProjects\\virgin\\app_merchant","/PycharmProjects/virgin")  +'/static/upload/'+filename
+                    print osstr
+                    file.save(osstr)
+                    uu = tool.pimg(osstr)
+                    u1 = connect.conn.imageIP + uu
+                    os.remove(osstr)
+                    print u1
+                jwtmsg = auto.decodejwt(request.form["jwtstr"])
+                result=tool.return_json(0,"success",jwtmsg,uu)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)

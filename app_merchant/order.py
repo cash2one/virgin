@@ -272,21 +272,83 @@ def ordercounts():
         try:
             start=datetime.datetime(*time.strptime(request.form['start_time'],'%Y-%m-%d')[:6])
             end = datetime.datetime(*time.strptime(request.form['end_time'],'%Y-%m-%d')[:6])+datetime.timedelta(days = 1)
+            data= {
+                    "aytotal": 0.0,
+                    "amtotal": 0.0,
+                    "watotal": 0.0,
+                    "yatotal": 0.0,
+                    "wmtotal": 0.0,
+                    "ymtotal": 0.0,
+                    "yytotal": 0.0,
+                    "wytotal": 0.0,
+                    "atotal":  0.0,
+                    "mnumpeople": 0.0,
+                    "anumpeople": 0.0,
+                    "ycount": 0.0,
+                    "yanumpeople": 0.0,
+                    "allcount": 0.0,
+                    "mcount": 0.0,
+                  }
             pdict = {'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
+            ndict = { '$group' : { '_id' : "$restaurant_id", 'numpeople': {'$sum': "$numpeople"} }}
             allcount = mongo.order.find(pdict).count()
-            anumpeoples = mongo.order.aggregate([{ '$match' : pdict}, { '$group' : { '_id' : "$restaurant_id", 'numpeople' : {'$sum' : "$numpeople"} }}])
-            json = {}
+            anumpeoples = mongo.order.aggregate([{ '$match' : pdict}, ndict])
+            data['allcount'] = allcount
             for i in anumpeoples:
-                    for key in i.keys():
-                        if key == '_id':
-                            json['id'] = str(i[key])
-                        else:
-                            json[key] = i[key]
+                data['anumpeople'] = i['numpeople']
             pdict['source'] = 1
             ycount = mongo.order.find(pdict).count()
+            yanumpeople = mongo.order.aggregate([{ '$match' : pdict}, ndict])
+            data['ycount'] = ycount
+            for i in yanumpeople:
+                data['yanumpeople'] = i['numpeople']
             pdict['source'] = 2
             mcount = mongo.order.find(pdict).count()
-            data={'allcount':allcount,'anumpeoples':json,'ycount':ycount,'mcount':mcount}
+            data['mcount'] = mcount
+            mnumpeople = mongo.order.aggregate([{ '$match' : pdict}, ndict])
+            for i in mnumpeople:
+                data['mnumpeople'] = i['numpeople']
+            gdict = { '$group' : { '_id' : "$restaurant_id", 'total': {'$sum': "$total"} }}
+            pdict['status'] = {'$in': [0, 2, 3, 4]}
+            atotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
+            for a in atotal:
+                data['atotal'] = a['total']
+            pdict['source'] = 1
+            aytotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
+            for a in aytotal:
+                data['aytotal'] = a['total']
+            pdict['source'] = 2
+            amtotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
+            for a in amtotal:
+                data['amtotal'] = a['total']
+            pdict = {'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
+            pdict['status'] = {'$in': [0, 2, 3]}
+
+            watotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
+            for a in watotal:
+                data['watotal'] = a['total']
+            pdict['source'] = 1
+            wytotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
+            for a in wytotal:
+                data['wytotal'] = a['total']
+            pdict['source'] = 2
+            wmtotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
+            for a in wmtotal:
+                data['wmtotal'] = a['total']
+            pdict = {'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
+            pdict['status'] = 4
+            yatotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
+            for a in yatotal:
+                data['yatotal'] = a['total']
+            pdict['source'] = 1
+            yytotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
+            for a in yytotal:
+                data['yytotal'] = a['total']
+            pdict['source'] = 2
+            ymtotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
+            for a in ymtotal:
+                print a
+                data['ymtotal'] = a['total']
             jwtmsg = auto.decodejwt(request.form["jwtstr"])
             result=tool.return_json(0,"success",jwtmsg,data)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
@@ -296,6 +358,35 @@ def ordercounts():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+# def ordercounts():
+#     if request.method == 'POST':
+#         try:
+#             start=datetime.datetime(*time.strptime(request.form['start_time'],'%Y-%m-%d')[:6])
+#             end = datetime.datetime(*time.strptime(request.form['end_time'],'%Y-%m-%d')[:6])+datetime.timedelta(days = 1)
+#             pdict = {'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
+#             allcount = mongo.order.find(pdict).count()
+#             anumpeoples = mongo.order.aggregate([{ '$match' : pdict}, { '$group' : { '_id' : "$restaurant_id", 'numpeople' : {'$sum' : "$numpeople"} }}])
+#             json = {}
+#             for i in anumpeoples:
+#                     for key in i.keys():
+#                         if key == '_id':
+#                             json['id'] = str(i[key])
+#                         else:
+#                             json[key] = i[key]
+#             pdict['source'] = 1
+#             ycount = mongo.order.find(pdict).count()
+#             pdict['source'] = 2
+#             mcount = mongo.order.find(pdict).count()
+#             data={'allcount':allcount,'anumpeoples':json,'ycount':ycount,'mcount':mcount}
+#             jwtmsg = auto.decodejwt(request.form["jwtstr"])
+#             result=tool.return_json(0,"success",jwtmsg,data)
+#             return json_util.dumps(result,ensure_ascii=False,indent=2)
+#         except Exception,e:
+#             print e
+#             result=tool.return_json(0,"field",False,None)
+#             return json_util.dumps(result,ensure_ascii=False,indent=2)
+#     else:
+#         return abort(403)
 #1.3.0.jpg餐位管理restaurant_id, preset_time
 @order_api.route('/fm/merchant/v1/order/orderbypreset/', methods=['POST'])
 def orderbypreset():
