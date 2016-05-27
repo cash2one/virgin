@@ -30,8 +30,10 @@ def getroomslist(restaurant_id, preset_time):
                 item["room_name"]=i1["room_name"]
                 pdict = {'room_id':i1['room_id'],'preset_time': {'$gte': start, '$lt': end}}
                 orderbyroom = mongo.order.find(pdict)
-                orderdict = {}
+                orderlist = []
+
                 for order in orderbyroom:
+                    orderdict = {}
                     for inorder in order.keys():
                         if inorder == '_id':
                             orderdict['id'] = str(order[inorder])
@@ -39,7 +41,8 @@ def getroomslist(restaurant_id, preset_time):
                             orderdict['preset_time'] = order[inorder].strftime('%Y-%m-%d %H:%M')
                         elif inorder == 'numpeople':
                             orderdict['numpeople'] = int(order[inorder])
-                item['orderinfo'] = orderdict
+                        orderlist.append(orderdict)
+                item['orderinfo'] = orderlist
                 rooms.append(item)
         room["room_count"]=rooms
         list.append(room)
