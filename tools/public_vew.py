@@ -38,7 +38,7 @@ def getroomslist(restaurant_id, preset_time):
                         elif inorder == 'preset_time':
                             orderdict['preset_time'] = order[inorder].strftime('%Y-%m-%d %H:%M')
                         elif inorder == 'numpeople':
-                            orderdict['preset_time'] = int(order[inorder])
+                            orderdict['numpeople'] = int(order[inorder])
                 item['orderinfo'] = orderdict
                 rooms.append(item)
         room["room_count"]=rooms
