@@ -1,4 +1,5 @@
 #--coding:utf-8--#
+import pymongo
 from flask import request
 import datetime
 _author_='hcy'
@@ -29,7 +30,7 @@ def getroomslist(restaurant_id, preset_time):
                 item["room_id"]=i1["room_id"]
                 item["room_name"]=i1["room_name"]
                 pdict = {'room_id':i1['room_id'],'preset_time': {'$gte': start, '$lt': end}}
-                orderbyroom = mongo.order.find(pdict)
+                orderbyroom = mongo.order.find(pdict).sort('add_time', pymongo.DESCENDING)
                 orderlist = []
 
                 for order in orderbyroom:
