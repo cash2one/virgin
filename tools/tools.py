@@ -125,6 +125,73 @@ class Foormat:
             return True
         except Exception, e:
             return False
+class Discount:
+    def __init__(self, objid):
+        self.objid = {"_id": ObjectId(objid)}
+        self.data = self.__get_db_data()
+        self.dish_data = None
+        self.menu_data = None
+        self.new_menu = None
+
+    def rebuild(self):
+        if self.new_menu is None:
+            rebuild_data = self.data
+        else:
+            rebuild_data = self.new_menu
+        menu_list = []
+        for menu in rebuild_data['menu']:
+            new_menu = dict()
+            for key in menu.keys():
+                if key == 'dishs':
+                    dishs = []
+                    if menu['name'] !='酒水' and menu['dish_type'] =='1' and menu['dishs']!=[]:
+                        for dish in menu['dishs']:
+                            print dish
+                            if 'id' in dish.keys():
+                                if dish['id'] in self.dish_data.keys():
+                                    dish_new = {}
+                                    for key_name in dish.keys():
+                                        if key_name in self.dish_data[dish['id']].keys():
+                                            dish_new[key_name] = self.dish_data[dish['id']][key_name]
+                                        else:
+                                            dish_new[key_name] = dish[key_name]
+                                    dishs.append(dish_new)
+                                else:
+                                    dishs.append(dish)
+                            else:
+                                dishs.append(dish)
+                        new_menu['dishs'] = dishs
+                    else:
+                        new_menu[key] = menu[key]
+                else:
+                    if self.menu_data is not None and (menu['id'] in self.menu_data.keys()):
+                        if key in self.menu_data[menu['id']].keys():
+                            new_menu[key] = self.menu_data[menu['id']][key]
+                        else:
+                            new_menu[key] = menu[key]
+                    else:
+                        new_menu[key] = menu[key]
+            menu_list.append(new_menu)
+        self.new_menu = {'menu': menu_list}
+        return True
+
+    def re_dish(self, dish_data=None):
+        self.dish_data = dish_data
+
+    def re_menu(self, menu_data=None):
+        self.menu_data = menu_data
+
+    def __get_db_data(self):
+        return mongo.restaurant.find(self.objid, {"menu": 1})[0]
+
+    def submit2db(self):
+        if self.new_menu is None:
+            self.rebuild()
+        try:
+            mongo.restaurant.update_one(self.objid, {"$set": self.new_menu})
+            return True
+        except Exception, e:
+            return False
 def pimg(uu):
   try:
     #创建一个请求
