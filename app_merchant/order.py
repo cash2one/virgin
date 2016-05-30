@@ -429,3 +429,22 @@ def updateorder():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+#1.1.2修改订单状态
+@order_api.route('/fm/merchant/v1/members/updatestatus/', methods=['POST'])
+def updatestatus():
+    if request.method=='POST':
+        try:
+            mongo.order.update_one({'_id':ObjectId(request.form['order_id'])},{"$set":{"status":int(request.form["status"])}})
+            json = {
+                    "status": 1,
+                    "msg":""
+            }
+            jwtmsg = auto.decodejwt(request.form["jwtstr"])
+            result=tool.return_json(0,"success",jwtmsg,json)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+        except Exception,e:
+            print e
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
