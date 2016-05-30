@@ -46,9 +46,9 @@ def register():
             return json_util.dumps(item)
         else:
             return json_util.dumps({'success': False, 'info': 'Database already had one'})
-        # print str(item)
-        # r = {"id": str(item)}
-        # return json_util.dumps(item, ensure_ascii=False, indent=2)
+            # print str(item)
+            # r = {"id": str(item)}
+            # return json_util.dumps(item, ensure_ascii=False, indent=2)
     else:
         return abort(403)
 
@@ -76,6 +76,21 @@ def verify_login():
     pass
 
 
+@user_api.route('/usercenter/v1/isuser', methods=['POST'])
+def is_user():
+    if request.method == "POST":
+        phone = request.form['phone']
+        found = mongo.find({'phone': phone, 'appid': {'2': True}})
+        if found:
+            found = found[0]
+            return json.dumps({'success': True, '_id': str(found['_id'])})
+        else:
+            return json.dumps({'success': False, 'info': 'Not Found'})
+    else:
+        return abort(403)
+    pass
+
+
 @user_api.route('/usercenter/v1/reset/', methods=['POST', 'PATCH'])
 def password_reset():
     if request.method in ['POST', 'PATCH']:
@@ -97,8 +112,35 @@ def password_reset():
     pass
 
 
-class Test:
+@user_api.route('/admin/v1/login', methods=['POST'])
+def admin_login():
+    if request.method == 'POST':
+        from tools.user_infos import GetUser
+        req = GetUser({'phone': request.form['phone'],
+                       'ident': request.form['ident'],
+                       'ex': '#foodmap.mobile',
+                       'tpl': 'SMS_8161119',
+                       'code': request.form['code'] if 'code' in request.form else ''})
+        if request.form['method'] == 'send_sms':
+            if req.is_admin:
+                try:
+                    req.send_sms()
+                    return json.dumps({'success': True})
+                except Exception, e:
+                    return json.dumps({'success': False, 'info': e})
+            else:
+                return json.dumps({'success': False, 'info': 'Not admin'})
+        elif request.form['method'] == 'shop_id':
+            if req.is_admin:
+                return json.dumps(req.admin_shop_id)
+            else:
+                return json.dumps({'success': False, 'info': 'Not admin'})
+    else:
+        return abort(403)
+    pass
 
+
+class Test:
     @staticmethod
     def find_user():
         test = mongo.find({'phone': '19782349087190'})
