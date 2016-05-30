@@ -96,12 +96,12 @@ class GetUser:
 
 
 if __name__ == '__main__':
-    u = GetUser({'phone': '15645678759',
-                 'ident': '',
-                 'ex': '#foodmap.mobile',
-                 'tpl': 'SMS_8161119',
-                 'code': '272609'})
-    print u.is_admin
+    # u = GetUser({'phone': '15645678759',
+    #              'ident': '',
+    #              'ex': '#foodmap.mobile',
+    #              'tpl': 'SMS_8161119',
+    #              'code': '272609'})
+    # print u.is_admin
     # print u.send_sms()
-    print u.admin_shop_id
+    # print u.admin_shop_id
     pass
