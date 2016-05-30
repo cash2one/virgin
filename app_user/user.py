@@ -135,6 +135,8 @@ def admin_login():
                 return json.dumps(req.admin_shop_id)
             else:
                 return json.dumps({'success': False, 'info': 'Not admin'})
+        else:
+            return json.dumps({'success': False, 'info': 'method inputError'})
     else:
         return abort(403)
     pass
