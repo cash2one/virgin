@@ -9,7 +9,6 @@ from connect import conn
 from bson import ObjectId,json_util
 import tools.tools as tool
 
-
 import connect
 
 table = {'status': 'int',
@@ -281,6 +280,7 @@ def dishsinfos():
 #平台优惠 菜品优惠 修改所有菜品特价
 @restaurant_api.route('/fm/merchant/v1/restaurant/updatedishs/', methods=['POST'])
 def updatedishs():
+    import json
     if request.method=='POST':
         try:
             # json = {
@@ -288,7 +288,7 @@ def updatedishs():
             #     '201605111040002332': {'discount_price': 22222222222222222222222222222.00}
             # }
             redish = request.form['redish']
-            json_util.loads(redish)
+            json.dumps(redish)
             first = tool.Discount(request.form["restaurant_id"])
             first.re_dish(redish)
             first.submit2db()
