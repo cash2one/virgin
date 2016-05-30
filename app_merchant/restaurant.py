@@ -169,13 +169,16 @@ def restaurant_discountinfos():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
-#平台优惠 菜品优惠 修改全单折扣
+#平台优惠 菜品优惠 修改菜品优惠包括全单折扣
 @restaurant_api.route('/fm/merchant/v1/restaurant/updatediscount/', methods=['POST'])
 def updatediscount():
     if request.method=='POST':
         try:
             pdict = {
-                "dishes_discount.discount":float(request.form["discount"])
+                "dishes_discount.discount":float(request.form["discount"]),
+                "dishes_discount.message":float(request.form["message"]),
+                "dishes_discount.start_time":float(request.form["start_time"]),
+                "dishes_discount.end_time":float(request.form["end_time"])
             }
             mongo.restaurant.update_one({"_id":ObjectId(request.form["restaurant_id"])},{"$set":pdict})
             json = {

@@ -112,7 +112,7 @@ def password_reset():
     pass
 
 
-@user_api.route('/admin/v1/login', methods=['POST'])
+@user_api.route('/admin/v1/login/', methods=['POST'])
 def admin_login():
     if request.method == 'POST':
         from tools.user_infos import GetUser
