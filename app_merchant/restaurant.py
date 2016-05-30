@@ -97,7 +97,7 @@ def dishes_discountinfos():
             pdict = {
                 '_id':request.form["restaurant_id"]
             }
-            item = mongo.restaurant.find(tools.orderformate(pdict, table),{"dishes_discount.discount":1})
+            item = mongo.restaurant.find(tools.orderformate(pdict, table),{"dishes_discount.discount":1,"dishes_discount.message":1,"dishes_discount.start_time":1,"dishes_discount.end_time":1})
             for i in item:
                 json = {}
                 for key in i.keys():
@@ -105,6 +105,9 @@ def dishes_discountinfos():
                         json['id'] = str(i[key])
                     elif key == 'dishes_discount':
                         json['discount'] = i["dishes_discount"]["discount"]
+                        json['message'] = i["dishes_discount"]["message"]
+                        json['start_time'] = i["dishes_discount"]["start_time"]
+                        json['end_time'] = i["dishes_discount"]["end_time"]
                     else:
                         json[key] = i[key]
 
@@ -176,9 +179,9 @@ def updatediscount():
         try:
             pdict = {
                 "dishes_discount.discount":float(request.form["discount"]),
-                "dishes_discount.message":float(request.form["message"]),
-                "dishes_discount.start_time":float(request.form["start_time"]),
-                "dishes_discount.end_time":float(request.form["end_time"])
+                "dishes_discount.message":request.form["message"],
+                "dishes_discount.start_time":request.form["start_time"],
+                "dishes_discount.end_time":request.form["end_time"]
             }
             mongo.restaurant.update_one({"_id":ObjectId(request.form["restaurant_id"])},{"$set":pdict})
             json = {
@@ -285,6 +288,7 @@ def updatedishs():
             #     '201605111040002332': {'discount_price': 22222222222222222222222222222.00}
             # }
             redish = request.form['redish']
+            json_util.loads(redish)
             first = tool.Discount(request.form["restaurant_id"])
             first.re_dish(redish)
             first.submit2db()
