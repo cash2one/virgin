@@ -96,7 +96,7 @@ def dishes_discountinfos():
             pdict = {
                 '_id':request.form["restaurant_id"]
             }
-            item = mongo.restaurant.find(tools.orderformate(pdict, table),{"dishes_discount.discount":1,"dishes_discount.message":1,"dishes_discount.start_time":1,"dishes_discount.end_time":1})
+            item = mongo.restaurant.find(tools.orderformate(pdict, table),{"dishes_discount.discount":1,"dishes_discount.message":1,"dishes_discount.start_time":1,"dishes_discount.end_time":1,"_id":1})
             for i in item:
                 json = {}
                 for key in i.keys():
@@ -127,12 +127,16 @@ def wine_discountinfos():
             pdict = {
                 '_id':request.form["restaurant_id"]
             }
-            item = mongo.restaurant.find(tools.orderformate(pdict, table),{"wine_discount":1})
+            item = mongo.restaurant.find(tools.orderformate(pdict, table),{"wine_discount.message":1,"wine_discount.start_time":1,"wine_discount.end_time":1,"_id":1})
             for i in item:
                 json = {}
                 for key in i.keys():
                     if key == '_id':
                         json['id'] = str(i[key])
+                    elif key == 'wine_discount':
+                        json['message'] = i["wine_discount"]["message"]
+                        json['start_time'] = i["wine_discount"]["start_time"]
+                        json['end_time'] = i["wine_discount"]["end_time"]
                     else:
                         json[key] = i[key]
 
@@ -153,12 +157,16 @@ def restaurant_discountinfos():
             pdict = {
                 '_id':request.form["restaurant_id"]
             }
-            item = mongo.restaurant.find(tools.orderformate(pdict, table),{"restaurant_discount":1})
+            item = mongo.restaurant.find(tools.orderformate(pdict, table),{"restaurant_discount.message":1,"restaurant_discount.start_time":1,"restaurant_discount.end_time":1,"_id":1})
             for i in item:
                 json = {}
                 for key in i.keys():
                     if key == '_id':
                         json['id'] = str(i[key])
+                    elif key == 'restaurant_discount':
+                        json['message'] = i["restaurant_discount"]["message"]
+                        json['start_time'] = i["restaurant_discount"]["start_time"]
+                        json['end_time'] = i["restaurant_discount"]["end_time"]
                     else:
                         json[key] = i[key]
 
