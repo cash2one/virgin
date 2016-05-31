@@ -127,6 +127,7 @@ def admin_login():
                     req.send_sms()
                     return json.dumps({'success': True})
                 except Exception, e:
+                    print e
                     return json.dumps({'success': False})
             else:
                 return json.dumps({'success': False, 'info': 'Not admin'})
