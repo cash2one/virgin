@@ -408,12 +408,11 @@ def updateorder():
     if request.method=='POST':
         try:
             pdict = {
-                '_id':request.form["id"],
                 'username':request.form["username"],
                 'phone':request.form["phone"],
                 'demand':request.form["demand"],
                 'numpeople':request.form["numpeople"],
-                'preset_time':request.form["preset_time"]
+                'preset_time':datetime.datetime.strptime(request.form["preset_time"], "%Y-%m-%d %H:%M:%S")
             }
             mongo.order.update_one({'_id':ObjectId(request.form['id'])},{"$set":tools.orderformate(pdict, table)})
             json = {
