@@ -9,7 +9,7 @@ _author_ = 'dolacmeo'
 
 
 class GetUser:
-    SMSnetgate = 'http://10.10.0.91:5000'
+    SMSnetgate = 'http://125.211.222.237:10031'
 
     def __init__(self, params):
         self.params = params
