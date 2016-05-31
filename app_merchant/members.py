@@ -117,7 +117,7 @@ def membersinfo():
                 'webuser_id':request.form['id']
             }
             if int(request.form['user_tpye'])==0:
-                item = mongo.members.find_one(tools.orderformate(pdict, table))
+                item = mongo.members.find_one({'_id':ObjectId(request.form['id']),'status':0})
                 json = {}
                 for key in item.keys():
                     if key == '_id':
@@ -194,7 +194,7 @@ def insertmembers():
                 'birthday':request.form["birthday"],
                 'phone':request.form["phone"],
                 'addtime':datetime.datetime.now(),
-                'status':request.form["status"],
+                'status':0,
                 'restaurant_id':request.form["restaurant_id"]
             }
             mongo.members.insert(tools.formatp(pdict, table))
