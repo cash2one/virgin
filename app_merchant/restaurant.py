@@ -296,7 +296,9 @@ def updatedishs():
             #     '201605111040002332': {'discount_price': 22222222222222222222222222222.00}
             # }
             redish = request.form['redish']
+            print redish
             json.dumps(redish)
+            print redish
             first = tool.Discount(request.form["restaurant_id"])
             first.re_dish(redish)
             first.submit2db()
