@@ -117,7 +117,7 @@ def membersinfo():
                 'webuser_id':request.form['id']
             }
             if int(request.form['user_tpye'])==0:
-                item = mongo.members.find_one({'_id':ObjectId(request.form['id']),'status':0})
+                item = mongo.members.find_one({'_id':ObjectId(request.form['id'])})
                 json = {}
                 for key in item.keys():
                     if key == '_id':
