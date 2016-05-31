@@ -194,7 +194,7 @@ def insertmembers():
                 'birthday':request.form["birthday"],
                 'phone':request.form["phone"],
                 'addtime':datetime.datetime.now(),
-                'status':0,
+                'status':'0',
                 'restaurant_id':request.form["restaurant_id"]
             }
             mongo.members.insert(tools.formatp(pdict, table))
