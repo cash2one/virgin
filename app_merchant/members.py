@@ -220,7 +220,6 @@ def updatemembers():
                 'nickname':request.form["nickname"],
                 'birthday':request.form["birthday"],
                 'phone':request.form["phone"],
-                'status':request.form["status"],
                 'restaurant_id':request.form["restaurant_id"]
             }
             mongo.members.update_one({'_id':ObjectId(request.form['id'])},{"$set":tools.orderformate(pdict, table)})
