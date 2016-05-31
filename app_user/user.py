@@ -127,7 +127,7 @@ def admin_login():
                     req.send_sms()
                     return json.dumps({'success': True})
                 except Exception, e:
-                    return json.dumps({'success': False, 'info': e})
+                    return json.dumps({'success': False})
             else:
                 return json.dumps({'success': False, 'info': 'Not admin'})
         elif request.form['method'] == 'shop_id':
