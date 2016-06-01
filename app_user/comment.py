@@ -23,9 +23,8 @@ def is_one(key, form):
 @user_comment.route('/fm/diners/v1/comment/submit', methods=['POST'])
 def app_comment_submit():
     if request.method == 'POST':
-        for n in ['restaurant_id', 'user_id', 'user_name', 'user_head', 'comment_text', 'comment_pic'
-                                                                                        'rating_total', 'rating_taste',
-                  'rating_env', 'rating_service']:
+        for n in {'restaurant_id', 'user_id', 'user_name', 'user_head', 'comment_text', 'comment_pic', 'rating_total',
+                  'rating_taste', 'rating_env', 'rating_service'}:
             if n not in request.form:
                 return abort(406)
         data = {
