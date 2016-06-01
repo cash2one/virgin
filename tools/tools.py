@@ -1,4 +1,4 @@
-#--coding:utf-8--#
+# coding=utf-8
 import json
 import os
 from poster.encode import multipart_encode
@@ -68,6 +68,7 @@ class Foormat:
         self.data = self.__get_db_data()
         self.dish_data = None
         self.menu_data = None
+        self.add_dish_data = None
         self.new_menu = None
 
     def rebuild(self):
@@ -76,27 +77,31 @@ class Foormat:
         else:
             rebuild_data = self.new_menu
         menu_list = []
-        for menu in rebuild_data['menu']:
+        for menu in rebuild_data['menu']:  # 循环数据库的菜单
             new_menu = dict()
-            for key in menu.keys():
-                if key == 'dishs':
+            for key in menu.keys():  # 循环菜单的键名
+                if key == 'dishs':  # 如果是菜品列表
                     dishs = []
-                    for dish in menu['dishs']:
-                        if 'id' in dish.keys():
-                            if dish['id'] in self.dish_data.keys():
+                    for dish in menu['dishs']:  # 循环菜单中的菜品
+                        try:
+                            if dish['id'] in self.dish_data.keys():  # 判断是否是需要修改的菜品
                                 dish_new = {}
-                                for key_name in dish.keys():
-                                    if key_name in self.dish_data[dish['id']].keys():
+                                for key_name in dish.keys():  # 循环菜品包含的键名
+                                    if key_name in self.dish_data[dish['id']].keys():  # 如果是需要修改的键
                                         dish_new[key_name] = self.dish_data[dish['id']][key_name]
-                                    else:
+                                    else:  # 如果不需要修改
                                         dish_new[key_name] = dish[key_name]
                                 dishs.append(dish_new)
-                            else:
+                            else:  # 不是要修改的菜品
                                 dishs.append(dish)
-                        else:
+                        except Exception, e:
+                            print e
                             dishs.append(dish)
+                    if menu['id'] in self.add_dish_data.keys():  # 如果当前菜单是需要添加菜品的菜单
+                        for new_dish in self.add_dish_data[menu['id']]:  # 循环操作添加新菜品
+                            dishs.append(new_dish)
                     new_menu['dishs'] = dishs
-                else:
+                else:  # 如果是菜单信息
                     if self.menu_data is not None and (menu['id'] in self.menu_data.keys()):
                         if key in self.menu_data[menu['id']].keys():
                             new_menu[key] = self.menu_data[menu['id']][key]
@@ -107,6 +112,9 @@ class Foormat:
             menu_list.append(new_menu)
         self.new_menu = {'menu': menu_list}
         return True
+
+    def add_dish(self, dish_data=None):
+        self.add_dish_data = dish_data
 
     def re_dish(self, dish_data=None):
         self.dish_data = dish_data
@@ -226,16 +234,33 @@ if __name__ == '__main__':
                     "type" : "str",
                     "id" : "str"
             }
-    obj = '57327f4a8831ac0e5cb96404'
+    obj = '57329b1f0c1d9b2f4c85f8e3'
     test_dish = {
         '201605111118535612': {'discount_price': 66,'name': '111111111111111111111111111111111111111111111111'}, '201605111003381987': {'discount_price': 88}
     }
     test_menu = {
         '201605111118535612': {'name': '111111111111111111111111111111111111111111111111'}
     }
-    test_data = mongo.restaurant.find({"_id" : ObjectId("57327f4a8831ac0e5cb96404")},{"menu":1})[0]
+    test_add = {
+        '201605111038236629': [{
+                    "is_enabled" : True,
+                    "name" : "1981肥牛王",
+                    "shijia" : False,
+                    "price" : 12.0,
+                    "is_recommend" : True,
+                    "danwei" : "",
+                    "discount_price" : 55555555555.0,
+                    "summary" : "",
+                    "praise_num" : 0,
+                    "guide_image" : "",
+                    "type" : "0",
+                    "id" : "201605111041429997"
+                }]
+    }
+    # test_data = mongo.restaurant.find({"_id" : ObjectId("57327f4a8831ac0e5cb96404")},{"menu":1})[0]
     # print json_util.dumps(test_data,ensure_ascii=False,indent=2)
     first = Foormat(obj)
+    first.add_dish(test_add)
     first.re_dish(test_dish)
     first.re_menu(test_menu)
     print first.submit2db()
