@@ -20,7 +20,7 @@ def is_one(key, form):
     pass
 
 
-@user_comment.route('/fm/diners/v1/comment/submit', methods=['POST'])
+@user_comment.route('/fm/diners/v1/comment/submit/', methods=['POST'])
 def app_comment_submit():
     if request.method == 'POST':
         for n in ['restaurant_id', 'user_id', 'user_name', 'user_head', 'comment_text', 'comment_pic', 'rating_total',
