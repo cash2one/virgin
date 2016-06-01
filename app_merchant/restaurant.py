@@ -89,6 +89,7 @@ def updaterestaurant_discount():
 def findalldis():
     if request.method=='POST':
         try:
+            type = int(request.form['type'])
             alldata = {}
             dishs_list = []
             wine_list =[]
@@ -103,7 +104,8 @@ def findalldis():
                         json['message'] = i["dishes_discount"]["message"]
                         json['start_time'] = i["dishes_discount"]["start_time"]
                         json['end_time'] = i["dishes_discount"]["end_time"]
-                alldata['dishes_discount'] = json
+                if type == 1:
+                    alldata['dishes_discount'] = json
                     #1菜品优惠信息结束
                 #2酒水优惠信息开始
                 winejson = {}
@@ -113,7 +115,8 @@ def findalldis():
                         winejson['message'] = i["wine_discount"]["message"]
                         winejson['start_time'] = i["wine_discount"]["start_time"]
                         winejson['end_time'] = i["wine_discount"]["end_time"]
-                alldata['wine_discount'] = winejson
+                if type == 2:
+                    alldata['wine_discount'] = winejson
                 #2酒水优惠信息结束
                 #3查询所有菜开始
                 for dishs in i['menu']:
@@ -126,7 +129,8 @@ def findalldis():
                             json['discount_price'] = dish['discount_price']
                             json['type'] = dish['type']
                             dishs_list.append(json)
-                alldata['dishs_list'] = dishs_list
+                if type == 1:
+                    alldata['dishs_list'] = dishs_list
                 #查询所有菜结束
                 #查询所有酒水开始
                 for wines in i['menu']:
@@ -139,7 +143,8 @@ def findalldis():
                             json['discount_price'] = dish['discount_price']
                             json['type'] = dish['type']
                             wine_list.append(json)
-                alldata['wine_list'] = wine_list
+                if type == 1:
+                    alldata['wine_list'] = wine_list
                 #查询所有酒水结束
             jwtmsg = auto.decodejwt(request.form["jwtstr"])
             result=tool.return_json(0,"success",jwtmsg,alldata)
@@ -155,16 +160,22 @@ def findalldis():
 def updatealldis():
     if request.method=='POST':
         try:
-            pdict = {
-                        "dishes_discount.discount":float(request.form["dishes_discount"]),
-                        "dishes_discount.message":request.form["dishes_message"],
-                        "dishes_discount.start_time":request.form["dishes_start_time"],
-                        "dishes_discount.end_time":request.form["dishes_end_time"],
-                        "wine_discount.discount":float(request.form["wine_discount"]),
-                        "wine_discount.message":request.form["wine_message"],
-                        "wine_discount.start_time":request.form["wine_start_time"],
-                        "wine_discount.end_time":request.form["wine_end_time"]
-                    }
+            type = int(request.form['type'])
+            if type == 1:
+                pdict = {
+                            "dishes_discount.discount":float(request.form["dishes_discount"]),
+                            "dishes_discount.message":request.form["dishes_message"],
+                            "dishes_discount.start_time":request.form["dishes_start_time"],
+                            "dishes_discount.end_time":request.form["dishes_end_time"]
+
+                        }
+            elif type == 2:
+                pdict = {
+                            "wine_discount.discount":float(request.form["wine_discount"]),
+                            "wine_discount.message":request.form["wine_message"],
+                            "wine_discount.start_time":request.form["wine_start_time"],
+                            "wine_discount.end_time":request.form["wine_end_time"]
+                        }
             mongo.restaurant.update_one({"_id":ObjectId(request.form["restaurant_id"])},{"$set":pdict})
             # redish = {'201605111041429997':{'discount_price': 5555.00},'201605111040002332':{'discount_price':2222.00}}
             redish = request.form['redish']
