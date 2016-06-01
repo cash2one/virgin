@@ -1,6 +1,10 @@
 #--coding:utf-8--#
 import json
 import os
+
+import datetime
+import random
+
 from poster.encode import multipart_encode
 from poster.streaminghttp import StreamingHTTPHandler, StreamingHTTPRedirectHandler, StreamingHTTPSHandler
 import urllib2
@@ -144,9 +148,8 @@ class Discount:
             for key in menu.keys():
                 if key == 'dishs':
                     dishs = []
-                    if menu['name'] !='酒水' and menu['dish_type'] =='1' and menu['dishs']!=[]:
+                    if menu['name'] !='优惠菜' and menu['name'] !='推荐菜' and menu['dish_type'] =='1' and menu['dishs']!=[]:
                         for dish in menu['dishs']:
-                            print dish
                             if 'id' in dish.keys():
                                 if dish['id'] in self.dish_data.keys():
                                     dish_new = {}
@@ -212,6 +215,9 @@ def pimg(uu):
     return str(a).replace(" ","")
   except Exception, e:
         print e
+def gen_rnd_filename():
+    filename_prefix = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+    return '%s%s' % (filename_prefix, str(random.randrange(1000, 10000)))
 if __name__ == '__main__':
     dish = {
                     "is_enabled" : 'str',
