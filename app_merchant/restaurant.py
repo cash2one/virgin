@@ -143,7 +143,7 @@ def findalldis():
                             json['discount_price'] = dish['discount_price']
                             json['type'] = dish['type']
                             wine_list.append(json)
-                if type == 1:
+                if type == 2:
                     alldata['wine_list'] = wine_list
                 #查询所有酒水结束
             jwtmsg = auto.decodejwt(request.form["jwtstr"])
@@ -236,7 +236,7 @@ def redishslist():
             for i in item:
 
                 for dishs in i['menu']:
-                    if dishs['name'] !='优惠菜' and dishs['name'] !='推荐菜' and dishs['dish_type'] =='1' and dishs['dishs']!=[]:
+                    if dishs['name'] ==request.form['name'] and dishs['name'] !='优惠菜' and dishs['name'] !='推荐菜' and dishs['dish_type'] =='1' and dishs['dishs']!=[]:
                         for dish in dishs['dishs']:
                             json = {}
                             json['dish_id'] = dish['id']
@@ -275,7 +275,7 @@ def redishsinfos():
                         for dish in j['dishs']:
                             json = {}
                             # if j['id'] == '201605111038236622':
-                            if j['id'] == request.form["dish_id"]:
+                            if dish['id'] == request.form["dish_id"]:
                                 json['dish_id'] = dish['id']
                                 json['price'] = dish['price']
                                 json['name'] = dish['name']
