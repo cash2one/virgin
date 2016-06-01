@@ -169,7 +169,7 @@ def updatealldis():
                             "dishes_discount.end_time":request.form["dishes_end_time"]
 
                         }
-            elif type == 2:
+            else:
                 pdict = {
                             "wine_discount.discount":float(request.form["wine_discount"]),
                             "wine_discount.message":request.form["wine_message"],
@@ -322,11 +322,23 @@ def updatedishs():
 def insertdishs():
     if request.method=='POST':
         try:
-            redish = {str(tool.gen_rnd_filename()):{'price': float(request.form['price']), 'name':request.form['name'], 'guide_image':request.form['guide_image'], 'type':request.form['type']}}
-            # redish = request.form['redish']
-            # jsonredish = json.loads(redish)
+            redish = {
+                str(request.form["menu_id"]):[{
+                    "is_enabled" : True,
+                    'name':request.form['name'],
+                    "shijia" : False,
+                    "price" : float(request.form['price']),
+                    "is_recommend" : True,
+                    "danwei" : "",
+                    "discount_price" : 0.0,
+                    "summary" : "",
+                    "praise_num" : 0,
+                    'guide_image':request.form['guide_image'],
+                    'type':request.form['type'],
+                    "id" : str(tool.gen_rnd_filename())
+                }]}
             first = tool.Discount(request.form["restaurant_id"])
-            first.re_dish(redish)
+            first.add_dish(redish)
             first.submit2db()
             jwtmsg = auto.decodejwt(request.form["jwtstr"])
             jsons = {
