@@ -35,10 +35,10 @@ def app_comment_submit():
             'user_info': {'user_name': is_one('user_name', request.form),
                           'user_head': is_one('user_head', request.form)},
             'post_date': datetime.now(),
-            'rating': {'total': is_one('rating_total', request.form),
-                       'taste': is_one('rating_taste', request.form),
-                       'env': is_one('rating_env', request.form),
-                       'service': is_one('rating_service', request.form)},
+            'rating': {'total': int(is_one('rating_total', request.form)),
+                       'taste': int(is_one('rating_taste', request.form)),
+                       'env': int(is_one('rating_env', request.form)),
+                       'service': int(is_one('rating_service', request.form))},
             'comment_text': is_one('comment_text', request.form),
             'comment_pic': json.loads(is_one('comment_pic', request.form))
         }

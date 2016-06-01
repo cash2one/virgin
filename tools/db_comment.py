@@ -82,7 +82,7 @@ class Comment(MongoAPI):
 
 
 if __name__ == '__main__':
-    # c = Comment()
+    c = Comment()
     # c.add(test_ex)
-    # print json.dumps(c.find({'user_id': '56cfb824dcc88e4ed3a9b2df'}), indent=2)
+    print json.dumps(c.find({'restaurant_id': '57329d530c1d9b2f4c85f8e5'}), indent=2)
     pass

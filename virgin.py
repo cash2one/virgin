@@ -14,6 +14,7 @@ from app_merchant.other import other_api
 from app_merchant.auto import auto_api
 from app_user.user import user_api
 from app_user.comment import user_comment
+from app_merchant.comment import restaurant_comment
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -29,6 +30,7 @@ app.register_blueprint(other_api)
 app.register_blueprint(auto_api)
 app.register_blueprint(user_api)
 app.register_blueprint(user_comment)
+app.register_blueprint(restaurant_comment)
 
 
 @app.route('/protected', methods=['POST'])
