@@ -101,9 +101,10 @@ class Foormat:
                         except Exception, e:
                             print e
                             dishs.append(dish)
-                    if menu['id'] in self.add_dish_data.keys():  # 如果当前菜单是需要添加菜品的菜单
-                        for new_dish in self.add_dish_data[menu['id']]:  # 循环操作添加新菜品
-                            dishs.append(new_dish)
+                    if self.add_dish_data:
+                        if menu['id'] in self.add_dish_data.keys():  # 如果当前菜单是需要添加菜品的菜单
+                            for new_dish in self.add_dish_data[menu['id']]:  # 循环操作添加新菜品
+                                dishs.append(new_dish)
                     new_menu['dishs'] = dishs
                 else:  # 如果是菜单信息
                     if self.menu_data is not None and (menu['id'] in self.menu_data.keys()):
@@ -144,7 +145,7 @@ class Discount:
         self.dish_data = None
         self.menu_data = None
         self.new_menu = None
-
+        self.add_dish_data = None
     def rebuild(self):
         if self.new_menu is None:
             rebuild_data = self.data
@@ -158,19 +159,27 @@ class Discount:
                     dishs = []
                     if menu['name'] !='优惠菜' and menu['name'] !='推荐菜' and menu['dish_type'] =='1' and menu['dishs']!=[]:
                         for dish in menu['dishs']:
-                            if 'id' in dish.keys():
-                                if dish['id'] in self.dish_data.keys():
-                                    dish_new = {}
-                                    for key_name in dish.keys():
-                                        if key_name in self.dish_data[dish['id']].keys():
-                                            dish_new[key_name] = self.dish_data[dish['id']][key_name]
-                                        else:
-                                            dish_new[key_name] = dish[key_name]
-                                    dishs.append(dish_new)
+                            try:
+                                if 'id' in dish.keys():
+                                    if dish['id'] in self.dish_data.keys():
+                                        dish_new = {}
+                                        for key_name in dish.keys():
+                                            if key_name in self.dish_data[dish['id']].keys():
+                                                dish_new[key_name] = self.dish_data[dish['id']][key_name]
+                                            else:
+                                                dish_new[key_name] = dish[key_name]
+                                        dishs.append(dish_new)
+                                    else:
+                                        dishs.append(dish)
                                 else:
                                     dishs.append(dish)
-                            else:
+                            except Exception, e:
                                 dishs.append(dish)
+                                pass
+                        if self.add_dish_data:
+                            if menu['id'] in self.add_dish_data.keys():  # 如果当前菜单是需要添加菜品的菜单
+                                for new_dish in self.add_dish_data[menu['id']]:  # 循环操作添加新菜品
+                                    dishs.append(new_dish)
                         new_menu['dishs'] = dishs
                     else:
                         new_menu[key] = menu[key]
@@ -188,7 +197,8 @@ class Discount:
 
     def re_dish(self, dish_data=None):
         self.dish_data = dish_data
-
+    def add_dish(self, dish_data=None):
+        self.add_dish_data = dish_data
     def re_menu(self, menu_data=None):
         self.menu_data = menu_data
 
@@ -267,8 +277,8 @@ if __name__ == '__main__':
     # print json_util.dumps(test_data,ensure_ascii=False,indent=2)
     first = Foormat(obj)
     first.add_dish(test_add)
-    first.re_dish(test_dish)
-    first.re_menu(test_menu)
+    # first.re_dish(test_dish)
+    # first.re_menu(test_menu)
     print first.submit2db()
 
     pass

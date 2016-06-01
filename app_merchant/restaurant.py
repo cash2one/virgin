@@ -143,7 +143,7 @@ def findalldis():
                             json['discount_price'] = dish['discount_price']
                             json['type'] = dish['type']
                             wine_list.append(json)
-                if type == 1:
+                if type == 2:
                     alldata['wine_list'] = wine_list
                 #查询所有酒水结束
             jwtmsg = auto.decodejwt(request.form["jwtstr"])
@@ -169,7 +169,7 @@ def updatealldis():
                             "dishes_discount.end_time":request.form["dishes_end_time"]
 
                         }
-            elif type == 2:
+            else:
                 pdict = {
                             "wine_discount.discount":float(request.form["wine_discount"]),
                             "wine_discount.message":request.form["wine_message"],
@@ -236,7 +236,7 @@ def redishslist():
             for i in item:
 
                 for dishs in i['menu']:
-                    if dishs['name'] !='优惠菜' and dishs['name'] !='推荐菜' and dishs['dish_type'] =='1' and dishs['dishs']!=[]:
+                    if dishs['name'] ==request.form['name'] and dishs['name'] !='优惠菜' and dishs['name'] !='推荐菜' and dishs['dish_type'] =='1' and dishs['dishs']!=[]:
                         for dish in dishs['dishs']:
                             json = {}
                             json['dish_id'] = dish['id']
@@ -275,7 +275,7 @@ def redishsinfos():
                         for dish in j['dishs']:
                             json = {}
                             # if j['id'] == '201605111038236622':
-                            if j['id'] == request.form["dish_id"]:
+                            if dish['id'] == request.form["dish_id"]:
                                 json['dish_id'] = dish['id']
                                 json['price'] = dish['price']
                                 json['name'] = dish['name']
@@ -322,11 +322,23 @@ def updatedishs():
 def insertdishs():
     if request.method=='POST':
         try:
-            redish = {str(tool.gen_rnd_filename()):{'price': float(request.form['price']), 'name':request.form['name'], 'guide_image':request.form['guide_image'], 'type':request.form['type']}}
-            # redish = request.form['redish']
-            # jsonredish = json.loads(redish)
+            redish = {
+                str(request.form["menu_id"]):[{
+                    "is_enabled" : True,
+                    'name':request.form['name'],
+                    "shijia" : False,
+                    "price" : float(request.form['price']),
+                    "is_recommend" : True,
+                    "danwei" : "",
+                    "discount_price" : 0.0,
+                    "summary" : "",
+                    "praise_num" : 0,
+                    'guide_image':request.form['guide_image'],
+                    'type':request.form['type'],
+                    "id" : str(tool.gen_rnd_filename())
+                }]}
             first = tool.Discount(request.form["restaurant_id"])
-            first.re_dish(redish)
+            first.add_dish(redish)
             first.submit2db()
             jwtmsg = auto.decodejwt(request.form["jwtstr"])
             jsons = {
