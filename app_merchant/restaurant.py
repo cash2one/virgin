@@ -1,4 +1,5 @@
 #--coding:utf-8--#
+import json
 from os import abort
 
 from app_merchant import auto
@@ -28,127 +29,6 @@ dishes_discount = {
 mongo=conn.mongo_conn()
 
 restaurant_api = Blueprint('restaurant_api', __name__, template_folder='templates')
-
-#1.4菜品优惠查询form:id
-@restaurant_api.route('/fm/merchant/v1/restaurant/restaurant_discount/', methods=['POST'])
-def restaurant_discount():
-    try:
-        pdict = {
-            '_id':request.form["id"],
-            'menu.dish_type':request.form['dish_type']
-        }
-        item = mongo.restaurant.find(tools.orderformate(pdict, table),{})
-        data={}
-        list = []
-        for i in item:
-            json = {}
-            for key in i.keys():
-                if key == '_id':
-                    json['id'] = i[key]
-                else:
-                    json[key] = i[key]
-            list.append(json)
-        data['list'] = list
-        jwtmsg = auto.decodejwt(request.form["jwtstr"])
-        result=tool.return_json(0,"success",jwtmsg,data)
-        return json_util.dumps(result,ensure_ascii=False,indent=2)
-    except Exception,e:
-        print e
-        result=tool.return_json(0,"field",False,None)
-        return json_util.dumps(result,ensure_ascii=False,indent=2)
-#修改菜品价格
-# @restaurant_api.route('/fm/merchant/v1/restaurant/updaterestaurant/', methods=['POST'])
-# def updaterestaurant():
-#     try:
-#         pdict = {
-#             "dishes_discount.discount":request.form['discount'],
-#             "dishes_discount.message":request.form['message'],
-#             "dishes_discount.end_time":request.form['end_time'],
-#             "dishes_discount.start_time":request.form['start_time'],
-#             "dishes_discount.desc":request.form['desc']
-#         }
-#         objid = {"_id":ObjectId(request.form["id"])}
-#         first = tools.orderformate(pdict,dishes_discount)
-#         second = {"$set":first}
-#         mongo.restaurant.update_one(objid,second)
-#
-#         dish = {
-#             request.form['dish_id']: {'discount_price': float(request.form['discount_price'])}
-#         }
-#         redish = tool.Foormat(request.form["id"]).re_dish(dish)
-#         redish.submit2db()
-#         json = {
-#                 "status": 1,
-#                 "msg":""
-#         }
-#         jwtmsg = auto.decodejwt(request.form["jwtstr"])
-#         result=tool.return_json(0,"success",jwtmsg,json)
-#         return json_util.dumps(result,ensure_ascii=False,indent=2)
-#     except Exception,e:
-#         print e
-#         result=tool.return_json(0,"field",False,None)
-#         return json_util.dumps(result,ensure_ascii=False,indent=2)
-#平台优惠 查询菜品优惠信息
-@restaurant_api.route('/fm/merchant/v1/restaurant/dishes_discountinfos/', methods=['POST'])
-def dishes_discountinfos():
-    if request.method=='POST':
-        try:
-            pdict = {
-                '_id':request.form["restaurant_id"]
-            }
-            item = mongo.restaurant.find(tools.orderformate(pdict, table),{"dishes_discount.discount":1,"dishes_discount.message":1,"dishes_discount.start_time":1,"dishes_discount.end_time":1,"_id":1})
-            for i in item:
-                json = {}
-                for key in i.keys():
-                    if key == '_id':
-                        json['id'] = str(i[key])
-                    elif key == 'dishes_discount':
-                        json['discount'] = i["dishes_discount"]["discount"]
-                        json['message'] = i["dishes_discount"]["message"]
-                        json['start_time'] = i["dishes_discount"]["start_time"]
-                        json['end_time'] = i["dishes_discount"]["end_time"]
-                    else:
-                        json[key] = i[key]
-
-            jwtmsg = auto.decodejwt(request.form["jwtstr"])
-            result=tool.return_json(0,"success",jwtmsg,json)
-            return json_util.dumps(result,ensure_ascii=False,indent=2)
-        except Exception,e:
-            print e
-            result=tool.return_json(0,"field",False,None)
-            return json_util.dumps(result,ensure_ascii=False,indent=2)
-    else:
-        return abort(403)
-#平台优惠 查询酒水优惠信息
-@restaurant_api.route('/fm/merchant/v1/restaurant/wine_discountinfos/', methods=['POST'])
-def wine_discountinfos():
-    if request.method=='POST':
-        try:
-            pdict = {
-                '_id':request.form["restaurant_id"]
-            }
-            item = mongo.restaurant.find(tools.orderformate(pdict, table),{"wine_discount.message":1,"wine_discount.start_time":1,"wine_discount.end_time":1,"_id":1})
-            for i in item:
-                json = {}
-                for key in i.keys():
-                    if key == '_id':
-                        json['id'] = str(i[key])
-                    elif key == 'wine_discount':
-                        json['message'] = i["wine_discount"]["message"]
-                        json['start_time'] = i["wine_discount"]["start_time"]
-                        json['end_time'] = i["wine_discount"]["end_time"]
-                    else:
-                        json[key] = i[key]
-
-            jwtmsg = auto.decodejwt(request.form["jwtstr"])
-            result=tool.return_json(0,"success",jwtmsg,json)
-            return json_util.dumps(result,ensure_ascii=False,indent=2)
-        except Exception,e:
-            print e
-            result=tool.return_json(0,"field",False,None)
-            return json_util.dumps(result,ensure_ascii=False,indent=2)
-    else:
-        return abort(403)
 #平台优惠 查询其他优惠信息
 @restaurant_api.route('/fm/merchant/v1/restaurant/restaurant_discountinfos/', methods=['POST'])
 def restaurant_discountinfos():
@@ -170,55 +50,6 @@ def restaurant_discountinfos():
                     else:
                         json[key] = i[key]
 
-            jwtmsg = auto.decodejwt(request.form["jwtstr"])
-            result=tool.return_json(0,"success",jwtmsg,json)
-            return json_util.dumps(result,ensure_ascii=False,indent=2)
-        except Exception,e:
-            print e
-            result=tool.return_json(0,"field",False,None)
-            return json_util.dumps(result,ensure_ascii=False,indent=2)
-    else:
-        return abort(403)
-#平台优惠 菜品优惠 修改菜品优惠包括全单折扣
-@restaurant_api.route('/fm/merchant/v1/restaurant/updatediscount/', methods=['POST'])
-def updatediscount():
-    if request.method=='POST':
-        try:
-            pdict = {
-                "dishes_discount.discount":float(request.form["discount"]),
-                "dishes_discount.message":request.form["message"],
-                "dishes_discount.start_time":request.form["start_time"],
-                "dishes_discount.end_time":request.form["end_time"]
-            }
-            mongo.restaurant.update_one({"_id":ObjectId(request.form["restaurant_id"])},{"$set":pdict})
-            json = {
-                    "status": 1,
-                    "msg":""
-            }
-            jwtmsg = auto.decodejwt(request.form["jwtstr"])
-            result=tool.return_json(0,"success",jwtmsg,json)
-            return json_util.dumps(result,ensure_ascii=False,indent=2)
-        except Exception,e:
-            print e
-            result=tool.return_json(0,"field",False,None)
-            return json_util.dumps(result,ensure_ascii=False,indent=2)
-    else:
-        return abort(403)
-#平台优惠 菜品优惠 修改酒水优惠
-@restaurant_api.route('/fm/merchant/v1/restaurant/updatewine_discount/', methods=['POST'])
-def updatewine_discount():
-    if request.method=='POST':
-        try:
-            pdict = {
-                "wine_discount.message":request.form["message"],
-                "wine_discount.start_time":request.form["start_time"],
-                "wine_discount.end_time":request.form["end_time"]
-            }
-            mongo.restaurant.update_one({"_id":ObjectId(request.form["restaurant_id"])},{"$set":pdict})
-            json = {
-                    "status": 1,
-                    "msg":""
-            }
             jwtmsg = auto.decodejwt(request.form["jwtstr"])
             result=tool.return_json(0,"success",jwtmsg,json)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
@@ -252,9 +83,36 @@ def updaterestaurant_discount():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
-#平台优惠 菜品优惠 查询所有菜品
-@restaurant_api.route('/fm/merchant/v1/restaurant/dishsinfos/', methods=['POST'])
-def dishsinfos():
+#mongo.restaurant.find({"_id":ObjectId("57329e300c1d9b2f4c85f8e6")},{"menu.name":1,"menu.id":1,"_id":0})
+#菜单修改-查询菜单分类
+@restaurant_api.route('/fm/merchant/v1/restaurant/menutypes/', methods=['POST'])
+def menutypes():
+    if request.method=='POST':
+        try:
+            pdict = {
+                '_id':request.form["restaurant_id"]
+            }
+            item = mongo.restaurant.find(tools.orderformate(pdict, table),{"menu.name":1,"menu.id":1,"_id":0})
+            data={}
+            list = []
+            for i in item:
+                for j in i['menu']:
+                    #如果需要修改优惠菜和推荐菜 就取消下面这句判断 暂定只修改菜品和酒水
+                    if j['name'] !='优惠菜' and j['name'] !='推荐菜':
+                        list.append(j)
+            data['list'] = list
+            jwtmsg = auto.decodejwt(request.form["jwtstr"])
+            result=tool.return_json(0,"success",jwtmsg,data)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+        except Exception,e:
+            print e
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#菜单修改-查询单独菜单的菜和酒水 参数是菜单分类 dish_id
+@restaurant_api.route('/fm/merchant/v1/restaurant/redishsinfos/', methods=['POST'])
+def redishsinfos():
     if request.method=='POST':
         try:
             pdict = {
@@ -265,16 +123,19 @@ def dishsinfos():
             dishs_list =[]
             for i in item:
 
-                for i in i['menu']:
+                for j in i['menu']:
 
-                    if i['name'] !='酒水' and i['dish_type'] =='1' and i['dishs']!=[]:
-                        for dish in i['dishs']:
+                    if j['name'] !='优惠菜' and j['name'] !='推荐菜' and j['dish_type'] =='1' and j['dishs']!=[]:
+                        for dish in j['dishs']:
                             json = {}
-                            json['dish_id'] = dish['id']
-                            json['price'] = dish['price']
-                            json['name'] = dish['name']
-                            json['discount_price'] = dish['discount_price']
-                            dishs_list.append(json)
+                            # if j['id'] == '201605111038236622':
+                            if j['id'] == request.form["dish_id"]:
+                                json['dish_id'] = dish['id']
+                                json['price'] = dish['price']
+                                json['name'] = dish['name']
+                                json['discount_price'] = dish['discount_price']
+                                json['type'] = dish['type']
+                                dishs_list.append(json)
             dishs_dict['list'] = dishs_list
             jwtmsg = auto.decodejwt(request.form["jwtstr"])
             result=tool.return_json(0,"success",jwtmsg,dishs_dict)
@@ -285,31 +146,103 @@ def dishsinfos():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
-#平台优惠 菜品优惠 修改所有菜品特价
-@restaurant_api.route('/fm/merchant/v1/restaurant/updatedishs/', methods=['POST'])
-def updatedishs():
-    import json
+#菜品优惠 查询所有优惠信息 参数  restaurant_id
+@restaurant_api.route('/fm/merchant/v1/restaurant/findalldis/', methods=['POST'])
+def findalldis():
     if request.method=='POST':
         try:
-            # json = {
-            #     '201605111041429997': {'discount_price': 55555555555555555555.00},
-            #     '201605111040002332': {'discount_price': 22222222222222222222222222222.00}
-            # }
+            alldata = {}
+            dishs_list = []
+            wine_list =[]
+            item = mongo.restaurant.find({"_id":ObjectId(request.form["restaurant_id"])})
+
+            for i in item:
+                json = {}
+                for key in i.keys():
+                    #1菜品优惠信息开始
+                    if key == 'dishes_discount':
+                        json['discount'] = i["dishes_discount"]["discount"]
+                        json['message'] = i["dishes_discount"]["message"]
+                        json['start_time'] = i["dishes_discount"]["start_time"]
+                        json['end_time'] = i["dishes_discount"]["end_time"]
+                alldata['dishes_discount'] = json
+                    #1菜品优惠信息结束
+                #2酒水优惠信息开始
+                winejson = {}
+                for winekey in i.keys():
+                    if winekey == 'wine_discount':
+                        winejson['discount'] = i["wine_discount"]["discount"]
+                        winejson['message'] = i["wine_discount"]["message"]
+                        winejson['start_time'] = i["wine_discount"]["start_time"]
+                        winejson['end_time'] = i["wine_discount"]["end_time"]
+                alldata['wine_discount'] = winejson
+                #2酒水优惠信息结束
+                #3查询所有菜开始
+                for dishs in i['menu']:
+                    if dishs['name'] !='酒水' and dishs['name'] !='优惠菜' and dishs['name'] !='推荐菜' and dishs['dish_type'] =='1' and dishs['dishs']!=[]:
+                        for dish in dishs['dishs']:
+                            json = {}
+                            json['dish_id'] = dish['id']
+                            json['price'] = dish['price']
+                            json['name'] = dish['name']
+                            json['discount_price'] = dish['discount_price']
+                            json['type'] = dish['type']
+                            dishs_list.append(json)
+                alldata['dishs_list'] = dishs_list
+                #查询所有菜结束
+                #查询所有酒水开始
+                for wines in i['menu']:
+                    if wines['name'] =='酒水' and wines['dish_type'] =='1' and wines['dishs']!=[]:
+                        for dish in wines['dishs']:
+                            json = {}
+                            json['dish_id'] = dish['id']
+                            json['price'] = dish['price']
+                            json['name'] = dish['name']
+                            json['discount_price'] = dish['discount_price']
+                            json['type'] = dish['type']
+                            wine_list.append(json)
+                alldata['wine_list'] = wine_list
+                #查询所有酒水结束
+            jwtmsg = auto.decodejwt(request.form["jwtstr"])
+            result=tool.return_json(0,"success",jwtmsg,alldata)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+        except Exception,e:
+            print e
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#菜品优惠 修改所有
+@restaurant_api.route('/fm/merchant/v1/restaurant/updatealldis/', methods=['POST'])
+def updatealldis():
+    if request.method=='POST':
+        try:
+            pdict = {
+                        "dishes_discount.discount":float(request.form["dishes_discount"]),
+                        "dishes_discount.message":request.form["dishes_message"],
+                        "dishes_discount.start_time":request.form["dishes_start_time"],
+                        "dishes_discount.end_time":request.form["dishes_end_time"],
+                        "wine_discount.discount":float(request.form["wine_discount"]),
+                        "wine_discount.message":request.form["wine_message"],
+                        "wine_discount.start_time":request.form["wine_start_time"],
+                        "wine_discount.end_time":request.form["wine_end_time"]
+                    }
+            mongo.restaurant.update_one({"_id":ObjectId(request.form["restaurant_id"])},{"$set":pdict})
+            # redish = {
+                    #     '201605111041429997': {'discount_price': 55555555555555555555.00},
+                    #     '201605111040002332': {'discount_price': 22222222222222222222222222222.00}
+                    # }
             redish = request.form['redish']
-            print redish
-            json.dumps(redish)
-            print redish
+            jsonredish = json.loads(redish)
             first = tool.Discount(request.form["restaurant_id"])
-            first.re_dish(redish)
+            first.re_dish(jsonredish)
             first.submit2db()
-
-
-            json = {
+            jsons = {
                     "status": 1,
                     "msg":""
             }
             jwtmsg = auto.decodejwt(request.form["jwtstr"])
-            result=tool.return_json(0,"success",jwtmsg,json)
+            result=tool.return_json(0,"success",jwtmsg,jsons)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
         except Exception,e:
             print e
