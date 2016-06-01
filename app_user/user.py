@@ -133,7 +133,8 @@ def admin_login():
                 return json.dumps({'success': False, 'info': 'Not admin'})
         elif request.form['method'] == 'shop_id':
             if req.is_admin:
-                return json.dumps({'id': req.admin_shop_id})
+                # print req.admin_shop_id
+                return json.dumps(req.admin_shop_id)
             else:
                 return json.dumps({'success': False, 'info': 'Not admin'})
         else:
