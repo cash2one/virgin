@@ -124,9 +124,9 @@ def findalldis():
                         for dish in dishs['dishs']:
                             json = {}
                             json['dish_id'] = dish['id']
-                            json['price'] = dish['price']
+                            json['price'] = str(dish['price'])
                             json['name'] = dish['name']
-                            json['discount_price'] = dish['discount_price']
+                            json['discount_price'] = str(dish['discount_price'])
                             json['type'] = dish['type']
                             dishs_list.append(json)
                 if type == 1:
@@ -138,9 +138,9 @@ def findalldis():
                         for dish in wines['dishs']:
                             json = {}
                             json['dish_id'] = dish['id']
-                            json['price'] = dish['price']
+                            json['price'] = str(dish['price'])
                             json['name'] = dish['name']
-                            json['discount_price'] = dish['discount_price']
+                            json['discount_price'] = str(dish['discount_price'])
                             json['type'] = dish['type']
                             wine_list.append(json)
                 if type == 2:
