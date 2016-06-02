@@ -224,7 +224,7 @@ def allorder():
             data['count'] = {'allcount':allcount,'newcount':newcount,'waitecount':waitecount,'redocount':redocount}
             jwtmsg = auto.decodejwt(request.form["jwtstr"])
             result=tool.return_json(0,"success",jwtmsg,data)
-            return json_util.dumps(result,ensure_ascii=False,indent=2)
+            return json_util.dumps(result)
         except Exception,e:
             print e
             result=tool.return_json(0,"field",False,None)
