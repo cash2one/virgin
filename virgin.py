@@ -3,6 +3,7 @@
 from flask import Flask, make_response, jsonify
 from werkzeug.security import safe_str_cmp
 
+from app_merchant.coupons import coupons_api
 from tools.error_warning import error_api
 from test.test import test_api
 from test.first_demo import firstdemo_api
@@ -31,7 +32,7 @@ app.register_blueprint(auto_api)
 app.register_blueprint(user_api)
 app.register_blueprint(user_comment)
 app.register_blueprint(restaurant_comment)
-
+app.register_blueprint(coupons_api)
 
 @app.route('/protected', methods=['POST'])
 @app.errorhandler(404)
