@@ -23,6 +23,11 @@ def restaurant_comment_list():
             found = Comment().conn.find(m).skip(int(request.form['skip'])).limit(10)
             if found:
                 found = json_util.loads(json_util.dumps(found))
+                for n in found:
+                    del n['dish_id']
+                    del n['order_id']
+                    n['_id'] = str(n['_id'])
+                    n['post_date'] = n['post_date'].strftime('%Y年%m月%d日 %H:%M:%S')
             else:
                 found = []
             jwtmsg = auto.decodejwt(request.form["jwtstr"])
