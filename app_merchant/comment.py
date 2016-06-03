@@ -13,31 +13,35 @@ restaurant_comment = Blueprint('restaurant_comment', __name__, template_folder='
 @restaurant_comment.route('/fm/merchant/v1/comment/restaurant_comment_list/', methods=['POST'])
 def restaurant_comment_list():
     if request.method == 'POST':
-        start = datetime.datetime(*time.strptime(request.form['start_time'], '%Y-%m-%d')[:6])
-        end = datetime.datetime(*time.strptime(request.form['end_time'], '%Y-%m-%d')[:6]) + datetime.timedelta(days=1)
-        try:
-            from tools.db_comment import Comment
-            m = {'restaurant_id': request.form['restaurant_id'], 'post_date': {"$gte": start, "$lte": end}}
-            if 'stars' in request.form:
-                m['rating.total'] = request.form['stars']
-            found = Comment().conn.find(m).skip(int(request.form['skip'])).limit(10)
-            if found:
-                found = json_util.loads(json_util.dumps(found))
-                for n in found:
-                    del n['dish_id']
-                    del n['order_id']
-                    n['_id'] = str(n['_id'])
-                    n['post_date'] = n['post_date'].strftime('%Y年%m月%d日 %H:%M:%S')
-            else:
-                found = []
-            jwtmsg = auto.decodejwt(request.form["jwtstr"])
-            result = tool.return_json(0, "success", jwtmsg, found)
-            return json_util.dumps(result, ensure_ascii=False, indent=2)
-        except Exception, e:
-            print e
-            result = tool.return_json(0, "field", False, e)
-            return json_util.dumps(result, ensure_ascii=False, indent=2)
-        pass
+        if auto.decodejwt(request.form['jwtstr']):
+
+            start = datetime.datetime(*time.strptime(request.form['start_time'], '%Y-%m-%d')[:6])
+            end = datetime.datetime(*time.strptime(request.form['end_time'], '%Y-%m-%d')[:6]) + datetime.timedelta(days=1)
+            try:
+                from tools.db_comment import Comment
+                m = {'restaurant_id': request.form['restaurant_id'], 'post_date': {"$gte": start, "$lte": end}}
+                if 'stars' in request.form:
+                    m['rating.total'] = request.form['stars']
+                found = Comment().conn.find(m).skip(int(request.form['skip'])).limit(10)
+                if found:
+                    found = json_util.loads(json_util.dumps(found))
+                    for n in found:
+                        del n['dish_id']
+                        del n['order_id']
+                        n['_id'] = str(n['_id'])
+                        n['post_date'] = n['post_date'].strftime('%Y年%m月%d日 %H:%M:%S')
+                else:
+                    found = []
+                result = tool.return_json(0, "success", True, found)
+                return json_util.dumps(result, ensure_ascii=False, indent=2)
+            except Exception, e:
+                print e
+                result = tool.return_json(0, "field", False, e)
+                return json_util.dumps(result, ensure_ascii=False, indent=2)
+            pass
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         abort(403)
     pass

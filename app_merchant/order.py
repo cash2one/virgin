@@ -175,58 +175,62 @@ def notification(order_id):
 @order_api.route('/fm/merchant/v1/order/allorder/', methods=['POST'])
 def allorder():
     if request.method=='POST':
-        try:
+        if auto.decodejwt(request.form['jwtstr']):
 
-            pdict = {
-                'restaurant_id':request.form["restaurant_id"]
-            }
-            if int(request.form["status"]) != -1:
-                pdict['status'] = request.form["status"]
-            elif int(request.form["type"]) != -1:
-                pdict['type'] = request.form["type"]
-            second = {
-                "_id" : 1,
-                "username" :1,
-                "status" : 1,
-                "type" : 1,
-                "restaurant_id" : 1,
-                "numpeople" : 1,
-                "preset_time" : 1,
-                "add_time" : 1
-            }
-            pageindex = request.form["pageindex"]
-            pagenum = 10
-            star = (int(pageindex)-1)*pagenum
-            end = (pagenum*int(pageindex))
-            # print tools.orderformate(pdict, table)
-            item = mongo.order.find(tools.orderformate(pdict, table),second).sort("add_time", pymongo.DESCENDING)[star:end]
-            allcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"])}).count()
-            newcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":0}).count()
-            waitecount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":2}).count()
-            redocount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":6}).count()
-            data = {}
-            list=[]
-            for i in item:
-                json = {}
-                for key in i.keys():
-                    if key == '_id':
-                        json['id'] = str(i[key])
-                    elif key == 'restaurant_id':
-                        json['restaurant_id'] = str(i[key])
-                    elif key == 'preset_time':
-                        json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
-                    elif key == 'add_time':
-                        json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
-                    else:
-                        json[key] = i[key]
-                list.append(json)
-            data['list'] = list
-            data['count'] = {'allcount':allcount,'newcount':newcount,'waitecount':waitecount,'redocount':redocount}
-            jwtmsg = auto.decodejwt(request.form["jwtstr"])
-            result=tool.return_json(0,"success",jwtmsg,data)
-            return json_util.dumps(result,ensure_ascii=False,indent=2)
-        except Exception,e:
-            print e
+            try:
+
+                pdict = {
+                    'restaurant_id':request.form["restaurant_id"]
+                }
+                if int(request.form["status"]) != -1:
+                    pdict['status'] = request.form["status"]
+                elif int(request.form["type"]) != -1:
+                    pdict['type'] = request.form["type"]
+                second = {
+                    "_id" : 1,
+                    "username" :1,
+                    "status" : 1,
+                    "type" : 1,
+                    "restaurant_id" : 1,
+                    "numpeople" : 1,
+                    "preset_time" : 1,
+                    "add_time" : 1
+                }
+                pageindex = request.form["pageindex"]
+                pagenum = 10
+                star = (int(pageindex)-1)*pagenum
+                end = (pagenum*int(pageindex))
+                # print tools.orderformate(pdict, table)
+                item = mongo.order.find(tools.orderformate(pdict, table),second).sort("add_time", pymongo.DESCENDING)[star:end]
+                allcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"])}).count()
+                newcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":0}).count()
+                waitecount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":2}).count()
+                redocount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":6}).count()
+                data = {}
+                list=[]
+                for i in item:
+                    json = {}
+                    for key in i.keys():
+                        if key == '_id':
+                            json['id'] = str(i[key])
+                        elif key == 'restaurant_id':
+                            json['restaurant_id'] = str(i[key])
+                        elif key == 'preset_time':
+                            json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                        elif key == 'add_time':
+                            json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                        else:
+                            json[key] = i[key]
+                    list.append(json)
+                data['list'] = list
+                data['count'] = {'allcount':allcount,'newcount':newcount,'waitecount':waitecount,'redocount':redocount}
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
             result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
@@ -235,32 +239,36 @@ def allorder():
 @order_api.route('/fm/merchant/v1/order/orderinfos/', methods=['POST'])
 def orderinfos():
     if request.method=='POST':
-        try:
-            pdict = {
-                '_id':request.form["id"]
-            }
-            item = mongo.order.find(tools.orderformate(pdict, table))
-            for i in item:
-                json = {}
-                for key in i.keys():
-                    if key == '_id':
-                        json['id'] = str(i[key])
-                    elif key == 'restaurant_id':
-                        json['restaurant_id'] = str(i[key])
-                    elif key == 'webuser_id':
-                        json['webuser_id'] = str(i[key])
-                    elif key == 'preset_time':
-                        json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
-                    elif key == 'add_time':
-                        json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
-                    else:
-                        json[key] = i[key]
+        if auto.decodejwt(request.form['jwtstr']):
 
-            jwtmsg = auto.decodejwt(request.form["jwtstr"])
-            result=tool.return_json(0,"success",jwtmsg,json)
-            return json_util.dumps(result,ensure_ascii=False,indent=2)
-        except Exception,e:
-            print e
+            try:
+                pdict = {
+                    '_id':request.form["id"]
+                }
+                item = mongo.order.find(tools.orderformate(pdict, table))
+                for i in item:
+                    json = {}
+                    for key in i.keys():
+                        if key == '_id':
+                            json['id'] = str(i[key])
+                        elif key == 'restaurant_id':
+                            json['restaurant_id'] = str(i[key])
+                        elif key == 'webuser_id':
+                            json['webuser_id'] = str(i[key])
+                        elif key == 'preset_time':
+                            json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                        elif key == 'add_time':
+                            json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                        else:
+                            json[key] = i[key]
+
+                result=tool.return_json(0,"success",True,json)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
             result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
@@ -269,91 +277,95 @@ def orderinfos():
 @order_api.route('/fm/merchant/v1/order/ordercounts/', methods=['POST'])
 def ordercounts():
     if request.method == 'POST':
-        try:
-            start=datetime.datetime(*time.strptime(request.form['start_time'],'%Y-%m-%d')[:6])
-            end = datetime.datetime(*time.strptime(request.form['end_time'],'%Y-%m-%d')[:6])+datetime.timedelta(days = 1)
-            data= {
-                    "aytotal": 0.0,
-                    "amtotal": 0.0,
-                    "watotal": 0.0,
-                    "yatotal": 0.0,
-                    "wmtotal": 0.0,
-                    "ymtotal": 0.0,
-                    "yytotal": 0.0,
-                    "wytotal": 0.0,
-                    "atotal":  0.0,
-                    "mnumpeople": 0.0,
-                    "anumpeople": 0.0,
-                    "ycount": 0.0,
-                    "yanumpeople": 0.0,
-                    "allcount": 0.0,
-                    "mcount": 0.0,
-                  }
-            pdict = {'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
-            ndict = { '$group' : { '_id' : "$restaurant_id", 'numpeople': {'$sum': "$numpeople"} }}
-            allcount = mongo.order.find(pdict).count()
-            anumpeoples = mongo.order.aggregate([{ '$match' : pdict}, ndict])
-            data['allcount'] = allcount
-            for i in anumpeoples:
-                data['anumpeople'] = i['numpeople']
-            pdict['source'] = 1
-            ycount = mongo.order.find(pdict).count()
-            yanumpeople = mongo.order.aggregate([{ '$match' : pdict}, ndict])
-            data['ycount'] = ycount
-            for i in yanumpeople:
-                data['yanumpeople'] = i['numpeople']
-            pdict['source'] = 2
-            mcount = mongo.order.find(pdict).count()
-            data['mcount'] = mcount
-            mnumpeople = mongo.order.aggregate([{ '$match' : pdict}, ndict])
-            for i in mnumpeople:
-                data['mnumpeople'] = i['numpeople']
-            gdict = { '$group' : { '_id' : "$restaurant_id", 'total': {'$sum': "$total"} }}
-            pdict['status'] = {'$in': [0, 2, 3, 4]}
-            atotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
-            for a in atotal:
-                data['atotal'] = a['total']
-            pdict['source'] = 1
-            aytotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
-            for a in aytotal:
-                data['aytotal'] = a['total']
-            pdict['source'] = 2
-            amtotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
-            for a in amtotal:
-                data['amtotal'] = a['total']
-            pdict = {'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
-            pdict['status'] = {'$in': [0, 2, 3]}
+        if auto.decodejwt(request.form['jwtstr']):
 
-            watotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
-            for a in watotal:
-                data['watotal'] = a['total']
-            pdict['source'] = 1
-            wytotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
-            for a in wytotal:
-                data['wytotal'] = a['total']
-            pdict['source'] = 2
-            wmtotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
-            for a in wmtotal:
-                data['wmtotal'] = a['total']
-            pdict = {'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
-            pdict['status'] = 4
-            yatotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
-            for a in yatotal:
-                data['yatotal'] = a['total']
-            pdict['source'] = 1
-            yytotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
-            for a in yytotal:
-                data['yytotal'] = a['total']
-            pdict['source'] = 2
-            ymtotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
-            for a in ymtotal:
-                print a
-                data['ymtotal'] = a['total']
-            jwtmsg = auto.decodejwt(request.form["jwtstr"])
-            result=tool.return_json(0,"success",jwtmsg,data)
-            return json_util.dumps(result,ensure_ascii=False,indent=2)
-        except Exception,e:
-            print e
+            try:
+                start=datetime.datetime(*time.strptime(request.form['start_time'],'%Y-%m-%d')[:6])
+                end = datetime.datetime(*time.strptime(request.form['end_time'],'%Y-%m-%d')[:6])+datetime.timedelta(days = 1)
+                data= {
+                        "aytotal": 0.0,
+                        "amtotal": 0.0,
+                        "watotal": 0.0,
+                        "yatotal": 0.0,
+                        "wmtotal": 0.0,
+                        "ymtotal": 0.0,
+                        "yytotal": 0.0,
+                        "wytotal": 0.0,
+                        "atotal":  0.0,
+                        "mnumpeople": 0.0,
+                        "anumpeople": 0.0,
+                        "ycount": 0.0,
+                        "yanumpeople": 0.0,
+                        "allcount": 0.0,
+                        "mcount": 0.0,
+                      }
+                pdict = {'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
+                ndict = { '$group' : { '_id' : "$restaurant_id", 'numpeople': {'$sum': "$numpeople"} }}
+                allcount = mongo.order.find(pdict).count()
+                anumpeoples = mongo.order.aggregate([{ '$match' : pdict}, ndict])
+                data['allcount'] = allcount
+                for i in anumpeoples:
+                    data['anumpeople'] = i['numpeople']
+                pdict['source'] = 1
+                ycount = mongo.order.find(pdict).count()
+                yanumpeople = mongo.order.aggregate([{ '$match' : pdict}, ndict])
+                data['ycount'] = ycount
+                for i in yanumpeople:
+                    data['yanumpeople'] = i['numpeople']
+                pdict['source'] = 2
+                mcount = mongo.order.find(pdict).count()
+                data['mcount'] = mcount
+                mnumpeople = mongo.order.aggregate([{ '$match' : pdict}, ndict])
+                for i in mnumpeople:
+                    data['mnumpeople'] = i['numpeople']
+                gdict = { '$group' : { '_id' : "$restaurant_id", 'total': {'$sum': "$total"} }}
+                pdict['status'] = {'$in': [0, 2, 3, 4]}
+                atotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
+                for a in atotal:
+                    data['atotal'] = a['total']
+                pdict['source'] = 1
+                aytotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
+                for a in aytotal:
+                    data['aytotal'] = a['total']
+                pdict['source'] = 2
+                amtotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
+                for a in amtotal:
+                    data['amtotal'] = a['total']
+                pdict = {'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
+                pdict['status'] = {'$in': [0, 2, 3]}
+
+                watotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
+                for a in watotal:
+                    data['watotal'] = a['total']
+                pdict['source'] = 1
+                wytotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
+                for a in wytotal:
+                    data['wytotal'] = a['total']
+                pdict['source'] = 2
+                wmtotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
+                for a in wmtotal:
+                    data['wmtotal'] = a['total']
+                pdict = {'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
+                pdict['status'] = 4
+                yatotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
+                for a in yatotal:
+                    data['yatotal'] = a['total']
+                pdict['source'] = 1
+                yytotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
+                for a in yytotal:
+                    data['yytotal'] = a['total']
+                pdict['source'] = 2
+                ymtotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
+                for a in ymtotal:
+                    print a
+                    data['ymtotal'] = a['total']
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
             result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
@@ -391,13 +403,17 @@ def ordercounts():
 @order_api.route('/fm/merchant/v1/order/orderbypreset/', methods=['POST'])
 def orderbypreset():
     if request.method=='POST':
-        try:
-            data = public.getroomslist(ObjectId(request.form['restaurant_id']),request.form['preset_time'])
-            jwtmsg = auto.decodejwt(request.form["jwtstr"])
-            result=tool.return_json(0,"success",jwtmsg,data)
-            return json_util.dumps(result,ensure_ascii=False,indent=2)
-        except Exception,e:
-            print e
+        if auto.decodejwt(request.form['jwtstr']):
+
+            try:
+                data = public.getroomslist(ObjectId(request.form['restaurant_id']),request.form['preset_time'])
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
             result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
@@ -406,24 +422,28 @@ def orderbypreset():
 @order_api.route('/fm/merchant/v1/members/updateorder/', methods=['POST'])
 def updateorder():
     if request.method=='POST':
-        try:
-            pdict = {
-                'username':request.form["username"],
-                'phone':request.form["phone"],
-                'demand':request.form["demand"],
-                'numpeople':request.form["numpeople"],
-                'preset_time':datetime.datetime.strptime(request.form["preset_time"], "%Y-%m-%d %H:%M:%S")
-            }
-            mongo.order.update_one({'_id':ObjectId(request.form['id'])},{"$set":tools.orderformate(pdict, table)})
-            json = {
-                    "status": 1,
-                    "msg":""
-            }
-            jwtmsg = auto.decodejwt(request.form["jwtstr"])
-            result=tool.return_json(0,"success",jwtmsg,json)
-            return json_util.dumps(result,ensure_ascii=False,indent=2)
-        except Exception,e:
-            print e
+        if auto.decodejwt(request.form['jwtstr']):
+
+            try:
+                pdict = {
+                    'username':request.form["username"],
+                    'phone':request.form["phone"],
+                    'demand':request.form["demand"],
+                    'numpeople':request.form["numpeople"],
+                    'preset_time':datetime.datetime.strptime(request.form["preset_time"], "%Y-%m-%d %H:%M:%S")
+                }
+                mongo.order.update_one({'_id':ObjectId(request.form['id'])},{"$set":tools.orderformate(pdict, table)})
+                json = {
+                        "status": 1,
+                        "msg":""
+                }
+                result=tool.return_json(0,"success",True,json)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
             result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
@@ -432,17 +452,20 @@ def updateorder():
 @order_api.route('/fm/merchant/v1/members/updatestatus/', methods=['POST'])
 def updatestatus():
     if request.method=='POST':
-        try:
-            mongo.order.update_one({'_id':ObjectId(request.form['order_id'])},{"$set":{"status":int(request.form["status"])}})
-            json = {
-                    "status": 1,
-                    "msg":""
-            }
-            jwtmsg = auto.decodejwt(request.form["jwtstr"])
-            result=tool.return_json(0,"success",jwtmsg,json)
-            return json_util.dumps(result,ensure_ascii=False,indent=2)
-        except Exception,e:
-            print e
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                mongo.order.update_one({'_id':ObjectId(request.form['order_id'])},{"$set":{"status":int(request.form["status"])}})
+                json = {
+                        "status": 1,
+                        "msg":""
+                }
+                result=tool.return_json(0,"success",True,json)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
             result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
