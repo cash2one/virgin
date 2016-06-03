@@ -69,13 +69,13 @@ def addfeedback():
     # try:
         if request.method == 'POST':
             content=request.form['content']
-            email=request.form['email']
+            # email=request.form['email']
             webuserid=request.form['userid']
             jwtstr = request.form["jwtstr"]
         jwtmsg = auto.decodejwt(jwtstr)
         item={
               "webuserid" : ObjectId(webuserid),
-              "email":email,
+              "email":"",
               "contents" : content,
               "addtime" :datetime.datetime.now(),
               "isread" : 2,

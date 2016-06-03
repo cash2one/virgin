@@ -23,7 +23,8 @@ table = {'status': 'int',
          'phone':'str',
          'demand':'str',
          'numpeople':'int',
-          'preset_time':''
+          'preset_time':'',
+         'room_id':'str'
       }
 mongo=conn.mongo_conn()
 
@@ -430,6 +431,7 @@ def updateorder():
                     'phone':request.form["phone"],
                     'demand':request.form["demand"],
                     'numpeople':request.form["numpeople"],
+                    'room_id':request.form["room_id"],
                     'preset_time':datetime.datetime.strptime(request.form["preset_time"], "%Y-%m-%d %H:%M:%S")
                 }
                 mongo.order.update_one({'_id':ObjectId(request.form['id'])},{"$set":tools.orderformate(pdict, table)})
