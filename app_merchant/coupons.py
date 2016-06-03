@@ -46,13 +46,13 @@ def findcoupons():
                             elif key == 'restaurant_id':
                                 json['restaurant_id'] = str(i[key])
                             elif key == 'showtime_start':
-                                json['showtime_start'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                                json['showtime_start'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'showtime_end':
-                                json['showtime_end'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                                json['showtime_end'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'indate_start':
-                                json['indate_start'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                                json['indate_start'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'indate_end':
-                                json['indate_end'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                                json['indate_end'] = i[key].strftime('%Y年%m月%d日')
                             else:
                                 json[key] = i[key]
                 elif kind == 2:
@@ -66,13 +66,13 @@ def findcoupons():
                             elif key == 'restaurant_id':
                                 json['restaurant_id'] = str(i[key])
                             elif key == 'showtime_start':
-                                json['showtime_start'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                                json['showtime_start'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'showtime_end':
-                                json['showtime_end'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                                json['showtime_end'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'indate_start':
-                                json['indate_start'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                                json['indate_start'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'indate_end':
-                                json['indate_end'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                                json['indate_end'] = i[key].strftime('%Y年%m月%d日')
                             else:
                                 json[key] = i[key]
                 else:
@@ -92,13 +92,13 @@ def findcoupons():
                             elif key == 'restaurant_id':
                                 data['restaurant_id'] = str(i[key])
                             elif key == 'showtime_start':
-                                data['showtime_start'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                                data['showtime_start'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'showtime_end':
-                                data['showtime_end'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                                data['showtime_end'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'indate_start':
-                                data['indate_start'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                                data['indate_start'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'indate_end':
-                                data['indate_end'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                                data['indate_end'] = i[key].strftime('%Y年%m月%d日')
                             else:
                                 data[key] = i[key]
                             if datetime.datetime.now()<i['indate_start']:
@@ -186,7 +186,7 @@ def insertcoupons():
                             "money" : float(request.form['money']),
                             "kind" : "3"
                         }
-                if request.form['type'] == 1 or request.form['type'] == 2:
+                if int(request.form['type']) == 1 or int(request.form['type']) == 2:
                     try:
                         if type(float(request.form['content'])) == float:
                             print '1'
@@ -242,7 +242,7 @@ def updatecoupons():
                             "rule" : request.form['rule'],
                             "money" : float(request.form['money'])
                         }
-                if request.form['type'] == 1 or request.form['type'] == 2:
+                if int(request.form['type']) == 1 or int(request.form['type']) == 2:
                     try:
                         if type(float(request.form['content'])) == float:
                             pdict['cross-claim'] = float(request.form['content'])
