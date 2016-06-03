@@ -63,8 +63,8 @@ def dishlikes():
             else:
                 result = tool.return_json(0, "field", False, 'Request id Not Support')
                 return json_util.dumps(result, ensure_ascii=False, indent=2)
+            jwtmsg = auto.decodejwt(request.form["jwtstr"])
             if found['success']:
-                jwtmsg = auto.decodejwt(request.form["jwtstr"])
                 result = tool.return_json(0, "success", jwtmsg, found['data'])
             else:
                 result = tool.return_json(0, "field", False, found['error'])

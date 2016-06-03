@@ -19,9 +19,13 @@ class DishLikes(MongoAPI):
                 if key not in json_data.keys():
                     return {'success': True, 'error': '%s is not in request' % key}
             json_data['is_like'] = True
+            had_one = self.conn.find_one(json_data)
             json_data['timestamp'] = datetime.now()
-            is_success = self.conn.insert(json_data)
-            return {'success': True, '_id': str(is_success)}
+            if had_one is None:
+                is_success = self.conn.insert(json_data)
+                return {'success': True, '_id': str(is_success)}
+            else:
+                return {'success': True, '_id': str(had_one['_id'])}
         except Exception, e:
             return {'success': True, 'error': e}
 
