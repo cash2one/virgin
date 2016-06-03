@@ -34,6 +34,7 @@ def appversion():
         }
     result=tool.return_json(0,"success",jwtmsg,json)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
+
 #上传图片的接口   参数：topImage
 @other_api.route('/fm/merchant/v1/uploadimg/', methods=['POST'])
 def up():
@@ -70,6 +71,8 @@ def addfeedback():
             content=request.form['content']
             email=request.form['email']
             webuserid=request.form['userid']
+            jwtstr = request.form["jwtstr"]
+        jwtmsg = auto.decodejwt(jwtstr)
         item={
               "webuserid" : ObjectId(webuserid),
               "email":email,
@@ -79,11 +82,12 @@ def addfeedback():
               "reContents" : "",
               "userid" : ObjectId("000000000000000000000000")
         }
-
-        result=tool.return_json(0,"field",False,None)
+        feedback=mongo.addfeedback.insert_one(item)
+        result=tool.return_json(0,"success",jwtmsg,{"status":True})
         return json_util.dumps(result,ensure_ascii=False,indent=2)
 
-        feedback=mongo.zoyo_feedback.insert_one(item)
-        return render_template('other/feedback.html',statecode=1)
+        #
+        # feedback=mongo.zoyo_feedback.insert_one(item)
+        # return render_template('other/feedback.html',statecode=1)
     # except Exception,e:
     #     return render_template('other/feedback.html',statecode=0)
