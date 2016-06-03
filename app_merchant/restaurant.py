@@ -2,6 +2,8 @@
 import json
 from os import abort
 
+import datetime
+
 from app_merchant import auto
 from tools import tools
 
@@ -45,8 +47,8 @@ def restaurant_discountinfos():
                         json['id'] = str(i[key])
                     elif key == 'restaurant_discount':
                         json['message'] = i["restaurant_discount"]["message"]
-                        json['start_time'] = i["restaurant_discount"]["start_time"]
-                        json['end_time'] = i["restaurant_discount"]["end_time"]
+                        json['start_time'] = i["restaurant_discount"]["start_time"].strftime('%Y年%m月%d日 %H:%M')
+                        json['end_time'] = i["restaurant_discount"]["end_time"].strftime('%Y年%m月%d日 %H:%M')
                     else:
                         json[key] = i[key]
 
@@ -66,8 +68,8 @@ def updaterestaurant_discount():
         try:
             pdict = {
                 "restaurant_discount.message":request.form["message"],
-                "restaurant_discount.start_time":request.form["start_time"],
-                "restaurant_discount.end_time":request.form["end_time"]
+                "restaurant_discount.start_time":datetime.datetime.strptime(request.form["start_time"], "%Y-%m-%d"),
+                "restaurant_discount.end_time":datetime.datetime.strptime(request.form["end_time"], "%Y-%m-%d"),
             }
             mongo.restaurant.update_one({"_id":ObjectId(request.form["restaurant_id"])},{"$set":pdict})
             json = {
@@ -102,8 +104,8 @@ def findalldis():
                     if key == 'dishes_discount':
                         json['discount'] = i["dishes_discount"]["discount"]
                         json['message'] = i["dishes_discount"]["message"]
-                        json['start_time'] = i["dishes_discount"]["start_time"]
-                        json['end_time'] = i["dishes_discount"]["end_time"]
+                        json['start_time'] = i["dishes_discount"]["start_time"].strftime('%Y年%m月%d日 %H:%M')
+                        json['end_time'] = i["dishes_discount"]["end_time"].strftime('%Y年%m月%d日 %H:%M')
                 if type == 1:
                     alldata['dishes_discount'] = json
                     #1菜品优惠信息结束
@@ -113,8 +115,8 @@ def findalldis():
                     if winekey == 'wine_discount':
                         winejson['discount'] = i["wine_discount"]["discount"]
                         winejson['message'] = i["wine_discount"]["message"]
-                        winejson['start_time'] = i["wine_discount"]["start_time"]
-                        winejson['end_time'] = i["wine_discount"]["end_time"]
+                        winejson['start_time'] = i["wine_discount"]["start_time"].strftime('%Y年%m月%d日 %H:%M')
+                        winejson['end_time'] = i["wine_discount"]["end_time"].strftime('%Y年%m月%d日 %H:%M')
                 if type == 2:
                     alldata['wine_discount'] = winejson
                 #2酒水优惠信息结束
@@ -165,16 +167,16 @@ def updatealldis():
                 pdict = {
                             "dishes_discount.discount":float(request.form["dishes_discount"]),
                             "dishes_discount.message":request.form["dishes_message"],
-                            "dishes_discount.start_time":request.form["dishes_start_time"],
-                            "dishes_discount.end_time":request.form["dishes_end_time"]
+                            "dishes_discount.start_time":request.form["dishes_start_time"].strftime('%Y年%m月%d日 %H:%M'),
+                            "dishes_discount.end_time":request.form["dishes_end_time"].strftime('%Y年%m月%d日 %H:%M')
 
                         }
             else:
                 pdict = {
                             "wine_discount.discount":float(request.form["wine_discount"]),
                             "wine_discount.message":request.form["wine_message"],
-                            "wine_discount.start_time":request.form["wine_start_time"],
-                            "wine_discount.end_time":request.form["wine_end_time"]
+                            "wine_discount.start_time":request.form["wine_start_time"].strftime('%Y年%m月%d日 %H:%M'),
+                            "wine_discount.end_time":request.form["wine_end_time"].strftime('%Y年%m月%d日 %H:%M')
                         }
             mongo.restaurant.update_one({"_id":ObjectId(request.form["restaurant_id"])},{"$set":pdict})
             # redish = {'201605111041429997':{'discount_price': 5555.00},'201605111040002332':{'discount_price':2222.00}}
