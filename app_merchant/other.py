@@ -36,6 +36,7 @@ def appversion():
 @other_api.route('/fm/merchant/v1/uploadimg/', methods=['POST'])
 def up():
      if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
             try:
                 file = request.files['topImage']
                 fname, fext = os.path.splitext(file.filename)
@@ -55,3 +56,6 @@ def up():
                 print e
                 result=tool.return_json(0,"field",False,None)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
