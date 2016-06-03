@@ -77,7 +77,7 @@ def findcoupons():
                                 json[key] = i[key]
                 else:
                     pdict['kind'] = 3
-                    pageindex = request.form['pageindex']
+                    pageindex = int(request.form['pageindex'])
                     pagenum = 10
                     star = (int(pageindex)-1)*pagenum
                     end = (pagenum*int(pageindex))
@@ -139,13 +139,13 @@ def couponsinfo():
                         elif key == 'restaurant_id':
                             json['restaurant_id'] = str(i[key])
                         elif key == 'showtime_start':
-                            json['showtime_start'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                            json['showtime_start'] = i[key].strftime('%Y年%m月%d日')
                         elif key == 'showtime_end':
-                            json['showtime_end'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                            json['showtime_end'] = i[key].strftime('%Y年%m月%d日')
                         elif key == 'indate_start':
-                            json['indate_start'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                            json['indate_start'] = i[key].strftime('%Y年%m月%d日')
                         elif key == 'indate_end':
-                            json['indate_end'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                            json['indate_end'] = i[key].strftime('%Y年%m月%d日')
                         else:
                             json[key] = i[key]
                         if datetime.datetime.now()<i['indate_start']:
