@@ -178,7 +178,7 @@ def insertcoupons():
                             "showtime_start" : datetime.datetime.strptime(request.form["showtime_start"], "%Y-%m-%d"),
                             "showtime_end" : datetime.datetime.strptime(request.form["showtime_end"], "%Y-%m-%d"),
                             "num" : request.form['num'],
-                            "cross-claim" :request.form['cross-claim'],
+                            "cross-claim" :0.0,
                             "content" : request.form['content'],
                             "indate_start" : datetime.datetime.strptime(request.form["indate_start"], "%Y-%m-%d"),
                             "indate_end" : datetime.datetime.strptime(request.form["indate_end"], "%Y-%m-%d"),
@@ -190,6 +190,7 @@ def insertcoupons():
                     try:
                         if type(float(request.form['content'])) == float:
                             print '1'
+                            pdict['cross-claim'] = float(request.form['content'])
                             item = mongo.coupons.insert(pdict)
                             json = {
                                 "status": 1,
