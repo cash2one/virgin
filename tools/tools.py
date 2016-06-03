@@ -66,14 +66,82 @@ def json_value(json_data, key_name, dump=False):
     else:
         return None
 
-class Foormat:
-    def __init__(self, objid):
-        self.objid = {"_id": ObjectId(objid)}
-        self.data = self.__get_db_data()
+
+class Restaurant:
+    def __init__(self, ident_json):
+        self.ident = ident_json
+        self.data, self.obj_id = self.__find_item()
         self.dish_data = None
         self.menu_data = None
+        self.info_data = None
         self.add_dish_data = None
         self.new_menu = None
+
+    def __find_item(self):
+        if '_id' in self.ident:
+            f = {"_id": ObjectId(self.ident['_id'])}
+        elif 'menu_id' in self.ident:
+            f = {"menu.id": self.ident['menu_id']}
+        elif 'dish_id' in self.ident:
+            f = {"menu.dishs.id": self.ident['dish_id']}
+        elif 'admin_id' in self.ident:
+            f = {"user": {"$in": [ObjectId(self.ident['admin_id'])]}}
+        else:
+            return None, ''
+        found = json_util.loads(json_util.dumps(mongo.restaurant.find_one(f)))
+        return found, '' if found is None else str(found['_id'])
+
+    def info(self, key=None):
+        if self.data is None:
+            # print 'Noting in db'
+            return None
+        need = None
+        if '_id' in self.ident:
+            need = self.data
+        elif 'menu_id' in self.ident:
+            for menu in self.data['menu']:
+                if menu['id'] == self.ident['menu_id']:
+                    need = menu
+        elif 'dish_id' in self.ident:
+            for menu in self.data['menu']:
+                for dish in menu['dishs']:
+                    if dish['id'] == self.ident['dish_id']:
+                        need = dish
+        else:
+            print 'Not Support input ident'
+            need = None
+        if key:
+            if need:
+                return need[key]
+            else:
+                return None
+        else:
+            return need
+
+    def get_item(self, key_name):
+        if self.data is None:
+            print 'Data ERROR'
+            return None
+        else:
+            if key_name == '_id':
+                return self.obj_id
+            elif key_name in self.data.keys():
+                return self.data[key_name]
+            else:
+                'KeyName Error'
+                return None
+
+    def add_dish(self, dish_data=None):
+        self.add_dish_data = dish_data
+
+    def re_dish(self, dish_data=None):
+        self.dish_data = dish_data
+
+    def re_menu(self, menu_data=None):
+        self.menu_data = menu_data
+
+    def re_infos(self, info_data=None):
+        self.info_data = info_data
 
     def rebuild(self):
         if self.new_menu is None:
@@ -118,26 +186,21 @@ class Foormat:
         self.new_menu = {'menu': menu_list}
         return True
 
-    def add_dish(self, dish_data=None):
-        self.add_dish_data = dish_data
-
-    def re_dish(self, dish_data=None):
-        self.dish_data = dish_data
-
-    def re_menu(self, menu_data=None):
-        self.menu_data = menu_data
-
-    def __get_db_data(self):
-        return mongo.restaurant.find(self.objid, {"menu": 1})[0]
-
     def submit2db(self):
         if self.new_menu is None:
             self.rebuild()
         try:
-            mongo.restaurant.update_one(self.objid, {"$set": self.new_menu})
+            update = self.info_data
+            if self.new_menu:
+                update['menu'] = self.new_menu['menu']
+            mongo.restaurant.update_one({"_id": ObjectId(self.obj_id)},
+                                        {"$set": update})
             return True
         except Exception, e:
+            print e
             return False
+
+
 class Discount:
     def __init__(self, objid):
         self.objid = {"_id": ObjectId(objid)}
@@ -233,6 +296,8 @@ def pimg(uu):
     return str(a).replace(" ","")
   except Exception, e:
         print e
+
+
 def gen_rnd_filename():
     filename_prefix = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     return '%s%s' % (filename_prefix, str(random.randrange(1000, 10000)))
@@ -275,10 +340,10 @@ if __name__ == '__main__':
     }
     # test_data = mongo.restaurant.find({"_id" : ObjectId("57327f4a8831ac0e5cb96404")},{"menu":1})[0]
     # print json_util.dumps(test_data,ensure_ascii=False,indent=2)
-    first = Foormat(obj)
-    first.add_dish(test_add)
+    # first = Foormat(obj)
+    # first.add_dish(test_add)
     # first.re_dish(test_dish)
     # first.re_menu(test_menu)
-    print first.submit2db()
-
+    # print first.submit2db()
+    print Restaurant({'dish_id': '201605111053268902'}).info
     pass
