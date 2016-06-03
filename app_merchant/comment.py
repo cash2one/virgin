@@ -50,15 +50,15 @@ def restaurant_comment_list():
 @restaurant_comment.route('/fm/diners/v1/dishs/praiselist/', methods=['POST'])
 def dishlikes():
     if request.method == 'POST':
-        start = datetime.datetime(*time.strptime(request.form['start_time'], '%Y-%m-%d')[:6])
-        end = datetime.datetime(*time.strptime(request.form['end_time'], '%Y-%m-%d')[:6]) + datetime.timedelta(days=1)
         try:
             from tools.db_dishlikes import DishLikes
             if 'restaurant_id' in request.form:
+                start = datetime.datetime(*time.strptime(request.form['start_time'], '%Y-%m-%d')[:6])
+                end = datetime.datetime(*time.strptime(request.form['end_time'], '%Y-%m-%d')[:6]) + datetime.timedelta(days=1)
                 f = {'restaurant_id': request.form['restaurant_id'], 'timestamp': {"$gte": start, "$lte": end}}
                 found = DishLikes().shoplikes(f)
             elif 'user_id' in request.form:
-                f = {'user_id': request.form['user_id'], 'timestamp': {"$gte": start, "$lte": end}}
+                f = {'user_id': request.form['user_id']}
                 found = DishLikes().findlikes(f)
             else:
                 result = tool.return_json(0, "field", False, 'Request id Not Support')
