@@ -236,7 +236,6 @@ def updatecoupons():
                             "showtime_start" : datetime.datetime.strptime(request.form["showtime_start"], "%Y-%m-%d"),
                             "showtime_end" : datetime.datetime.strptime(request.form["showtime_end"], "%Y-%m-%d"),
                             "num" : request.form['num'],
-                            "cross-claim" :request.form['cross-claim'],
                             "content" : request.form['content'],
                             "indate_start" : datetime.datetime.strptime(request.form["indate_start"], "%Y-%m-%d"),
                             "indate_end" : datetime.datetime.strptime(request.form["indate_end"], "%Y-%m-%d"),
@@ -246,6 +245,7 @@ def updatecoupons():
                 if request.form['type'] == 1 or request.form['type'] == 2:
                     try:
                         if type(float(request.form['content'])) == float:
+                            pdict['cross-claim'] = float(request.form['content'])
                             print '1'
                             item = mongo.coupons.update({"_id":ObjectId(request.form["coupons_id"])},{"$set":pdict})
                             json = {
