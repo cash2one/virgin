@@ -6,9 +6,11 @@ from flask import Blueprint,render_template,request
 from connect import conn
 import pymongo
 import tools.tools as tool
-from bson import  json_util
+from bson import  json_util,ObjectId
 import auto
 import os
+import datetime
+
 
 from flask import request, Response
 import sys
@@ -59,3 +61,29 @@ def up():
         # else:
         #     result=tool.return_json(0,"field",False,None)
         #     return json_util.dumps(result,ensure_ascii=False,indent=2)
+
+
+@other_api.route('/fm/merchant/v1/addfeedback/',methods=['POST'])
+def addfeedback():
+    # try:
+        if request.method == 'POST':
+            content=request.form['content']
+            email=request.form['email']
+            webuserid=request.form['userid']
+        item={
+              "webuserid" : ObjectId(webuserid),
+              "email":email,
+              "contents" : content,
+              "addtime" :datetime.datetime.now(),
+              "isread" : 2,
+              "reContents" : "",
+              "userid" : ObjectId("000000000000000000000000")
+        }
+
+        result=tool.return_json(0,"field",False,None)
+        return json_util.dumps(result,ensure_ascii=False,indent=2)
+
+        feedback=mongo.zoyo_feedback.insert_one(item)
+        return render_template('other/feedback.html',statecode=1)
+    # except Exception,e:
+    #     return render_template('other/feedback.html',statecode=0)
