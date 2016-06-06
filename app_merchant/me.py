@@ -21,8 +21,8 @@ mongo=conn.mongo_conn()
 me_api = Blueprint('me_api', __name__, template_folder='templates')
 
 #推送记录查询 条件是时间
-@me_api.route('/fm/merchant/v1/me/messages/', methods=['POST'])
-def messages():
+@me_api.route('/fm/merchant/v1/me/frommessages/', methods=['POST'])
+def frommessages():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
             try:
@@ -94,6 +94,40 @@ def aboutus():
                     for key in i.keys():
                         json[key] = i[key]
                 result=tool.return_json(0,"success",True,json)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#接收的推送消息查询
+@me_api.route('/fm/merchant/v1/me/tomessages/', methods=['POST'])
+def tomessages():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                item = mongo.message.find({"$or":[{"infoto."+str(request.form["restaurant_id"]) : 1},{"infoto."+str(request.form["restaurant_id"]) : 0}]})
+
+                data = {}
+                list = []
+                for i in item:
+                    json = {}
+                    for key in i.keys():
+                        if key == '_id':
+                            json['id'] = str(i[key])
+                        elif key == 'infos':
+                            json['title'] = i['infos']['infotitle']
+                        elif key == 'add_time':
+                            json['add_time'] = i[key].strftime('%Y年%m月%d日')
+                        elif key == 'infoto':
+                            json['status'] = i['infoto'][str(request.form["restaurant_id"])]
+                    list.append(json)
+                data['list'] = list
+                result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e
