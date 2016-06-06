@@ -138,3 +138,25 @@ def tomessages():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+#轮播图查询
+@me_api.route('/fm/merchant/v1/me/imgs/', methods=['POST'])
+def imgs():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                item = mongo.turnsimg.find()
+                json = {}
+                for i in item:
+                    for key in i.keys():
+                        json[key] = i[key]
+                result=tool.return_json(0,"success",True,json)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
