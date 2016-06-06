@@ -2,7 +2,7 @@
 import datetime
 import requests
 from connect import conn
-from bson import ObjectId
+from bson import ObjectId, json_util
 import json
 
 _author_ = 'dolacmeo'
@@ -18,7 +18,10 @@ class GetUser:
         self.user_center_conn = conn.mongo_conn_user().user_web
         self.restaurant_conn = conn.mongo_conn().restaurant
         self.center_info = self.get_center_info()
-        self.user_center_id = str(self.center_info['_id'])
+        if self.center_info:
+            self.user_center_id = str(self.center_info['_id'])
+        else:
+            self.user_center_id = None
 
     def __appid(self, sub_appid):
         self.is_admin, self.is_user = False, False
@@ -77,6 +80,7 @@ class GetUser:
 
     def get_center_info(self):
         found = self.user_center_conn.find({'phone': self.params['phone']})
+        found = json_util.loads(json_util.dumps(found))
         if found:
             self.__appid(found[0]['appid'])
             return found[0]
