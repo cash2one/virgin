@@ -260,6 +260,12 @@ def orderinfos():
                             json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
                         elif key == 'add_time':
                             json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                        elif key == 'room_id':
+                            item = mongo.restaurant.find({"_id":ObjectId(i['restaurant_id'])},{"rooms":1})
+                            for t in item:
+                                for r in t['rooms']:
+                                    if r['room_id'] == i['room_id']:
+                                        json['rname'] = r['room_name']
                         else:
                             json[key] = i[key]
 
