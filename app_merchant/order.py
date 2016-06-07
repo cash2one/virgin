@@ -185,7 +185,7 @@ def allorder():
                 }
                 if int(request.form["status"]) != -1:
                     pdict['status'] = request.form["status"]
-                elif int(request.form["type"]) != -1:
+                if int(request.form["type"]) != -1:
                     pdict['type'] = request.form["type"]
                 second = {
                     "_id" : 1,
