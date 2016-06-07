@@ -148,7 +148,10 @@ def imgs():
                 json = {}
                 for i in item:
                     for key in i.keys():
-                        json[key] = i[key]
+                        if key == '_id':
+                            json[key] = str(i[key])
+                        else:
+                            json[key] = i[key]
                 result=tool.return_json(0,"success",True,json)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
