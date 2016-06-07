@@ -110,7 +110,11 @@ def tomessages():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
             try:
-                item = mongo.message.find({"$or":[{"infoto."+str(request.form["restaurant_id"]) : 1},{"infoto."+str(request.form["restaurant_id"]) : 0}]})
+                pageindex = request.form["pageindex"]
+                pagenum = 10
+                star = (int(pageindex)-1)*pagenum
+                end = (pagenum*int(pageindex))
+                item = mongo.message.find({"$or":[{"infoto."+str(request.form["restaurant_id"]) : 1},{"infoto."+str(request.form["restaurant_id"]) : 0}]}).sort("add_time", pymongo.DESCENDING)[star:end]
 
                 data = {}
                 list = []
@@ -152,6 +156,30 @@ def imgs():
                             json[key] = str(i[key])
                         else:
                             json[key] = i[key]
+                result=tool.return_json(0,"success",True,json)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#消息状态修改
+@me_api.route('/fm/merchant/v1/me/updatemessage/', methods=['POST'])
+def updatemessage():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+
+            try:
+                restaurant_id=request.form['restaurant_id']
+                mongo.message.update({"_id":ObjectId(request.form["message_id"])},{"$set":{"infoto."+restaurant_id:1}})
+                json = {
+                        "status": 1,
+                        "msg":""
+                }
                 result=tool.return_json(0,"success",True,json)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
