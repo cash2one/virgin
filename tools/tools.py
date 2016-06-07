@@ -104,9 +104,10 @@ class Restaurant:
                     need = menu
         elif 'dish_id' in self.ident:
             for menu in self.data['menu']:
-                for dish in menu['dishs']:
-                    if dish['id'] == self.ident['dish_id']:
-                        need = dish
+                if menu['dish_type'] == '1':
+                    for dish in menu['dishs']:
+                        if str(dish['id']) == str(self.ident['dish_id']):
+                            need = dish
         else:
             print 'Not Support input ident'
             need = None
