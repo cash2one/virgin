@@ -9,8 +9,8 @@ _author_ = 'dolacmeo'
 
 
 class GetUser:
-    # SMSnetgate = 'http://125.211.222.237:10031'
-    SMSnetgate = 'http://127.0.0.1:10032'
+    SMSnetgate = 'http://125.211.222.237:10031'
+    # SMSnetgate = 'http://127.0.0.1:10032'
 
     def __init__(self, params):
         self.params = params
@@ -92,7 +92,7 @@ class GetUser:
         self.validate()
         if self.is_admin:
             if self.sms_validate():
-                return {'success': True, 'id': str(self.shop_info['_id'])}
+                return {'success': True, 'id': str(self.shop_info['_id']), 'name': self.shop_info['name']}
             else:
                 return {'success': False, 'info': 'sms code ERROR'}
         else:
