@@ -40,7 +40,7 @@ def appversion():
 def up():
      if request.method=='POST':
         # if auto.decodejwt(request.form['jwtstr']):
-            try:
+        #     try:
                 file = request.files['topImage']
                 fname, fext = os.path.splitext(file.filename)
                 if file:
@@ -55,10 +55,10 @@ def up():
                 # jwtmsg = auto.decodejwt(request.form["jwtstr"])
                 result=tool.return_json(0,"success",True,uu)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
-            except Exception,e:
-                print e
-                result=tool.return_json(0,"field",False,None)
-                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            # except Exception,e:
+            #     print e
+            #     result=tool.return_json(0,"field",False,None)
+            #     return json_util.dumps(result,ensure_ascii=False,indent=2)
         # else:
         #     result=tool.return_json(0,"field",False,None)
         #     return json_util.dumps(result,ensure_ascii=False,indent=2)
