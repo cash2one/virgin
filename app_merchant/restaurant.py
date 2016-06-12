@@ -193,16 +193,16 @@ def updatealldis():
                     pdict = {
                                 "dishes_discount.discount":float(request.form["dishes_discount"]),
                                 "dishes_discount.message":request.form["dishes_message"],
-                                "dishes_discount.start_time":request.form["dishes_start_time"].strftime('%Y年%m月%d日'),
-                                "dishes_discount.end_time":request.form["dishes_end_time"].strftime('%Y年%m月%d日')
+                                "dishes_discount.start_time":datetime.datetime.strptime(request.form["dishes_start_time"], "%Y-%m-%d"),
+                                "dishes_discount.end_time":datetime.datetime.strptime(request.form["dishes_end_time"], "%Y-%m-%d")
 
                             }
                 else:
                     pdict = {
                                 "wine_discount.discount":float(request.form["wine_discount"]),
                                 "wine_discount.message":request.form["wine_message"],
-                                "wine_discount.start_time":request.form["wine_start_time"].strftime('%Y年%m月%d日'),
-                                "wine_discount.end_time":request.form["wine_end_time"].strftime('%Y年%m月%d日')
+                                "wine_discount.start_time":datetime.datetime.strptime(request.form["dishes_start_time"], "%Y-%m-%d"),
+                                "wine_discount.end_time":datetime.datetime.strptime(request.form["dishes_end_time"], "%Y-%m-%d")
                             }
                 mongo.restaurant.update_one({"_id":ObjectId(request.form["restaurant_id"])},{"$set":pdict})
                 # redish = {'201605111041429997':{'discount_price': 5555.00},'201605111040002332':{'discount_price':2222.00}}
