@@ -52,8 +52,8 @@ def up():
                     u1 = connect.conn.imageIP + uu
                     os.remove(osstr)
                     print u1
-                jwtmsg = auto.decodejwt(request.form["jwtstr"])
-                result=tool.return_json(0,"success",jwtmsg,uu)
+                # jwtmsg = auto.decodejwt(request.form["jwtstr"])
+                result=tool.return_json(0,"success",True,uu)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e

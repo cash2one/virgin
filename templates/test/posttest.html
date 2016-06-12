@@ -3,6 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+<script src="ajaxfileupload.js/"></script>
+<script>
+    function uploadImage() {
+            $.ajaxFileUpload({
+                cache: false,
+                url: "/fm/merchant/v1/uploadimg/",
+                secureuri: false,
+                fileElementId: "topImage",
+                dataType: "json",
+                beforeSend: function () {
+                },
+                complete: function () {
+                },
+                success: function (data) {
+                        alert(data);
+
+                },
+                error: function (data, status, e) {
+                    alert("图片上传失败,请重新选择图片");
+                }
+            });
+        }
+
+</script>
 </head>
 <body>
 <fieldset><legend>1.1.0和1.1.3JPG订单测试</legend>
@@ -55,38 +80,9 @@
     <input type="submit" value="提交">
 </form>
  </fieldset>
-<fieldset><legend>获取md5</legend>
-<form action="/fm/merchant/v1/getmd5/" method="post">
-    包名：<input type="text"  name="baoming" />
-    签名：<input type="text"  name="ident" />
-    <input type="submit" value="提交">
-</form>
- </fieldset>
-<fieldset><legend>auto</legend>
-<form action="/fm/merchant/v1/auto/" method="post">
-    包名：<input type="text"  name="baoming" />
-    签名：<input type="text"  name="ident" />
-    类型：<input type="text"  name="type" />
-    <input type="submit" value="提交">
-</form>
- </fieldset>
-<fieldset><legend>全部订单</legend>
-<form action="/fm/merchant/v1/order/allorder/" method="post">
-    饭店id：<input type="text"  name="restaurant_id"  value="57329b1f0c1d9b2f4c85f8e3"/>
-    订单状态：<input type="text"  name="status" value="0" />
-    订单类型：<input type="text"  name="type" value="1" />
-    页数：<input type="text"  name="pageindex" value="1" />
-    jwtstr：<input type="text"  name="jwtstr" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs" />
-    <input type="submit" value="提交">
-</form>
- </fieldset>
-<fieldset><legend>意见反馈</legend>
-<form action="/fm/merchant/v1/order/allorder/" method="post">
-    用户id：<input type="text"  name="userid"  value="57396ec17c1f31a9cce960f4"/>
-{#    邮箱：<input type="text"  name="email" value="412886356@qq.com" />#}
-    内容：<input type="text"  name="content" value="美食地图" />
-    jwtstr：<input type="text"  name="jwtstr" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs" />
-    <input type="submit" value="提交">
+<fieldset><legend>图片上传测试</legend>
+<form action="/usercenter/v1/register/" method="post">
+    <input name="topImage" id="topImage" type="file" onchange="uploadImage();"/>
 </form>
  </fieldset>
 </body>
