@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Title</title>
 <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
-<script src="ajaxfileupload.js/"></script>
 <script>
     function uploadImage() {
             $.ajaxFileUpload({
@@ -81,8 +80,9 @@
 </form>
  </fieldset>
 <fieldset><legend>图片上传测试</legend>
-<form action="/usercenter/v1/register/" method="post">
-    <input name="topImage" id="topImage" type="file" onchange="uploadImage();"/>
+<form action="/fm/merchant/v1/uploadimg/" method="post" enctype="multipart/form-data">
+    <input name="topImage" id="topImage" type="file" />
+    <input type="submit" value="提交">
 </form>
  </fieldset>
 </body>
