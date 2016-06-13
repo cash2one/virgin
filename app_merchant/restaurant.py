@@ -197,12 +197,12 @@ def updatealldis():
                                 "dishes_discount.end_time":datetime.datetime.strptime(request.form["dishes_end_time"], "%Y-%m-%d")
 
                             }
-                if type == 2:
+                else:
                     pdict = {
                                 "wine_discount.discount":float(request.form["wine_discount"]),
                                 "wine_discount.message":request.form["wine_message"],
-                                "wine_discount.start_time":datetime.datetime.strptime(request.form["dishes_start_time"], "%Y-%m-%d"),
-                                "wine_discount.end_time":datetime.datetime.strptime(request.form["dishes_end_time"], "%Y-%m-%d")
+                                "wine_discount.start_time":datetime.datetime.strptime(request.form["wine_start_time"], "%Y-%m-%d"),
+                                "wine_discount.end_time":datetime.datetime.strptime(request.form["wine_end_time"], "%Y-%m-%d")
                             }
                 mongo.restaurant.update_one({"_id":ObjectId(request.form["restaurant_id"])},{"$set":pdict})
                 # redish = {'201605111041429997':{'discount_price': 5555.00},'201605111040002332':{'discount_price':2222.00}}
@@ -219,7 +219,7 @@ def updatealldis():
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e
-                result=tool.return_json(0,"field",False,e)
+                result=tool.return_json(0,"field",False,None)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)
