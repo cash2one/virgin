@@ -197,7 +197,7 @@ def updatealldis():
                                 "dishes_discount.end_time":datetime.datetime.strptime(request.form["dishes_end_time"], "%Y-%m-%d")
 
                             }
-                else:
+                if type == 2:
                     pdict = {
                                 "wine_discount.discount":float(request.form["wine_discount"]),
                                 "wine_discount.message":request.form["wine_message"],
@@ -219,7 +219,7 @@ def updatealldis():
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e
-                result=tool.return_json(0,"field",False,None)
+                result=tool.return_json(0,"field",False,e)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)
