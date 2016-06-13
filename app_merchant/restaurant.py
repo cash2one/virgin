@@ -121,8 +121,8 @@ def findalldis():
                                 json['start_time'] = i["dishes_discount"]["start_time"].strftime('%Y年%m月%d日')
                                 json['end_time'] = i["dishes_discount"]["end_time"].strftime('%Y年%m月%d日')
                             except Exception,e:
-                                json['start_time'] = i["dishes_discount"]["start_time"]
-                                json['end_time'] = i["dishes_discount"]["end_time"]
+                                json['start_time'] = ''
+                                json['end_time'] = ''
                     if type == 1:
                         alldata['dishes_discount'] = json
                         #1菜品优惠信息结束
@@ -138,8 +138,8 @@ def findalldis():
                                 json['start_time'] = i["wine_discount"]["start_time"].strftime('%Y年%m月%d日')
                                 json['end_time'] = i["wine_discount"]["end_time"].strftime('%Y年%m月%d日')
                             except Exception,e:
-                                json['start_time'] = i["wine_discount"]["start_time"]
-                                json['end_time'] = i["wine_discount"]["end_time"]
+                                json['start_time'] = ''
+                                json['end_time'] = ''
                     if type == 2:
                         alldata['wine_discount'] = winejson
                     #2酒水优惠信息结束
