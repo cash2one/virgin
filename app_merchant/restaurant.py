@@ -135,11 +135,11 @@ def findalldis():
                             # winejson['start_time'] = i["wine_discount"]["start_time"].strftime('%Y年%m月%d日')
                             # winejson['end_time'] = i["wine_discount"]["end_time"].strftime('%Y年%m月%d日')
                             try:
-                                json['start_time'] = i["wine_discount"]["start_time"].strftime('%Y年%m月%d日')
-                                json['end_time'] = i["wine_discount"]["end_time"].strftime('%Y年%m月%d日')
+                                winejson['start_time'] = i["wine_discount"]["start_time"].strftime('%Y年%m月%d日')
+                                winejson['end_time'] = i["wine_discount"]["end_time"].strftime('%Y年%m月%d日')
                             except Exception,e:
-                                json['start_time'] = ''
-                                json['end_time'] = ''
+                                winejson['start_time'] = ''
+                                winejson['end_time'] = ''
                     if type == 2:
                         alldata['wine_discount'] = winejson
                     #2酒水优惠信息结束
