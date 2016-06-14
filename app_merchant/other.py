@@ -50,7 +50,7 @@ def up():
                     print osstr
                     file.save(osstr)
                     uu = tool.pimg(osstr)
-                    u1 = connect.conn.imageIP + uu
+                    u1 = connect.conn.imageIP + str(uu)
                     os.remove(osstr)
                     print u1
                 # jwtmsg = auto.decodejwt(request.form["jwtstr"])
