@@ -3,7 +3,7 @@ import connect
 
 __author__ = 'hcy'
 from flask import Blueprint,render_template,request,abort
-from connect import conn
+from connect import conn,settings
 import pymongo
 import tools.tools as tool
 from bson import  json_util,ObjectId
@@ -50,7 +50,7 @@ def up():
                     print osstr
                     file.save(osstr)
                     uu = tool.pimg(osstr)
-                    u1 = connect.conn.imageIP + str(uu)
+                    u1 = settings.getimageIP + str(uu)
                     os.remove(osstr)
                     print u1
                 # jwtmsg = auto.decodejwt(request.form["jwtstr"])

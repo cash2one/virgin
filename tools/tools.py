@@ -12,7 +12,7 @@ import re
 from flask import request, Response
 
 import connect
-from connect import conn
+from connect import conn,settings
 from bson import ObjectId,json_util
 mongo=conn.mongo_conn()
 
@@ -277,6 +277,7 @@ class Discount:
             return True
         except Exception, e:
             return False
+
 def pimg(uu):
   # try:
     #创建一个请求
@@ -287,7 +288,7 @@ def pimg(uu):
     cc = open(uu, "rb")
     datagen, headers = multipart_encode({"image": cc })
     #发送请求
-    request = urllib2.Request(connect.conn.imageIP , datagen, headers)
+    request = urllib2.Request(settings.setimageIP , datagen, headers)
     #获取返回中的内容
     re1 = r"<h1>MD5:(?P<md5>.*?)</h1>"
     match5 = re.findall(re1,urllib2.urlopen(request).read())
