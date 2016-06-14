@@ -25,28 +25,36 @@ mongo=conn.mongo_conn()
 
 restaurant_user_api = Blueprint('restaurant_user_api', __name__, template_folder='templates')
 #饭店列表 条件很多
-@restaurant_user_api.route('/fm/user/v1/index/index/',methods=['POST'])
-def index():
+@restaurant_user_api.route('/fm/user/v1/restaurant/restaurant/',methods=['POST'])
+def restaurant():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
 
             try:
                 pass
                 data = {}
-                first = {"dishes_type.id":"10","dishes_discount.message":{"$ne":""},"rooms.room_type.id":"36","tese.id":"54","pay_type.id":{"$in":["48"]},"_id":{"$in":[ObjectId("57329e300c1d9b2f4c85f8e6")]}}
+                # first = {"dishes_type.id":"10","dishes_discount.message":{"$ne":""},"rooms.room_type.id":"36","tese.id":"54","pay_type.id":{"$in":["48"]},"_id":{"$in":[ObjectId("57329e300c1d9b2f4c85f8e6")]}}
+                first = {}
+                #分类
                 if request.form['dishes_type']!='-1':
-                    first["pay_type.id"] = int(request.form['dishes_type'])
+                    first["dishes_type.id"] = request.form['dishes_type']
+                #饭店优惠
                 if request.form['discount']!='-1':
                     if request.form['discount'] == 'dish':
                         first["dishes_discount.message"] = {"$ne":""}
                     elif request.form['discount'] == 'wine':
                         first["wine_discount.message"] = {"$ne":""}
-                    elif request.form['discount'] == 'wine':
+                    elif request.form['discount'] == 'other':
                         first["restaurant_discount.message"] = {"$ne":""}
+                    else:
+                        pass
+                #包房
                 if request.form['room_type']!='-1':
-                    pass
+                    first["rooms.room_type.id"] = request.form['room_type']
+                #特色
                 if request.form['tese']!='-1':
-                    pass
+                    first["tese.id"] = request.form['tese']
+                #支付
                 if request.form['pay_type']!='-1':
                     pass
                     idlist = request.form['pay_type'].split('_')
@@ -55,8 +63,10 @@ def index():
                         if mid != '' and mid != None:
                             midlist.append(ObjectId(mid))
                     first["pay_type.id"] = {"$in":midlist}
+                #范儿店
                 if request.form['recommend']!='-1':
                     pass
+                    #
                     if request.form['recommend_type']!='-1':
                         item = mongo.shop_recommend.find({"type":1},{"_id":1})
                     else:
@@ -65,7 +75,11 @@ def index():
                     for i in item:
                         r_idlist.append(i['_id'])
                     first['_id'] = {"$in":r_idlist}
-                list = guess(first=first,start=0,end=10000)
+                pageindex = request.form["pageindex"]
+                pagenum = 10
+                star = (int(pageindex)-1)*pagenum
+                end = (pagenum*int(pageindex))
+                list = guess(first=first,lat1=float(request.form['x']),lon1=float(request.form['y']),start=star,end=end)
                 data['list'] = list
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)

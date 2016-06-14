@@ -47,7 +47,7 @@ def haversine(lon1, lat1, lon2, lat2): # 经度1，纬度1，经度2，纬度2 �
     return c * r * 1000
 #根据获取的经纬度查询若干条距离最近的饭店信息
 def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3):
-    if lat1!=None:
+    if lat1!='x':
         item = mongo.restaurant.find(first,{"zuobiao":1})
         rsetaurant_list = []
         for i in item:
