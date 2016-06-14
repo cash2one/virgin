@@ -36,7 +36,7 @@ def appversion():
     return json_util.dumps(result,ensure_ascii=False,indent=2)
 
 #上传图片的接口   参数：topImage
-@other_api.route('/fm/merchant/ v1/uploadimg/', methods=['POST'])
+@other_api.route('/fm/merchant/v1/uploadimg/', methods=['POST'])
 def up():
      if request.method=='POST':
         # if auto.decodejwt(request.form['jwtstr']):
