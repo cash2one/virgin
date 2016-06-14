@@ -54,7 +54,7 @@ def up():
                     os.remove(osstr)
                     print u1
                 # jwtmsg = auto.decodejwt(request.form["jwtstr"])
-                result=tool.return_json(0,"success",True,uu)
+                result=tool.return_json(0,"success",True,str(uu))
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             # except Exception,e:
             #     print e
