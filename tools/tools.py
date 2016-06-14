@@ -296,7 +296,7 @@ def pimg(uu):
     print str(a).replace(" ","")
     return str(a).replace(" ","")
   except Exception, e:
-        print e
+        return e
 
 
 def gen_rnd_filename():
