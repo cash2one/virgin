@@ -278,7 +278,7 @@ class Discount:
         except Exception, e:
             return False
 def pimg(uu):
-  try:
+  # try:
     #创建一个请求
     handlers = [StreamingHTTPHandler, StreamingHTTPRedirectHandler, StreamingHTTPSHandler]
     opener = urllib2.build_opener(*handlers)
@@ -295,8 +295,8 @@ def pimg(uu):
     cc.close()
     print str(a).replace(" ","")
     return str(a).replace(" ","")
-  except Exception, e:
-        return e
+  # except Exception, e:
+  #       return e
 
 
 def gen_rnd_filename():
