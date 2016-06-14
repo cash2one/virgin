@@ -1,11 +1,12 @@
 #--coding:utf-8--#
 import pymongo
 import sys
+from math import radians, cos, sin, asin, sqrt
+
 reload(sys)
 sys.setdefaultencoding('utf8')
 from connect import conn
 from bson import ObjectId,json_util
-import tools.tools as tool
 import datetime
 
 mongo=conn.mongo_conn()
@@ -32,13 +33,25 @@ def getxingzhengqu(xid):
     item = mongo.district.find({"biz_areas.biz_area_id":int(xid)},{"district_name":1})
     for i in item:
         return i["district_name"]
+#经纬度算距离
+def haversine(lon1, lat1, lon2, lat2): # 经度1，纬度1，经度2，纬度2 （十进制度数）
+
+    # 将十进制度数转化为弧度
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+    # haversine公式
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a))
+    r = 6371 # 地球平均半径，单位为公里
+    return c * r * 1000
 #根据获取的经纬度查询若干条距离最近的饭店信息
 def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3):
     if lat1!=None:
         item = mongo.restaurant.find(first,{"zuobiao":1})
         rsetaurant_list = []
         for i in item:
-            rsetaurant_list.append((int(tool.haversine(lon1, lat1, i['zuobiao'][0]['c1'], i['zuobiao'][0]['c2'])), str(i['_id'])))
+            rsetaurant_list.append((int(haversine(lon1, lat1, i['zuobiao'][0]['c1'], i['zuobiao'][0]['c2'])), str(i['_id'])))
         list=[]
         for l in sorted(rsetaurant_list)[start:end]:
             restaurant = mongo.restaurant.find({'_id':ObjectId(l[1])})
@@ -72,7 +85,7 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3)
                         json['distance'] = l[0]
                 list.append(json)
     else:
-        restaurant = mongo.restaurant.find().sort("addtime", pymongo.DESCENDING)[start:end]
+        restaurant = mongo.restaurant.find(first).sort("addtime", pymongo.DESCENDING)[start:end]
         list = []
         for rest in restaurant:
             json = {}
