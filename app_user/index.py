@@ -85,7 +85,7 @@ def index():
                 data['recommend'] = recommend
                 #今日范儿店 结束
                 #猜你喜欢 开始
-                guesslist = guess(float(request.form['x']),float(request.form['y']))
+                guesslist = guess(lat1=float(request.form['x']),lon1=float(request.form['y']))
                 data['guess'] = guesslist
                 #猜你喜欢 结束
                 result=tool.return_json(0,"success",True,data)
