@@ -92,3 +92,56 @@ def restaurant():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+@restaurant_user_api.route('/fm/user/v1/restaurant/restaurant_img/',methods=['POST'])
+def restaurant_img():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                item = mongo.restaurant.find({'_id':ObjectId(request.form["restaurant_id"])})
+                type = request.form['type']
+                data ={}
+                dishs_list =[]
+                photo_list = []
+                room_list = []
+                for i in item:
+                    #菜品图片 开始
+                    if type == '1' or type == '-1':
+                        for dishs in i['menu']:
+                            if dishs['name'] !='优惠菜' and dishs['name'] !='推荐菜' and dishs['dish_type'] =='1' and dishs['dishs']!=[]:
+                                for dish in dishs['dishs']:
+                                    json = {}
+                                    json['name'] = dish['name']
+                                    json['guide_image'] = dish['guide_image']
+                                    dishs_list.append(json)
+                    #菜品图片 结束
+                    #环境图片 开始
+                    if type == '2' or type == '-1':
+                        for photo in i['show_photos']:
+                            pjson = {}
+                            pjson['img'] = photo['img']
+                            pjson['desc'] = photo['desc']
+                            photo_list.append(pjson)
+                    #环境图片 结束
+                    #包房图片 开始
+                    if type == '3' or type == '-1':
+                        for room in i['rooms']:
+                            for room_photo in room['room_photo']:
+                                rjson = {}
+                                rjson['img'] = room_photo['img']
+                                rjson['desc'] = room_photo['desc']
+                                room_list.append(rjson)
+                    #包房图片 结束
+                dishs_list[0:0] = room_list
+                dishs_list[0:0] = photo_list
+                data['list'] = dishs_list
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
