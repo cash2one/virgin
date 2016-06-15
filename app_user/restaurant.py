@@ -33,7 +33,7 @@ def restaurant():
             try:
                 pass
                 data = {}
-                # first = {"dishes_type.id":"10","dishes_discount.message":{"$ne":""},"rooms.room_type.id":"36","tese.id":"54","pay_type.id":{"$in":["48"]},"_id":{"$in":[ObjectId("57329e300c1d9b2f4c85f8e6")]}}
+# first = {"dishes_type.id":"10","dishes_discount.message":{"$ne":""},"rooms.room_type.id":"36","tese.id":"54","pay_type.id":{"$in":["48"]},"_id":{"$in":[ObjectId("57329e300c1d9b2f4c85f8e6")]}}
                 first = {}
                 #分类
                 if request.form['dishes_type']!='-1':
@@ -61,19 +61,19 @@ def restaurant():
                     midlist = []
                     for mid in idlist:
                         if mid != '' and mid != None:
-                            midlist.append(ObjectId(mid))
+                            midlist.append(mid)
                     first["pay_type.id"] = {"$in":midlist}
                 #范儿店
                 if request.form['recommend']!='-1':
                     pass
                     #
                     if request.form['recommend_type']!='-1':
-                        item = mongo.shop_recommend.find({"type":1},{"_id":1})
+                        item = mongo.shop_recommend.find({"type":1},{"restaurant_id":1})
                     else:
-                        item = mongo.shop_recommend.find({},{"_id":1})
+                        item = mongo.shop_recommend.find({},{"restaurant_id":1})
                     r_idlist = []
                     for i in item:
-                        r_idlist.append(i['_id'])
+                        r_idlist.append(i['restaurant_id'])
                     first['_id'] = {"$in":r_idlist}
                 pageindex = request.form["pageindex"]
                 pagenum = 10
