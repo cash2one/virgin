@@ -173,7 +173,7 @@ def insertcoupons():
         try:
             if auto.decodejwt(request.form['jwtstr']):
                 pdict = {
-                            "restaurant_id" : request.form['restaurant_id'],
+                            "restaurant_id" : ObjectId(request.form['restaurant_id']),
                             "type" : request.form['type'],
                             "showtime_start" : datetime.datetime.strptime(request.form["showtime_start"], "%Y-%m-%d"),
                             "showtime_end" : datetime.datetime.strptime(request.form["showtime_end"], "%Y-%m-%d"),
@@ -231,7 +231,7 @@ def updatecoupons():
         try:
             if auto.decodejwt(request.form['jwtstr']):
                 pdict = {
-                            "restaurant_id" : request.form['restaurant_id'],
+                            "restaurant_id" : ObjectId(request.form['restaurant_id']),
                             "type" : request.form['type'],
                             "showtime_start" : datetime.datetime.strptime(request.form["showtime_start"], "%Y-%m-%d"),
                             "showtime_end" : datetime.datetime.strptime(request.form["showtime_end"], "%Y-%m-%d"),
