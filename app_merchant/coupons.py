@@ -11,6 +11,7 @@ from flask import Blueprint,request
 from connect import conn
 from bson import ObjectId,json_util
 import tools.tools as tool
+import  pymongo
 mongo=conn.mongo_conn()
 table = {'status': 'int',
          'type': 'int',
@@ -37,7 +38,7 @@ def findcoupons():
                 kind = int(request.form['kind'])
                 json={}
                 if kind == 1:
-                    item = mongo.coupons.find(tools.orderformate(pdict, table))
+                    item = mongo.coupons.find(tools.orderformate(pdict, table)).sort("addtime",pymongo.DESCENDING)
                     for i in item:
                         json = {}
                         for key in i.keys():
@@ -184,7 +185,8 @@ def insertcoupons():
                             "indate_end" : datetime.datetime.strptime(request.form["indate_end"], "%Y-%m-%d"),
                             "rule" : request.form['rule'],
                             "money" : float(request.form['money']),
-                            "kind" : "3"
+                            "kind" : "3",
+                            "addtime":datetime.datetime.now()   #hancuiyi
                         }
                 if int(request.form['type']) == 1 or int(request.form['type']) == 2:
                     try:
@@ -240,7 +242,8 @@ def updatecoupons():
                             "indate_start" : datetime.datetime.strptime(request.form["indate_start"], "%Y-%m-%d"),
                             "indate_end" : datetime.datetime.strptime(request.form["indate_end"], "%Y-%m-%d"),
                             "rule" : request.form['rule'],
-                            "money" : float(request.form['money'])
+                            "money" : float(request.form['money']),
+                            "addtime":datetime.datetime.now()   #hancuiyi
                         }
                 if int(request.form['type']) == 1 or int(request.form['type']) == 2:
                     try:
