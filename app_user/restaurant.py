@@ -92,6 +92,7 @@ def restaurant():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+#图片展示列表
 @restaurant_user_api.route('/fm/user/v1/restaurant/restaurant_img/',methods=['POST'])
 def restaurant_img():
     if request.method=='POST':
@@ -131,9 +132,13 @@ def restaurant_img():
                                 rjson['desc'] = room_photo['desc']
                                 room_list.append(rjson)
                     #包房图片 结束
+                pageindex = request.form["pageindex"]
+                pagenum = 10
+                star = (int(pageindex)-1)*pagenum
+                end = (pagenum*int(pageindex))
                 dishs_list[0:0] = room_list
                 dishs_list[0:0] = photo_list
-                data['list'] = dishs_list
+                data['list'] = dishs_list[star:end]
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
