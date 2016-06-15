@@ -150,3 +150,54 @@ def restaurant_img():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+#饭店查询类别标签
+@restaurant_user_api.route('/fm/user/v1/restaurant/restaurant_type/',methods=['POST'])
+def restaurant_type():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                data = {}
+                f_list = []
+                b_list = []
+                t_list = []
+                z_list = []
+                item = mongo.assortment.find({"parent":{"$in":[1,35,59,50,46]}})
+                for i in item:
+                    f_json = {}
+                    b_json = {}
+                    t_json = {}
+                    z_json = {}
+                    if i['parent'] == 1:
+                        f_json['id'] = str(i['_id'])
+                        f_json['name'] = i['name']
+                        f_list.append(f_json)
+                    elif i['parent'] == 35 or i['parent'] == 59:
+                        b_json['id'] = str(i['_id'])
+                        b_json['name'] = i['name']
+                        b_list.append(b_json)
+                    elif i['parent'] == 50:
+                        t_json['id'] = str(i['_id'])
+                        t_json['name'] = i['name']
+                        t_list.append(t_json)
+                    elif i['parent'] == 46:
+                        z_json['id'] = str(i['_id'])
+                        z_json['name'] = i['name']
+                        z_list.append(z_json)
+                    else:
+                        pass
+                data['fenlei'] = f_list
+                data['baofang'] = b_list
+                data['tese'] = t_list
+                data['zhifu'] = z_list
+                data['youhui'] = [{'id':'dish','name':'菜品优惠'},{'id':'wine','name':'酒水优惠'},{'id':'other','name':'其他优惠'}]
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
