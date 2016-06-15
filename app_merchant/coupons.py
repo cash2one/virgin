@@ -105,7 +105,7 @@ def findcoupons():
                             elif key == 'indate_end':
                                 data['indate_end'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'addtime':
-                                json['addtime'] = i[key].strftime('%Y年%m月%d日')
+                                data['addtime'] = i[key].strftime('%Y年%m月%d日')
                             else:
                                 data[key] = i[key]
                             if datetime.datetime.now()<i['indate_start']:
