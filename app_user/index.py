@@ -67,8 +67,9 @@ def index():
                 #店粉优惠专用图片 结束
                 #今日范儿店 开始
                 shop_recommend = mongo.shop_recommend.find({'showtime': {'$gte': datetime.datetime.now()-datetime.timedelta(days = 1),'$lt': datetime.datetime.now()}}).sort("showtime", pymongo.DESCENDING)[0:1]
+                recommend = {}
                 for i in shop_recommend:
-                    recommend = {}
+
                     for key in i.keys():
                         if key == '_id':
                             recommend['id'] = str(i[key])
