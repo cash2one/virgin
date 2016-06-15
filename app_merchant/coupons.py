@@ -54,11 +54,13 @@ def findcoupons():
                                 json['indate_start'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'indate_end':
                                 json['indate_end'] = i[key].strftime('%Y年%m月%d日')
+                            elif key == 'addtime':
+                                json['addtime'] = i[key].strftime('%Y年%m月%d日')
                             else:
                                 json[key] = i[key]
                 elif kind == 2:
                     pdict['kind'] = 2
-                    item = mongo.coupons.find(tools.orderformate(pdict, table))
+                    item = mongo.coupons.find(tools.orderformate(pdict, table)).sort("addtime",pymongo.DESCENDING)
                     for i in item:
                         json = {}
                         for key in i.keys():
@@ -74,6 +76,8 @@ def findcoupons():
                                 json['indate_start'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'indate_end':
                                 json['indate_end'] = i[key].strftime('%Y年%m月%d日')
+                            elif key == 'addtime':
+                                json['addtime'] = i[key].strftime('%Y年%m月%d日')
                             else:
                                 json[key] = i[key]
                 else:
@@ -82,7 +86,7 @@ def findcoupons():
                     pagenum = 10
                     star = (int(pageindex)-1)*pagenum
                     end = (pagenum*int(pageindex))
-                    item = mongo.coupons.find(tools.orderformate(pdict, table))[star:end]
+                    item = mongo.coupons.find(tools.orderformate(pdict, table)).sort("addtime",pymongo.DESCENDING)[star:end]
 
                     list = []
                     for i in item:
@@ -100,6 +104,8 @@ def findcoupons():
                                 data['indate_start'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'indate_end':
                                 data['indate_end'] = i[key].strftime('%Y年%m月%d日')
+                            elif key == 'addtime':
+                                json['addtime'] = i[key].strftime('%Y年%m月%d日')
                             else:
                                 data[key] = i[key]
                             if datetime.datetime.now()<i['indate_start']:
