@@ -279,7 +279,7 @@ def orderinfos():
                                     pdjson['price'] = str(pd['price'])
                                     pdjson['num'] = str(pd['num'])
                                     pdjson['name'] = pd['name']
-                                    pdjson['discount_price'] = pd['discount_price']
+                                    pdjson['discount_price'] = str(pd['discount_price'])
                                     pdlist.append(pdjson)
                             json['preset_dishs'] = pdlist
                         else:
