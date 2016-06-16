@@ -47,6 +47,21 @@ def findcoupons():
                                 json['id'] = str(i[key])
                             elif key == 'restaurant_id':
                                 json['restaurant_id'] = str(i[key])
+                            elif key == 'rule':
+                                if i[key] == '0':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '无门槛'
+                                elif i[key] == '1':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '全品满'
+                                elif i[key] == '2':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '菜品满'
+                                elif i[key] == '3':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '酒类满'
+                                else:
+                                    json['rule'] = ''
                             elif key == 'showtime_start':
                                 json['showtime_start'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'showtime_end':
@@ -69,6 +84,21 @@ def findcoupons():
                                 json['id'] = str(i[key])
                             elif key == 'restaurant_id':
                                 json['restaurant_id'] = str(i[key])
+                            elif key == 'rule':
+                                if i[key] == '0':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '无门槛'
+                                elif i[key] == '1':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '全品满'
+                                elif i[key] == '2':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '菜品满'
+                                elif i[key] == '3':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '酒类满'
+                                else:
+                                    json['rule'] = ''
                             elif key == 'showtime_start':
                                 json['showtime_start'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'showtime_end':
@@ -97,6 +127,21 @@ def findcoupons():
                                 data['id'] = str(i[key])
                             elif key == 'restaurant_id':
                                 data['restaurant_id'] = str(i[key])
+                            elif key == 'rule':
+                                if i[key] == '0':
+                                    data['rule'] = i[key]
+                                    data['rulename'] = '无门槛'
+                                elif i[key] == '1':
+                                    data['rule'] = i[key]
+                                    data['rulename'] = '全品满'
+                                elif i[key] == '2':
+                                    data['rule'] = i[key]
+                                    data['rulename'] = '菜品满'
+                                elif i[key] == '3':
+                                    data['rule'] = i[key]
+                                    data['rulename'] = '酒类满'
+                                else:
+                                    data['rule'] = ''
                             elif key == 'showtime_start':
                                 data['showtime_start'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'showtime_end':
@@ -146,6 +191,21 @@ def couponsinfo():
                             json['id'] = str(i[key])
                         elif key == 'restaurant_id':
                             json['restaurant_id'] = str(i[key])
+                        elif key == 'rule':
+                                if i[key] == '0':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '无门槛'
+                                elif i[key] == '1':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '全品满'
+                                elif i[key] == '2':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '菜品满'
+                                elif i[key] == '3':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '酒类满'
+                                else:
+                                    json['rule'] = ''
                         elif key == 'showtime_start':
                             json['showtime_start'] = i[key].strftime('%Y年%m月%d日')
                         elif key == 'showtime_end':
