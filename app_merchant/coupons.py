@@ -11,6 +11,7 @@ from flask import Blueprint,request
 from connect import conn
 from bson import ObjectId,json_util
 import tools.tools as tool
+import  pymongo
 mongo=conn.mongo_conn()
 table = {'status': 'int',
          'type': 'int',
@@ -38,7 +39,7 @@ def findcoupons():
                 kind = int(request.form['kind'])
                 json={}
                 if kind == 1:
-                    item = mongo.coupons.find(tools.orderformate(pdict, table))
+                    item = mongo.coupons.find(tools.orderformate(pdict, table)).sort("addtime",pymongo.DESCENDING)
                     for i in item:
                         json = {}
                         for key in i.keys():
@@ -54,11 +55,13 @@ def findcoupons():
                                 json['indate_start'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'indate_end':
                                 json['indate_end'] = i[key].strftime('%Y年%m月%d日')
+                            elif key == 'addtime':
+                                json['addtime'] = i[key].strftime('%Y年%m月%d日')
                             else:
                                 json[key] = i[key]
                 elif kind == 2:
                     pdict['kind'] = 2
-                    item = mongo.coupons.find(tools.orderformate(pdict, table))
+                    item = mongo.coupons.find(tools.orderformate(pdict, table)).sort("addtime",pymongo.DESCENDING)
                     for i in item:
                         json = {}
                         for key in i.keys():
@@ -74,6 +77,8 @@ def findcoupons():
                                 json['indate_start'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'indate_end':
                                 json['indate_end'] = i[key].strftime('%Y年%m月%d日')
+                            elif key == 'addtime':
+                                json['addtime'] = i[key].strftime('%Y年%m月%d日')
                             else:
                                 json[key] = i[key]
                 else:
@@ -82,7 +87,7 @@ def findcoupons():
                     pagenum = 10
                     star = (int(pageindex)-1)*pagenum
                     end = (pagenum*int(pageindex))
-                    item = mongo.coupons.find(tools.orderformate(pdict, table))[star:end]
+                    item = mongo.coupons.find(tools.orderformate(pdict, table)).sort("addtime",pymongo.DESCENDING)[star:end]
 
                     list = []
                     for i in item:
@@ -100,6 +105,8 @@ def findcoupons():
                                 data['indate_start'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'indate_end':
                                 data['indate_end'] = i[key].strftime('%Y年%m月%d日')
+                            elif key == 'addtime':
+                                data['addtime'] = i[key].strftime('%Y年%m月%d日')
                             else:
                                 data[key] = i[key]
                             if datetime.datetime.now()<i['indate_start']:
@@ -189,6 +196,7 @@ def insertcoupons():
                             "money" : float(request.form['money']),
                             "kind" : "3"
                             # "status" : 0
+                            "addtime":datetime.datetime.now()   #hancuiyi
                         }
                 if int(request.form['type']) == 1 or int(request.form['type']) == 2:
                     try:
@@ -246,6 +254,7 @@ def updatecoupons():
                             "rule" : request.form['rule'],
                             "money" : float(request.form['money']),
                             # "status" : request.form['status']
+                            "addtime":datetime.datetime.now()   #hancuiyi
                         }
                 if int(request.form['type']) == 1 or int(request.form['type']) == 2:
                     try:
