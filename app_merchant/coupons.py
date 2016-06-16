@@ -32,7 +32,8 @@ def findcoupons():
             if auto.decodejwt(request.form['jwtstr']):
                 pdict = {
                     'restaurant_id':request.form['restaurant_id'],
-                    'kind':'1'
+                    'kind':'1',
+                    # 'status':0
                     }
                 kind = int(request.form['kind'])
                 json={}
@@ -146,6 +147,8 @@ def couponsinfo():
                             json['indate_start'] = i[key].strftime('%Y年%m月%d日')
                         elif key == 'indate_end':
                             json['indate_end'] = i[key].strftime('%Y年%m月%d日')
+                        elif key == 'addtime':
+                            json['addtime'] = i[key].strftime('%Y年%m月%d日')
                         else:
                             json[key] = i[key]
                         if datetime.datetime.now()<i['indate_start']:
@@ -185,6 +188,7 @@ def insertcoupons():
                             "rule" : request.form['rule'],
                             "money" : float(request.form['money']),
                             "kind" : "3"
+                            # "status" : 0
                         }
                 if int(request.form['type']) == 1 or int(request.form['type']) == 2:
                     try:
@@ -240,7 +244,8 @@ def updatecoupons():
                             "indate_start" : datetime.datetime.strptime(request.form["indate_start"], "%Y-%m-%d"),
                             "indate_end" : datetime.datetime.strptime(request.form["indate_end"], "%Y-%m-%d"),
                             "rule" : request.form['rule'],
-                            "money" : float(request.form['money'])
+                            "money" : float(request.form['money']),
+                            # "status" : request.form['status']
                         }
                 if int(request.form['type']) == 1 or int(request.form['type']) == 2:
                     try:
@@ -280,3 +285,26 @@ def updatecoupons():
 
     else:
         return abort(403)
+# #店粉优惠 删除
+# @coupons_api.route('/fm/merchant/v1/coupons/deletecoupons/', methods=['POST'])
+# def deletecoupons():
+#     if request.method=='POST':
+#         try:
+#             if auto.decodejwt(request.form['jwtstr']):
+#                 item = mongo.coupons.update({"_id":ObjectId(request.form["coupons_id"])},{"$set":{"status":1}})
+#                 json = {
+#                     "status": 1,
+#                     "msg":""
+#                 }
+#                 result=tool.return_json(0,"success",True,json)
+#                 return json_util.dumps(result,ensure_ascii=False,indent=2)
+#             else:
+#                 result=tool.return_json(0,"field",False,None)
+#                 return json_util.dumps(result,ensure_ascii=False,indent=2)
+#         except Exception,e:
+#             print e
+#             result=tool.return_json(0,"field",False,None)
+#             return json_util.dumps(result,ensure_ascii=False,indent=2)
+#
+#     else:
+#         return abort(403)
