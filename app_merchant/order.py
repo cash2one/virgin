@@ -282,6 +282,18 @@ def orderinfos():
                                     pdjson['discount_price'] = str(pd['discount_price'])
                                     pdlist.append(pdjson)
                             json['preset_dishs'] = pdlist
+                        elif key == 'preset_wine':
+                            pdlist = []
+                            pdjson = {}
+                            if i[key]!=None:
+                                for pd in i[key]:
+                                    pdjson['id'] = pd['id']
+                                    pdjson['price'] = str(pd['price'])
+                                    pdjson['num'] = str(pd['num'])
+                                    pdjson['name'] = pd['name']
+                                    pdjson['discount_price'] = str(pd['discount_price'])
+                                    pdlist.append(pdjson)
+                            json['preset_wine'] = pdlist
                         else:
                             json[key] = i[key]
 
