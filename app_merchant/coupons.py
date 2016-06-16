@@ -194,7 +194,7 @@ def insertcoupons():
                             "indate_end" : datetime.datetime.strptime(request.form["indate_end"], "%Y-%m-%d"),
                             "rule" : request.form['rule'],
                             "money" : float(request.form['money']),
-                            "kind" : "3"
+                            "kind" : "3",
                             # "status" : 0
                             "addtime":datetime.datetime.now()   #hancuiyi
                         }
