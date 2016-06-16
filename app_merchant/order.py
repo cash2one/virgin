@@ -266,6 +266,22 @@ def orderinfos():
                                 for r in t['rooms']:
                                     if r['room_id'] == i['room_id']:
                                         json['rname'] = r['room_name']
+                                    else:
+                                        json['rname'] = ''
+                        elif key == 'webuser_id':
+                            json['webuser_id'] = str(i[key])
+                        elif key == 'preset_dishs':
+                            pdlist = []
+                            pdjson = {}
+                            if i[key]!=None:
+                                for pd in i[key]:
+                                    pdjson['id'] = pd['id']
+                                    pdjson['price'] = str(pd['price'])
+                                    pdjson['num'] = str(pd['num'])
+                                    pdjson['name'] = pd['name']
+                                    pdjson['discount_price'] = pd['discount_price']
+                                    pdlist.append(pdjson)
+                            json['preset_dishs'] = pdlist
                         else:
                             json[key] = i[key]
 
