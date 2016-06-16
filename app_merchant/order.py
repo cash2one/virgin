@@ -256,7 +256,7 @@ def orderinfos():
                             json['restaurant_id'] = str(i[key])
                             ritem = mongo.restaurant.find({"_id":ObjectId(i[key])},{"dishes_discount":1})
                             for r in ritem:
-                                json['discount'] = r['dishes_discount']['discount']
+                                json['discount'] = str(r['dishes_discount']['discount'])
                         elif key == 'webuser_id':
                             json['webuser_id'] = str(i[key])
                         elif key == 'preset_time':
