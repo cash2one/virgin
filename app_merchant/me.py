@@ -148,7 +148,7 @@ def imgs():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
             try:
-                item = mongo.turnsimg.find()
+                item = mongo.turnsimg.find({"appid":"1"})
                 json = {}
                 for i in item:
                     for key in i.keys():
