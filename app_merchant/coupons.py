@@ -11,6 +11,7 @@ from flask import Blueprint,request
 from connect import conn
 from bson import ObjectId,json_util
 import tools.tools as tool
+import  pymongo
 mongo=conn.mongo_conn()
 table = {'status': 'int',
          'type': 'int',
@@ -32,12 +33,13 @@ def findcoupons():
             if auto.decodejwt(request.form['jwtstr']):
                 pdict = {
                     'restaurant_id':request.form['restaurant_id'],
-                    'kind':'1'
+                    'kind':'1',
+                    # 'status':0
                     }
                 kind = int(request.form['kind'])
                 json={}
                 if kind == 1:
-                    item = mongo.coupons.find(tools.orderformate(pdict, table))
+                    item = mongo.coupons.find(tools.orderformate(pdict, table)).sort("addtime",pymongo.DESCENDING)
                     for i in item:
                         json = {}
                         for key in i.keys():
@@ -45,6 +47,21 @@ def findcoupons():
                                 json['id'] = str(i[key])
                             elif key == 'restaurant_id':
                                 json['restaurant_id'] = str(i[key])
+                            elif key == 'rule':
+                                if i[key] == '0':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '无门槛'
+                                elif i[key] == '1':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '全品满'
+                                elif i[key] == '2':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '菜品满'
+                                elif i[key] == '3':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '酒类满'
+                                else:
+                                    json['rule'] = ''
                             elif key == 'showtime_start':
                                 json['showtime_start'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'showtime_end':
@@ -53,11 +70,13 @@ def findcoupons():
                                 json['indate_start'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'indate_end':
                                 json['indate_end'] = i[key].strftime('%Y年%m月%d日')
+                            elif key == 'addtime':
+                                json['addtime'] = i[key].strftime('%Y年%m月%d日')
                             else:
                                 json[key] = i[key]
                 elif kind == 2:
                     pdict['kind'] = 2
-                    item = mongo.coupons.find(tools.orderformate(pdict, table))
+                    item = mongo.coupons.find(tools.orderformate(pdict, table)).sort("addtime",pymongo.DESCENDING)
                     for i in item:
                         json = {}
                         for key in i.keys():
@@ -65,6 +84,21 @@ def findcoupons():
                                 json['id'] = str(i[key])
                             elif key == 'restaurant_id':
                                 json['restaurant_id'] = str(i[key])
+                            elif key == 'rule':
+                                if i[key] == '0':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '无门槛'
+                                elif i[key] == '1':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '全品满'
+                                elif i[key] == '2':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '菜品满'
+                                elif i[key] == '3':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '酒类满'
+                                else:
+                                    json['rule'] = ''
                             elif key == 'showtime_start':
                                 json['showtime_start'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'showtime_end':
@@ -73,6 +107,8 @@ def findcoupons():
                                 json['indate_start'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'indate_end':
                                 json['indate_end'] = i[key].strftime('%Y年%m月%d日')
+                            elif key == 'addtime':
+                                json['addtime'] = i[key].strftime('%Y年%m月%d日')
                             else:
                                 json[key] = i[key]
                 else:
@@ -81,7 +117,7 @@ def findcoupons():
                     pagenum = 10
                     star = (int(pageindex)-1)*pagenum
                     end = (pagenum*int(pageindex))
-                    item = mongo.coupons.find(tools.orderformate(pdict, table))[star:end]
+                    item = mongo.coupons.find(tools.orderformate(pdict, table)).sort("addtime",pymongo.DESCENDING)[star:end]
 
                     list = []
                     for i in item:
@@ -91,6 +127,21 @@ def findcoupons():
                                 data['id'] = str(i[key])
                             elif key == 'restaurant_id':
                                 data['restaurant_id'] = str(i[key])
+                            elif key == 'rule':
+                                if i[key] == '0':
+                                    data['rule'] = i[key]
+                                    data['rulename'] = '无门槛'
+                                elif i[key] == '1':
+                                    data['rule'] = i[key]
+                                    data['rulename'] = '全品满'
+                                elif i[key] == '2':
+                                    data['rule'] = i[key]
+                                    data['rulename'] = '菜品满'
+                                elif i[key] == '3':
+                                    data['rule'] = i[key]
+                                    data['rulename'] = '酒类满'
+                                else:
+                                    data['rule'] = ''
                             elif key == 'showtime_start':
                                 data['showtime_start'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'showtime_end':
@@ -99,6 +150,8 @@ def findcoupons():
                                 data['indate_start'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'indate_end':
                                 data['indate_end'] = i[key].strftime('%Y年%m月%d日')
+                            elif key == 'addtime':
+                                data['addtime'] = i[key].strftime('%Y年%m月%d日')
                             else:
                                 data[key] = i[key]
                             if datetime.datetime.now()<i['indate_start']:
@@ -138,6 +191,21 @@ def couponsinfo():
                             json['id'] = str(i[key])
                         elif key == 'restaurant_id':
                             json['restaurant_id'] = str(i[key])
+                        elif key == 'rule':
+                                if i[key] == '0':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '无门槛'
+                                elif i[key] == '1':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '全品满'
+                                elif i[key] == '2':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '菜品满'
+                                elif i[key] == '3':
+                                    json['rule'] = i[key]
+                                    json['rulename'] = '酒类满'
+                                else:
+                                    json['rule'] = ''
                         elif key == 'showtime_start':
                             json['showtime_start'] = i[key].strftime('%Y年%m月%d日')
                         elif key == 'showtime_end':
@@ -146,6 +214,8 @@ def couponsinfo():
                             json['indate_start'] = i[key].strftime('%Y年%m月%d日')
                         elif key == 'indate_end':
                             json['indate_end'] = i[key].strftime('%Y年%m月%d日')
+                        elif key == 'addtime':
+                            json['addtime'] = i[key].strftime('%Y年%m月%d日')
                         else:
                             json[key] = i[key]
                         if datetime.datetime.now()<i['indate_start']:
@@ -173,7 +243,7 @@ def insertcoupons():
         try:
             if auto.decodejwt(request.form['jwtstr']):
                 pdict = {
-                            "restaurant_id" : request.form['restaurant_id'],
+                            "restaurant_id" : ObjectId(request.form['restaurant_id']),
                             "type" : request.form['type'],
                             "showtime_start" : datetime.datetime.strptime(request.form["showtime_start"], "%Y-%m-%d"),
                             "showtime_end" : datetime.datetime.strptime(request.form["showtime_end"], "%Y-%m-%d"),
@@ -184,7 +254,9 @@ def insertcoupons():
                             "indate_end" : datetime.datetime.strptime(request.form["indate_end"], "%Y-%m-%d"),
                             "rule" : request.form['rule'],
                             "money" : float(request.form['money']),
-                            "kind" : "3"
+                            "kind" : "3",
+                            # "status" : 0
+                            "addtime":datetime.datetime.now()   #hancuiyi
                         }
                 if int(request.form['type']) == 1 or int(request.form['type']) == 2:
                     try:
@@ -231,7 +303,7 @@ def updatecoupons():
         try:
             if auto.decodejwt(request.form['jwtstr']):
                 pdict = {
-                            "restaurant_id" : request.form['restaurant_id'],
+                            "restaurant_id" : ObjectId(request.form['restaurant_id']),
                             "type" : request.form['type'],
                             "showtime_start" : datetime.datetime.strptime(request.form["showtime_start"], "%Y-%m-%d"),
                             "showtime_end" : datetime.datetime.strptime(request.form["showtime_end"], "%Y-%m-%d"),
@@ -240,7 +312,9 @@ def updatecoupons():
                             "indate_start" : datetime.datetime.strptime(request.form["indate_start"], "%Y-%m-%d"),
                             "indate_end" : datetime.datetime.strptime(request.form["indate_end"], "%Y-%m-%d"),
                             "rule" : request.form['rule'],
-                            "money" : float(request.form['money'])
+                            "money" : float(request.form['money']),
+                            # "status" : request.form['status']
+                            "addtime":datetime.datetime.now()   #hancuiyi
                         }
                 if int(request.form['type']) == 1 or int(request.form['type']) == 2:
                     try:
@@ -280,3 +354,26 @@ def updatecoupons():
 
     else:
         return abort(403)
+# #店粉优惠 删除
+# @coupons_api.route('/fm/merchant/v1/coupons/deletecoupons/', methods=['POST'])
+# def deletecoupons():
+#     if request.method=='POST':
+#         try:
+#             if auto.decodejwt(request.form['jwtstr']):
+#                 item = mongo.coupons.update({"_id":ObjectId(request.form["coupons_id"])},{"$set":{"status":1}})
+#                 json = {
+#                     "status": 1,
+#                     "msg":""
+#                 }
+#                 result=tool.return_json(0,"success",True,json)
+#                 return json_util.dumps(result,ensure_ascii=False,indent=2)
+#             else:
+#                 result=tool.return_json(0,"field",False,None)
+#                 return json_util.dumps(result,ensure_ascii=False,indent=2)
+#         except Exception,e:
+#             print e
+#             result=tool.return_json(0,"field",False,None)
+#             return json_util.dumps(result,ensure_ascii=False,indent=2)
+#
+#     else:
+#         return abort(403)

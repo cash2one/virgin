@@ -3,7 +3,7 @@ import connect
 
 __author__ = 'hcy'
 from flask import Blueprint,render_template,request,abort
-from connect import conn
+from connect import conn,settings
 import pymongo
 import tools.tools as tool
 from bson import  json_util,ObjectId
@@ -40,25 +40,26 @@ def appversion():
 def up():
      if request.method=='POST':
         # if auto.decodejwt(request.form['jwtstr']):
-            try:
+        #     try:
                 file = request.files['topImage']
                 fname, fext = os.path.splitext(file.filename)
                 if file:
-                    filename = '%s%s' % ('test', fext)
-                    osstr = os.path.dirname(__file__).replace("\\PycharmProjects\\virgin\\app_merchant","/PycharmProjects/virgin")  +'/static/upload/'+filename
+                    filename = '%s%s' % (tool.gen_rnd_filename(), fext)
+                    # osstr = os.path.dirname(__file__).replace("\\PycharmProjects\\virgin\\app_merchant","/PycharmProjects/virgin")  +'/static/upload/'+filename
+                    osstr = "/www/site/foodmap/virgin/virgin/static/upload/"+filename
                     print osstr
                     file.save(osstr)
                     uu = tool.pimg(osstr)
-                    u1 = connect.conn.imageIP + uu
+                    u1 = settings.getimageIP + str(uu)
                     os.remove(osstr)
                     print u1
-                jwtmsg = auto.decodejwt(request.form["jwtstr"])
-                result=tool.return_json(0,"success",jwtmsg,uu)
+                # jwtmsg = auto.decodejwt(request.form["jwtstr"])
+                result=tool.return_json(0,"success",True,str(uu))
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
-            except Exception,e:
-                print e
-                result=tool.return_json(0,"field",False,None)
-                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            # except Exception,e:
+            #     print e
+            #     result=tool.return_json(0,"field",False,None)
+            #     return json_util.dumps(result,ensure_ascii=False,indent=2)
         # else:
         #     result=tool.return_json(0,"field",False,None)
         #     return json_util.dumps(result,ensure_ascii=False,indent=2)

@@ -22,6 +22,7 @@ ip_port0_user = '192.168.22.101:27638'
 auth_user = '/db_UserCenter?authmechanism=SCRAM-SHA-1'
 db_name_user = 'db_UserCenter'
 
+imageIP = 'http://125.211.222.237:17937/'
 
 def mongo_conn_user():
     client_user = MongoClient(conn_user + ip_port0_user + auth_user)

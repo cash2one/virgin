@@ -254,6 +254,9 @@ def orderinfos():
                             json['id'] = str(i[key])
                         elif key == 'restaurant_id':
                             json['restaurant_id'] = str(i[key])
+                            ritem = mongo.restaurant.find({"_id":ObjectId(i[key])},{"dishes_discount":1})
+                            for r in ritem:
+                                json['discount'] = str(r['dishes_discount']['discount'])
                         elif key == 'webuser_id':
                             json['webuser_id'] = str(i[key])
                         elif key == 'preset_time':
@@ -266,6 +269,34 @@ def orderinfos():
                                 for r in t['rooms']:
                                     if r['room_id'] == i['room_id']:
                                         json['rname'] = r['room_name']
+                                    else:
+                                        json['rname'] = ''
+                        elif key == 'webuser_id':
+                            json['webuser_id'] = str(i[key])
+                        elif key == 'preset_dishs':
+                            pdlist = []
+                            pdjson = {}
+                            if i[key]!=None:
+                                for pd in i[key]:
+                                    pdjson['id'] = pd['id']
+                                    pdjson['price'] = str(pd['price'])
+                                    pdjson['num'] = str(pd['num'])
+                                    pdjson['name'] = pd['name']
+                                    pdjson['discount_price'] = str(pd['discount_price'])
+                                    pdlist.append(pdjson)
+                            json['preset_dishs'] = pdlist
+                        elif key == 'preset_wine':
+                            pdlist = []
+                            pdjson = {}
+                            if i[key]!=None:
+                                for pd in i[key]:
+                                    pdjson['id'] = pd['id']
+                                    pdjson['price'] = str(pd['price'])
+                                    pdjson['num'] = str(pd['num'])
+                                    pdjson['name'] = pd['name']
+                                    pdjson['discount_price'] = str(pd['discount_price'])
+                                    pdlist.append(pdjson)
+                            json['preset_wine'] = pdlist
                         else:
                             json[key] = i[key]
 
