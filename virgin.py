@@ -5,6 +5,7 @@ from werkzeug.security import safe_str_cmp
 
 from app_merchant.coupons import coupons_api
 from app_merchant.me import me_api
+from app_merchant.message import message_api
 from app_user.index import index_api
 from app_user.restaurant import restaurant_user_api
 from tools.error_warning import error_api
@@ -39,6 +40,7 @@ app.register_blueprint(coupons_api)
 app.register_blueprint(me_api)
 app.register_blueprint(index_api)
 app.register_blueprint(restaurant_user_api)
+app.register_blueprint(message_api)
 
 @app.route('/protected', methods=['POST'])
 @app.errorhandler(404)
