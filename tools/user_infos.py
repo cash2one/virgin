@@ -40,7 +40,11 @@ class GetUser:
                                                            "time": datetime.datetime.now()}})
                 self.shop_info = self.restaurant_conn.find({"user": {"$in": [ObjectId(self.user_center_id)]}})
                 if self.shop_info:
-                    self.shop_info = self.shop_info[0]
+                    print self.shop_info
+                    try:
+                        self.shop_info = self.shop_info[0]
+                    except Exception, e:
+                        return self.shop_info
                 else:
                     self.shop_info = None
             else:
