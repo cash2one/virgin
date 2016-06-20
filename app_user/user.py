@@ -1,3 +1,4 @@
+# coding=utf-8
 from flask import Blueprint, render_template, request, abort, json
 from connect import conn
 from connect.mongotool import MongoAPI
@@ -43,6 +44,23 @@ def register():
         # item = mongo.user_web.insert(json)
         if not mongo.find({'phone': phone, 'appid': {'2': True}}):
             item = mongo.add(data)
+            if item['success']:
+                from tools.tools import qrcode as qr
+                webuser_add = conn.mongo_conn_user().webuser.insert({"automembers_id": item['_id'],
+                                                                     "nickname": "",
+                                                                     "gender": 1,
+                                                                     "birthday": "",
+                                                                     "headimage": "",
+                                                                     "phone": request.form["phone"]})
+                print json_util.dumps(webuser_add)
+                user_addqr = conn.mongo_conn().webuser.update({'_id': ObjectId('')},
+                                                              {'$set': {'qrcode_img': qr(json.dumps({
+                                                                  'fuc': 'webuser',
+                                                                  'info': {
+                                                                      'user_id': str(webuser_add['_id'])
+                                                                  }
+                                                              }))}})
+                print json_util.dumps(user_addqr)
             return json_util.dumps(item)
         else:
             return json_util.dumps({'success': False, 'info': 'Database already had one'})
