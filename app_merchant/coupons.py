@@ -67,7 +67,7 @@ def findcoupons():
                             elif key == 'content':
                                 if i['type'] == '1':
                                     if i['rule'] == '0':
-                                        json['content'] = '下单即减'+i['cross-claim']+'元'
+                                        json['content'] = '下单即减'+str(i['cross-claim'])+'元'
                                     elif i['rule'] == '1':
                                         json['content'] = '全品满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
                                     elif i['rule'] == '2':
@@ -78,7 +78,7 @@ def findcoupons():
                                         pass
                                 elif i['type'] == '2':
                                     if i['rule'] == '0':
-                                        json['content'] = '下单即打'+i['cross-claim']+'折'
+                                        json['content'] = '下单即打'+str(i['cross-claim'])+'折'
                                     elif i['rule'] == '1':
                                         json['content'] = '全品满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
                                     elif i['rule'] == '2':
@@ -128,7 +128,7 @@ def findcoupons():
                             elif key == 'content':
                                 if i['type'] == '1':
                                     if i['rule'] == '0':
-                                        json['content'] = '下单即减'+i['cross-claim']+'元'
+                                        json['content'] = '下单即减'+str(i['cross-claim'])+'元'
                                     elif i['rule'] == '1':
                                         json['content'] = '全品满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
                                     elif i['rule'] == '2':
@@ -139,7 +139,7 @@ def findcoupons():
                                         pass
                                 elif i['type'] == '2':
                                     if i['rule'] == '0':
-                                        json['content'] = '下单即打'+i['cross-claim']+'折'
+                                        json['content'] = '下单即打'+str(i['cross-claim'])+'折'
                                     elif i['rule'] == '1':
                                         json['content'] = '全品满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
                                     elif i['rule'] == '2':
@@ -197,28 +197,28 @@ def findcoupons():
                             elif key == 'content':
                                 if i['type'] == '1':
                                     if i['rule'] == '0':
-                                        json['content'] = '下单即减'+i['cross-claim']+'元'
+                                        data['content'] = '下单即减'+str(i['cross-claim'])+'元'
                                     elif i['rule'] == '1':
-                                        json['content'] = '全品满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
+                                        data['content'] = '全品满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
                                     elif i['rule'] == '2':
-                                        json['content'] = '菜品满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
+                                        data['content'] = '菜品满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
                                     elif i['rule'] == '3':
-                                        json['content'] = '酒类满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
+                                        data['content'] = '酒类满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
                                     else:
                                         pass
                                 elif i['type'] == '2':
                                     if i['rule'] == '0':
-                                        json['content'] = '下单即打'+i['cross-claim']+'折'
+                                        data['content'] = '下单即打'+str(i['cross-claim'])+'折'
                                     elif i['rule'] == '1':
-                                        json['content'] = '全品满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
+                                        data['content'] = '全品满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
                                     elif i['rule'] == '2':
-                                        json['content'] = '菜品满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
+                                        data['content'] = '菜品满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
                                     elif i['rule'] == '3':
-                                        json['content'] = '酒类满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
+                                        data['content'] = '酒类满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
                                     else:
                                         pass
                                 else:
-                                    json['content'] = i['content']
+                                    data['content'] = i['content']
                             elif key == 'showtime_start':
                                 data['showtime_start'] = i[key].strftime('%Y年%m月%d日')
                             elif key == 'showtime_end':
@@ -269,20 +269,45 @@ def couponsinfo():
                         elif key == 'restaurant_id':
                             json['restaurant_id'] = str(i[key])
                         elif key == 'rule':
-                                if i[key] == '0':
-                                    json['rule'] = i[key]
-                                    json['rulename'] = '无门槛'
-                                elif i[key] == '1':
-                                    json['rule'] = i[key]
-                                    json['rulename'] = '全品满'
-                                elif i[key] == '2':
-                                    json['rule'] = i[key]
-                                    json['rulename'] = '菜品满'
-                                elif i[key] == '3':
-                                    json['rule'] = i[key]
-                                    json['rulename'] = '酒类满'
+                            if i[key] == '0':
+                                json['rule'] = i[key]
+                                json['rulename'] = '无门槛'
+                            elif i[key] == '1':
+                                json['rule'] = i[key]
+                                json['rulename'] = '全品满'+str(i['money'])+'元可使用'
+                            elif i[key] == '2':
+                                json['rule'] = i[key]
+                                json['rulename'] = '菜品满'+str(i['money'])+'元可使用'
+                            elif i[key] == '3':
+                                json['rule'] = i[key]
+                                json['rulename'] = '酒类满'+str(i['money'])+'元可使用'
+                            else:
+                                json['rule'] = ''
+                        elif key == 'content':
+                            if i['type'] == '1':
+                                if i['rule'] == '0':
+                                    json['content'] = '下单即减'+str(i['cross-claim'])+'元'
+                                elif i['rule'] == '1':
+                                    json['content'] = '全品满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
+                                elif i['rule'] == '2':
+                                    json['content'] = '菜品满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
+                                elif i['rule'] == '3':
+                                    json['content'] = '酒类满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
                                 else:
-                                    json['rule'] = ''
+                                    pass
+                            elif i['type'] == '2':
+                                if i['rule'] == '0':
+                                    json['content'] = '下单即打'+str(i['cross-claim'])+'折'
+                                elif i['rule'] == '1':
+                                    json['content'] = '全品满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
+                                elif i['rule'] == '2':
+                                    json['content'] = '菜品满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
+                                elif i['rule'] == '3':
+                                    json['content'] = '酒类满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
+                                else:
+                                    pass
+                            else:
+                                json['content'] = i['content']
                         elif key == 'showtime_start':
                             json['showtime_start'] = i[key].strftime('%Y年%m月%d日')
                         elif key == 'showtime_end':
