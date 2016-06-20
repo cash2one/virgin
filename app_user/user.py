@@ -53,11 +53,11 @@ def register():
                                                                      "headimage": "",
                                                                      "phone": request.form["phone"]})
                 print json_util.dumps(webuser_add)
-                user_addqr = conn.mongo_conn().webuser.update({'_id': ObjectId('')},
+                user_addqr = conn.mongo_conn().webuser.update({'_id': ObjectId("webuser_add['_id']['$oid']")},
                                                               {'$set': {'qrcode_img': qr(json.dumps({
                                                                   'fuc': 'webuser',
                                                                   'info': {
-                                                                      'user_id': str(webuser_add['_id'])
+                                                                      'user_id': webuser_add['_id']['$oid']
                                                                   }
                                                               }))}})
                 print json_util.dumps(user_addqr)
