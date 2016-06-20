@@ -509,3 +509,86 @@ def updatestatus():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+#添加订单
+@order_api.route('/fm/merchant/v1/order/insertorder/', methods=['POST'])
+def insertorder():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+
+            try:
+                pdict = {
+                    "username" : request.form["username"],
+                    "status" : 0,
+                    "type" : request.form['type'],
+                    "is_room" : request.form['is_room'],
+                    "restaurant_id" : ObjectId(request.form['restaurant_id']),
+                    "preset_dishs" : [],
+                    "webuser_id" : ObjectId(""),
+                    "phone" : request.form['phone'],
+                    "dis_message" : "",
+                    "room_id" : request.form['room_id'],
+                    "deposit" : 0.0,
+                    "demand" : request.form['demand'],
+                    "total" : 0.0,
+                    "numpeople" : request.form['numpeople'],
+                    "preset_time" : datetime.datetime.strptime(request.form["preset_time"], "%Y-%m-%d %H:%M:%S"),
+                    "add_time" : datetime.datetime.now()
+                }
+                mongo.order.insert({'_id':ObjectId(request.form['id'])},{"$set":pdict})
+                json = {
+                        "status": 1,
+                        "msg":""
+                }
+                result=tool.return_json(0,"success",True,json)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#订座和订菜查询
+@order_api.route('/fm/merchant/v1/order/dishroomorder/', methods=['POST'])
+def dishroomorder():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+
+            try:
+                pdict = {
+                    '_id':request.form["id"]
+                }
+                item = mongo.order.find(tools.orderformate(pdict, table))
+                json = {}
+                for i in item:
+
+                    for key in i.keys():
+                        if key == '_id':
+                            json['id'] = str(i[key])
+                        elif key == 'total':
+                            json['total'] = str(i[key])
+                        elif key == 'demand':
+                            json['demand'] = i[key]
+                        elif key == 'dis_message':
+                            json['dis_message'] = i[key]
+                        elif key == 'preset_time':
+                            json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                        elif key == 'restaurant_id':
+                            json['restaurant_id'] = str(i[key])
+                            json['roomlist'] = public.getroomorderlist(i[key],datetime.datetime.now().strftime("%Y-%m-%d"))
+                        else:
+                            pass
+
+                result=tool.return_json(0,"success",True,json)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)

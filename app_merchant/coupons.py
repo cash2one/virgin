@@ -377,3 +377,143 @@ def updatecoupons():
 #
 #     else:
 #         return abort(403)
+#店粉优惠 扫码查询
+@coupons_api.route('/fm/merchant/v1/coupons/couponsbyqr/', methods=['POST'])
+def couponsbyqr():
+    if request.method=='POST':
+        try:
+            if auto.decodejwt(request.form['jwtstr']):
+                user_id = request.form['webuser_id']
+                json={}
+                item = mongo.coupons.find({"restaurant_id":ObjectId(request.form["restaurant_id"]),"kind":"1"}).sort("addtime",pymongo.DESCENDING)
+                kind1 = {}
+                for i in item:
+                    print i
+                    for key in i.keys():
+                        if key == '_id':
+                            kind1['id'] = str(i[key])
+                        elif key == 'restaurant_id':
+                            kind1['restaurant_id'] = str(i[key])
+                        elif key == 'rule':
+                            if i[key] == '0':
+                                kind1['rule'] = i[key]
+                                kind1['rulename'] = '无门槛'
+                            elif i[key] == '1':
+                                kind1['rule'] = i[key]
+                                kind1['rulename'] = '全品满'
+                            elif i[key] == '2':
+                                kind1['rule'] = i[key]
+                                kind1['rulename'] = '菜品满'
+                            elif i[key] == '3':
+                                kind1['rule'] = i[key]
+                                kind1['rulename'] = '酒类满'
+                            else:
+                                kind1['rule'] = ''
+                        elif key == 'showtime_start':
+                            kind1['showtime_start'] = i[key].strftime('%Y年%m月%d日')
+                        elif key == 'showtime_end':
+                            kind1['showtime_end'] = i[key].strftime('%Y年%m月%d日')
+                        elif key == 'indate_start':
+                            kind1['indate_start'] = i[key].strftime('%Y年%m月%d日')
+                        elif key == 'indate_end':
+                            kind1['indate_end'] = i[key].strftime('%Y年%m月%d日')
+                        elif key == 'addtime':
+                            kind1['addtime'] = i[key].strftime('%Y年%m月%d日')
+                        else:
+                            kind1[key] = i[key]
+
+
+                item = mongo.coupons.find({"restaurant_id":ObjectId(request.form["restaurant_id"]),"kind":"2"}).sort("addtime",pymongo.DESCENDING)
+                kind2 = {}
+                for i in item:
+
+                    for key in i.keys():
+                        if key == '_id':
+                            kind2['id'] = str(i[key])
+                        elif key == 'restaurant_id':
+                            kind2['restaurant_id'] = str(i[key])
+                        elif key == 'rule':
+                            if i[key] == '0':
+                                kind2['rule'] = i[key]
+                                kind2['rulename'] = '无门槛'
+                            elif i[key] == '1':
+                                kind2['rule'] = i[key]
+                                kind2['rulename'] = '全品满'
+                            elif i[key] == '2':
+                                kind2['rule'] = i[key]
+                                kind2['rulename'] = '菜品满'
+                            elif i[key] == '3':
+                                kind2['rule'] = i[key]
+                                kind2['rulename'] = '酒类满'
+                            else:
+                                kind2['rule'] = ''
+                        elif key == 'showtime_start':
+                            kind2['showtime_start'] = i[key].strftime('%Y年%m月%d日')
+                        elif key == 'showtime_end':
+                            kind2['showtime_end'] = i[key].strftime('%Y年%m月%d日')
+                        elif key == 'indate_start':
+                            kind2['indate_start'] = i[key].strftime('%Y年%m月%d日')
+                        elif key == 'indate_end':
+                            kind2['indate_end'] = i[key].strftime('%Y年%m月%d日')
+                        elif key == 'addtime':
+                            kind2['addtime'] = i[key].strftime('%Y年%m月%d日')
+                        else:
+                            kind2[key] = i[key]
+
+                item = mongo.coupons.find({"restaurant_id":ObjectId(request.form["restaurant_id"]),"kind":"3"}).sort("addtime",pymongo.DESCENDING)[0:1]
+                kind3 = {}
+                for i in item:
+
+                    for key in i.keys():
+                        if key == '_id':
+                            kind3['id'] = str(i[key])
+                        elif key == 'restaurant_id':
+                            kind3['restaurant_id'] = str(i[key])
+                        elif key == 'rule':
+                            if i[key] == '0':
+                                kind3['rule'] = i[key]
+                                kind3['rulename'] = '无门槛'
+                            elif i[key] == '1':
+                                kind3['rule'] = i[key]
+                                kind3['rulename'] = '全品满'
+                            elif i[key] == '2':
+                                kind3['rule'] = i[key]
+                                kind3['rulename'] = '菜品满'
+                            elif i[key] == '3':
+                                kind3['rule'] = i[key]
+                                kind3['rulename'] = '酒类满'
+                            else:
+                                kind3['rule'] = ''
+                        elif key == 'showtime_start':
+                            kind3['showtime_start'] = i[key].strftime('%Y年%m月%d日')
+                        elif key == 'showtime_end':
+                            kind3['showtime_end'] = i[key].strftime('%Y年%m月%d日')
+                        elif key == 'indate_start':
+                            kind3['indate_start'] = i[key].strftime('%Y年%m月%d日')
+                        elif key == 'indate_end':
+                            kind3['indate_end'] = i[key].strftime('%Y年%m月%d日')
+                        elif key == 'addtime':
+                            kind3['addtime'] = i[key].strftime('%Y年%m月%d日')
+                        else:
+                            kind3[key] = i[key]
+                        if datetime.datetime.now()<i['indate_start']:
+                            kind3['status'] = '未开始'
+                        elif i['indate_start']<datetime.datetime.now()<i['indate_end']:
+                            kind3['status'] = '进行中'
+                        else:
+                            kind3['status'] = '已结束'
+                json['kind1'] = kind1
+                json['kind2'] = kind2
+                json['kind3'] = kind3
+                result=tool.return_json(0,"success",True,json)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            else:
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        except Exception,e:
+            print e
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+
+    else:
+        return abort(403)

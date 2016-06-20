@@ -1,7 +1,10 @@
 # coding=utf-8
 import json
 import os
+import base64
+from io import BytesIO
 
+import qrcode as qrc
 import datetime
 import random
 
@@ -289,6 +292,9 @@ def pimg(uu):
     datagen, headers = multipart_encode({"image": cc })
     #发送请求
     request = urllib2.Request(settings.setimageIP , datagen, headers)
+    #测试本地用
+    # request = urllib2.Request(settings.setimageIPlocal , datagen, headers)
+
     #获取返回中的内容
     re1 = r"<h1>MD5:(?P<md5>.*?)</h1>"
     match5 = re.findall(re1,urllib2.urlopen(request).read())
@@ -303,7 +309,36 @@ def pimg(uu):
 def gen_rnd_filename():
     filename_prefix = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     return '%s%s' % (filename_prefix, str(random.randrange(1000, 10000)))
+correction_levels = {
+    'L': qrc.constants.ERROR_CORRECT_L,
+    'M': qrc.constants.ERROR_CORRECT_M,
+    'Q': qrc.constants.ERROR_CORRECT_Q,
+    'H': qrc.constants.ERROR_CORRECT_H
+}
+def qrcode(data, version=None, error_correction='L', box_size=10, border=0, fit=True):
+    """ makes qr image using qrcode as qrc See documentation for qrcode package for info"""
+    qr = qrc.QRCode(
+        version=version,
+        error_correction=correction_levels[error_correction],
+        box_size=box_size,
+        border=border
+    )
+    qr.add_data(data)
+    qr.make(fit=fit)
+
+    # creates qrcode base64
+    out = BytesIO()
+    qr_img = qr.make_image()
+    filename = '%s%s' % (gen_rnd_filename(), ".PNG")
+    # osstr = os.path.dirname(__file__).replace("tools","")+"static/upload/"+filename
+    osstr = "/www/site/foodmap/virgin/virgin/static/upload/"+filename
+    qr_img.save(osstr)
+    uu = pimg(osstr)
+    u1 = settings.getimageIP + str(uu)
+    os.remove(osstr)
+    return uu
 if __name__ == '__main__':
+    print qrcode("测试")
     dish = {
                     "is_enabled" : 'str',
                     "name" : "str",
@@ -347,5 +382,5 @@ if __name__ == '__main__':
     # first.re_dish(test_dish)
     # first.re_menu(test_menu)
     # print first.submit2db()
-    print Restaurant({'dish_id': '201605111053268902'}).info
+    # print Restaurant({'dish_id': '201605111053268902'}).info
     pass

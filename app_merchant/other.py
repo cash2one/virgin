@@ -117,3 +117,21 @@ def counts():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+#二维码生成
+@other_api.route('/fm/merchant/v1/getqrcode/',methods=['POST'])
+def getqrcode():
+    # if request.method=='POST':
+    #     if auto.decodejwt(request.form['jwtstr']):
+
+            try:
+                test = tool.qrcode("测试二维码")
+                return test
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+    #     else:
+    #         result=tool.return_json(0,"field",False,None)
+    #         return json_util.dumps(result,ensure_ascii=False,indent=2)
+    # else:
+    #     return abort(403)
