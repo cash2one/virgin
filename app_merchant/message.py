@@ -119,3 +119,11 @@ def sendmessage():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+
+
+# def sendinformation():
+#     if request.method=='POST':
+
+
+
+

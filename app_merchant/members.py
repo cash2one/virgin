@@ -13,7 +13,7 @@ from connect import conn
 from bson import json_util, ObjectId
 import tools.tools as tool
 reload(sys)
-sys.setdefaultencoding('utf8')
+sys. setdefaultencoding('utf8')
 
 table = {
         'restaurant_id': 'obj',
