@@ -520,7 +520,6 @@ def insertorder():
                     "username" : request.form["username"],
                     "status" : 0,
                     "type" : request.form['type'],
-                    "is_room" : request.form['is_room'],
                     "restaurant_id" : ObjectId(request.form['restaurant_id']),
                     "preset_dishs" : [],
                     "webuser_id" : "",
@@ -534,6 +533,10 @@ def insertorder():
                     "preset_time" : datetime.datetime.strptime(request.form["preset_time"], "%Y-%m-%d %H:%M:%S"),
                     "add_time" : datetime.datetime.now()
                 }
+                if request.form['is_room'] == 'true':
+                    pdict['is_room'] = True
+                else:
+                    pdict['is_room'] = False
                 mongo.order.insert(pdict)
                 json = {
                         "status": 1,
