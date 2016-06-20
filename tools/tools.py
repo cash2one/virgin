@@ -8,6 +8,7 @@ import qrcode as qrc
 import datetime
 import random
 
+import requests
 from poster.encode import multipart_encode
 from poster.streaminghttp import StreamingHTTPHandler, StreamingHTTPRedirectHandler, StreamingHTTPSHandler
 import urllib2
@@ -17,8 +18,11 @@ from flask import request, Response
 import connect
 from connect import conn,settings
 from bson import ObjectId,json_util
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
 mongo=conn.mongo_conn()
-
+mongouser=conn.mongo_conn_user()
 def return_json(code,message,jwt,data):
     if jwt:
         data = data
@@ -337,6 +341,124 @@ def qrcode(data, version=None, error_correction='L', box_size=10, border=0, fit=
     u1 = settings.getimageIP + str(uu)
     os.remove(osstr)
     return uu
+def tuisong(mfrom='', mto='57396ec17c1f31a9cce960f4_57329b1f0c1d9b2f4c85f8e3', title='', info='',type='0',appname='foodmap_user',msgtype='message',target='device', ispost=True):
+
+    try:
+        #以下是获取消息来源名
+        infofromname = ''
+        if type == '0':
+            item = mongo.webuser.find({"_id":ObjectId(mfrom)})
+            for i in item:
+                infofromname = i['nickname']
+        elif type == '1':
+            item = mongo.restaurant.find({"_id":ObjectId(mfrom)})
+            for i in item:
+                infofromname = i['name']
+        elif type == '2':
+            item = mongo.webuser.find({"_id":ObjectId(mfrom)})
+            for i in item:
+                infofromname = i['nickname']
+        else:
+            pass
+            infofromname = '未知'
+        #获取消息来源名结束
+
+
+        #本地消息表接收方id
+        infoto = {}
+        #安卓设备号数组
+        identandroid = ''
+        identandroidlist = []
+        #IOS设备号数组
+        identios = ''
+        identioslist = []
+        if mto!='':
+            idlist = mto.split('_')
+            for mid in idlist:
+                if mid != '' and mid != None:
+                    infoto[mid] = 0
+                    #mid是接收方id 下面webuser是查询用户中心id
+                    webuser = mongo.webuser.find({"_id":ObjectId(mid)})
+                    for w in webuser:
+                        #查询用户中心表usercenter得到设备类型和设备号
+                        usercenter = mongouser.user_web.find({"_id":ObjectId(w['automembers_id'])})
+                        for u in usercenter:
+                            #0是安卓1是IOS
+                            if u['lastlogin']['type'] == '0':
+                                #拼接TargetValue参数
+                                identandroidlist.append(identandroid+u['lastlogin']['ident'])
+                            else:
+                                identioslist.append(identandroid+u['lastlogin']['ident'])
+        identandroid = ",".join(identandroidlist)
+        identios = ",".join(identioslist)
+        print identandroid,identios
+        #阿里网关参数安卓
+        androidmsg = {}
+        #阿里网关参数IOS
+        iosmsg = {}
+        #阿里网关返回参数
+        req = None
+        #target是all表示发送给所有设备
+        if target=='device':
+            #message是消息
+            if msgtype == 'message':
+                #分别判断设备号数组串，为空就不能发
+                if identandroid!='' and ispost:
+                    #固定模板
+                    androidmsg = {"appname": appname, "type": msgtype, "Message": info, "Target": "device", "TargetValue": identandroid}
+                    #requests方式POST
+                    req = requests.post('http://125.211.222.237:11035/push.android',data=androidmsg)
+                    print '安卓消息个推推送成功！',req.json()
+                if identios!='' and ispost:
+                    iosmsg = {"appname": appname, "type": msgtype, "Message": info, "Summary": title, "Target": "device", "TargetValue": identios}
+                    req = requests.post('http://125.211.222.237:11035/push.ios',data=iosmsg)
+                    print 'IOS消息个推推送成功！',req.json()
+            #notice是通知
+            else:
+                if identandroid!='' and ispost:
+                    androidmsg = {"appname": appname, "type": msgtype, "Title": title, "Summary": info, "Target": "device", "TargetValue": identandroid}
+                    req = requests.post('http://125.211.222.237:11035/push.android',data=androidmsg)
+                    print '安卓通知个推推送成功！',req.json()
+                if identios!='' and ispost:
+                    iosmsg = {"appname": appname, "type": msgtype, "Summary": info, "Target": "device", "TargetValue": identios}
+                    req = requests.post('http://125.211.222.237:11035/push.ios',data=iosmsg)
+                    print 'IOS通知个推推送成功！',req.json()
+        elif target=='all':
+            if msgtype == 'message':
+                if ispost:
+                    androidmsg = {"appname": appname, "type": msgtype, "Message": info, "Target": "all", "TargetValue": "all"}
+                    req = requests.post('http://125.211.222.237:11035/push.android',data=androidmsg)
+                    print '安卓消息全推推送成功！',req.json()
+                    iosmsg = {"appname": appname, "type": msgtype, "Message": info, "Summary": title, "Target": "all", "TargetValue": "all"}
+                    req = requests.post('http://125.211.222.237:11035/push.ios',data=iosmsg)
+                    print 'IOS消息全推推送成功！',req.json()
+            else:
+                if ispost:
+                    androidmsg = {"appname": appname, "type": msgtype, "Title": title, "Summary": info, "Target": "all", "TargetValue": "all"}
+                    req = requests.post('http://125.211.222.237:11035/push.android',data=androidmsg)
+                    print '安卓通知全推推送成功！',req.json()
+                    iosmsg = {"appname": appname, "type": msgtype, "Summary": info, "Target": "all", "TargetValue": "all"}
+                    req = requests.post('http://125.211.222.237:11035/push.ios',data=iosmsg)
+                    print 'IOS通知全推推送成功！',req.json()
+        else:
+            pass
+        insertjson = {
+                "infofrom" : ObjectId(mfrom),
+                "infoto" : infoto,
+                "infos" : {
+                    "infotitle" : title,
+                    "information" : info,
+                    "infofromname" : infofromname
+                },
+                "type" : 0,
+                "add_time" : datetime.datetime.now(),
+                "androidmsg" : androidmsg,
+                "iosmsg": iosmsg
+        }
+        mongo.message.insert(insertjson)
+    except:
+        return False
+    return True
 if __name__ == '__main__':
     print qrcode("测试")
     dish = {
