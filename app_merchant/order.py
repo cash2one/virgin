@@ -577,7 +577,7 @@ def dishroomorder():
                             json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
                         elif key == 'restaurant_id':
                             json['restaurant_id'] = str(i[key])
-                            json['roomlist'] = public.getroomslist(i[key],i['preset_time'].strftime("%Y-%m-%d"))
+                            json['roomlist'] = public.getroomslist(i[key],i['preset_time'].strftime("%Y-%m-%d"))['list']
                         else:
                             pass
 
