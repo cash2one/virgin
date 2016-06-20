@@ -35,12 +35,12 @@ mgs_template ={
         "text":"抢单人:%(name)s\n内容:%(content)s\n抢单时间:%(data)s\n联系电话:%(phone)s\n剩余名额:%(copies)s\n",
         "goto":"page5"
     },
-    "sj_5":{ #推送原因：订座时间提前提醒
+    "sj_5":{ #推送原因：订座时间提前提醒  备注：比约定的吃饭时间1小时发送
         "title":"***（包房名）包房***（时间）有预定，请提前准备",
         "text":"联系人:%(name)s\n联系电话:%(phone)s\n",
         "goto":"page5"
     },
-    "sj_6":{ #推送原因：点菜时间提醒
+    "sj_6":{ #推送原因：点菜时间提醒 备注：比约定的吃饭时间1小时发送
         "title":"%(roomsname)s\n包房 %(data)s 有预定，请提前准备",
         "text":"联系人:%(name)s\n联系电话:%(phone)s\n",
         "goto":"page5"
@@ -60,9 +60,9 @@ mgs_template ={
         "text":"联系人:%(name)s\n联系电话:%(phone)s\n",
         "goto":"page3"
     },
-    "yh_3":{ #推送原因：订座、点菜被确认
-        "title":"%(roomsname)s\n包房 %(data)s 有预定，请提前准备",
-        "text":"联系人:%(name)s\n联系电话:%(phone)s\n",
+    "yh_3":{ #推送原因：订单被确认
+        "title":"您的订单已被安排，点击查看详细内容，祝您用餐愉快。",
+        "text":"您好：尊敬的%(name)s,%(redname)s%(data)s为您预留了%(roomname)s房间，菜单：%(nume)s，地址：%(address)s，电话：%(phone)s,祝您用餐愉快",
         "goto":"page5"
     },
     "yh_4":{ #推送原因：订座、点菜 提前提示
@@ -78,7 +78,7 @@ mgs_template ={
         "con3":"%(shiwu)s实物券",
         "con4":"%(yuan)s元%(people)s人开团请客活动",
         "goto":"page5"
-    }
+    },
 }
 
 # def send(a):
