@@ -74,6 +74,7 @@ def findcoupons():
                                 json['addtime'] = i[key].strftime('%Y年%m月%d日')
                             else:
                                 json[key] = i[key]
+                                json['status'] = ''
                 elif kind == 2:
                     pdict['kind'] = 2
                     item = mongo.coupons.find(tools.orderformate(pdict, table)).sort("addtime",pymongo.DESCENDING)
@@ -90,13 +91,13 @@ def findcoupons():
                                     json['rulename'] = '无门槛'
                                 elif i[key] == '1':
                                     json['rule'] = i[key]
-                                    json['rulename'] = '全品满'
+                                    json['rulename'] = '全品满'+str(i['money'])+'元可使用'
                                 elif i[key] == '2':
                                     json['rule'] = i[key]
-                                    json['rulename'] = '菜品满'
+                                    json['rulename'] = '菜品满'+str(i['money'])+'元可使用'
                                 elif i[key] == '3':
                                     json['rule'] = i[key]
-                                    json['rulename'] = '酒类满'
+                                    json['rulename'] = '酒类满'+str(i['money'])+'元可使用'
                                 else:
                                     json['rule'] = ''
                             elif key == 'showtime_start':
@@ -111,6 +112,7 @@ def findcoupons():
                                 json['addtime'] = i[key].strftime('%Y年%m月%d日')
                             else:
                                 json[key] = i[key]
+                                json['status'] = ''
                 else:
                     pdict['kind'] = 3
                     pageindex = int(request.form['pageindex'])
