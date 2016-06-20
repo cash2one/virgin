@@ -62,7 +62,7 @@ mgs_template ={
     },
     "yh_3":{ #推送原因：订单被确认
         "title":"您的订单已被安排，点击查看详细内容，祝您用餐愉快。",
-        "text":"您好：尊敬的%(name)s,%(redname)s%(data)s为您预留了%(roomname)s房间，菜单：%(nume)s，地址：%(address)s，电话：%(phone)s,祝您用餐愉快",
+        "text":"您好：尊敬的%(name)s,%(redname)s%(data)s为您预留了%(roomname)s房间，菜单：%(dishs)s，地址：%(address)s，电话：%(phone)s,祝您用餐愉快",
         "goto":"page5"
     },
     "yh_4":{ #推送原因：订座、点菜 提前提示
@@ -77,6 +77,11 @@ mgs_template ={
         "con2":"%(zhekou)s折 折扣券",
         "con3":"%(shiwu)s实物券",
         "con4":"%(yuan)s元%(people)s人开团请客活动",
+        "goto":"page5"
+    },
+    "yh_6":{ #推送原因：订单被拒绝
+        "title":"您预订的 %(renname)s 饭店已为您安排好了，欢迎您 %(data)s 前来就餐",
+        "text":"您预订的 %(renname)s 饭店已为您安排好了，欢迎您 %(data)s 前来就餐\n联系电话：%(data)",
         "goto":"page5"
     },
 }
