@@ -523,7 +523,7 @@ def insertorder():
                     "is_room" : request.form['is_room'],
                     "restaurant_id" : ObjectId(request.form['restaurant_id']),
                     "preset_dishs" : [],
-                    "webuser_id" : ObjectId(""),
+                    "webuser_id" : "",
                     "phone" : request.form['phone'],
                     "dis_message" : "",
                     "room_id" : request.form['room_id'],
@@ -534,7 +534,7 @@ def insertorder():
                     "preset_time" : datetime.datetime.strptime(request.form["preset_time"], "%Y-%m-%d %H:%M:%S"),
                     "add_time" : datetime.datetime.now()
                 }
-                mongo.order.insert({'_id':ObjectId(request.form['id'])},{"$set":pdict})
+                mongo.order.insert(pdict)
                 json = {
                         "status": 1,
                         "msg":""
@@ -577,7 +577,7 @@ def dishroomorder():
                             json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
                         elif key == 'restaurant_id':
                             json['restaurant_id'] = str(i[key])
-                            json['roomlist'] = public.getroomorderlist(i[key],datetime.datetime.now().strftime("%Y-%m-%d"))
+                            json['roomlist'] = public.getroomorderlist(i[key],i['preset_time'].strftime("%Y-%m-%d"))
                         else:
                             pass
 
