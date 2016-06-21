@@ -397,9 +397,14 @@ def ordercounts1():
                 for a in ymtotal:
                     print a
                     data['ymtotal'] = a['total']
+                json = {
+                    "content":"<p>共接收座位预定订单&nbsp;<span style=\"color:red\">"+data['allcount']+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+data['anumpeople']+"</span>&nbsp;人；</p><p>美食地图预定&nbsp;<span style=\"color:red\">"+data['mcount']+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+data['mnumpeople']+"</span>&nbsp;人；</p><p>其它方式预定&nbsp;<span style=\"color:red\">"+data['ycount']+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+data['yanumpeople']+"</span>&nbsp;人。</p>"
+                }
+                result=tool.return_json(0,"success",True,json)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
             # except Exception,e:
             #     print e
-                return render_template("/test/count.html",allcount = data['allcount'] , anumpeople = data['anumpeople'] , mcount = data['mcount'] , mnumpeople = data['mnumpeople'] , ycount = data['ycount'] , yanumpeople = data['yanumpeople'])
+            #     return render_template("/test/count.html",allcount = data['allcount'] , anumpeople = data['anumpeople'] , mcount = data['mcount'] , mnumpeople = data['mnumpeople'] , ycount = data['ycount'] , yanumpeople = data['yanumpeople'])
 
 
 
