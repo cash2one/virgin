@@ -330,10 +330,10 @@ def ordercounts1():
                         "yytotal": 0.0,
                         "wytotal": 0.0,
                         "atotal":  0.0,
-                        "mnumpeople": 0.0,
-                        "anumpeople": 0.0,
+                        "mnumpeople": 0,
+                        "anumpeople": 0,
                         "ycount": 0.0,
-                        "yanumpeople": 0.0,
+                        "yanumpeople": 0,
                         "allcount": 0.0,
                         "mcount": 0.0
                       }
@@ -423,10 +423,10 @@ def ordercounts():
                         "yytotal": 0.0,
                         "wytotal": 0.0,
                         "atotal":  0.0,
-                        "mnumpeople": 0.0,
-                        "anumpeople": 0.0,
+                        "mnumpeople": 0,
+                        "anumpeople": 0,
                         "ycount": 0.0,
-                        "yanumpeople": 0.0,
+                        "yanumpeople": 0,
                         "allcount": 0.0,
                         "mcount": 0.0
                       }
