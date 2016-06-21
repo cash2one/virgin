@@ -398,7 +398,7 @@ def ordercounts1():
                     print a
                     data['ymtotal'] = a['total']
                 json = {
-                    "content":"<p>共接收座位预定订单&nbsp;<span style=\"color:red\">"+str(data['allcount'])+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+str(data['anumpeople'])+"</span>&nbsp;人；</p><p>美食地图预定&nbsp;<span style=\"color:red\">"+str(data['mcount'])+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+str(data['mnumpeople'])+"</span>&nbsp;人；</p><p>其它方式预定&nbsp;<span style=\"color:red\">"+str(data['ycount'])+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+str(data['yanumpeople'])+"</span>&nbsp;人。</p>"
+                    "content":"<p style=\"margin-left: 20px;\">共接收座位预定订单&nbsp;<span style=\"color:red\">"+str(data['allcount'])+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+str(data['anumpeople'])+"</span>&nbsp;人；</p><p style=\"margin-left: 20px;\">美食地图预定&nbsp;<span style=\"color:red\">"+str(data['mcount'])+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+str(data['mnumpeople'])+"</span>&nbsp;人；</p><p style=\"margin-left: 20px;\">其它方式预定&nbsp;<span style=\"color:red\">"+str(data['ycount'])+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+str(data['yanumpeople'])+"</span>&nbsp;人。</p>"
                 }
                 result=tool.return_json(0,"success",True,json)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
