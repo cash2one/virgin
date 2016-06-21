@@ -103,8 +103,8 @@ mgs_template ={
         "channel":"优惠"
     },
     "yh_6":{ #推送原因：订单被拒绝
-        "title":"您预订的 %(renname)s 饭店已为您安排好了，欢迎您 %(data)s 前来就餐",
-        "text":"您预订的 %(renname)s 饭店已为您安排好了，欢迎您 %(data)s 前来就餐\n联系电话：%(data)",
+        "title":"很遗憾，店铺无法为你安排就餐。",
+        "text":"回执时间：%(data)s ,处理结果：%(cont)s",
         "goto":"5",
         "is_push":True,
         "channel":"订单"
