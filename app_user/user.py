@@ -46,12 +46,12 @@ def register():
             item = mongo.add(data)
             if item['success']:
                 from tools.tools import qrcode as qr
-                webuser_add = conn.mongo_conn_user().webuser.insert({"automembers_id": item['_id'],
-                                                                     "nickname": "",
-                                                                     "gender": 1,
-                                                                     "birthday": "",
-                                                                     "headimage": "",
-                                                                     "phone": request.form["phone"]})
+                webuser_add = conn.mongo_conn().webuser.insert({"automembers_id": item['_id'],
+                                                                "nickname": "",
+                                                                "gender": 1,
+                                                                "birthday": "",
+                                                                "headimage": "",
+                                                                "phone": request.form["phone"]})
                 webuser_add = json_util.loads(json_util.dumps(webuser_add))
                 print webuser_add
                 user_addqr = conn.mongo_conn().webuser.update({'_id': ObjectId(webuser_add)},
