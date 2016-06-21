@@ -317,7 +317,7 @@ def orderinfos():
 def ordercounts1():
     if request.method == 'POST':
         if auto.decodejwt(request.form['jwtstr']):
-            try:
+            # try:
                 start=datetime.datetime(*time.strptime(request.form['start_time'],'%Y-%m-%d')[:6])
                 end = datetime.datetime(*time.strptime(request.form['end_time'],'%Y-%m-%d')[:6])+datetime.timedelta(days = 1)
                 data= {
@@ -397,8 +397,8 @@ def ordercounts1():
                 for a in ymtotal:
                     print a
                     data['ymtotal'] = a['total']
-            except Exception,e:
-                print e
+            # except Exception,e:
+            #     print e
                 return render_template("/test/count.html",allcount = data['allcount'] , anumpeople = data['anumpeople'] , mcount = data['mcount'] , mnumpeople = data['mnumpeople'] , ycount = data['ycount'] , yanumpeople = data['yanumpeople'])
 
 
