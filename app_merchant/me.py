@@ -82,6 +82,7 @@ def messageinfo():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+
 #关于我们内容查询
 @me_api.route('/fm/merchant/v1/me/aboutus/', methods=['POST'])
 def aboutus():
@@ -104,6 +105,13 @@ def aboutus():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+
+#iOS用--关于我们内容查询
+@me_api.route('/fm/merchant/v1/me/aboutus1/', methods=['GET'])
+def aboutus1():
+    return render_template("/test/about.html")
+
+
 #接收的推送消息查询
 @me_api.route('/fm/merchant/v1/me/tomessages/', methods=['POST'])
 def tomessages():

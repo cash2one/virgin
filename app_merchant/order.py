@@ -404,6 +404,7 @@ def ordercounts1():
 
 
 
+
 #1.2.jpg订单-统计|restaurant_id:饭店id|start_time:开始时间|end_time：结束时间|
 @order_api.route('/fm/merchant/v1/order/ordercounts/', methods=['POST'])
 def ordercounts():
@@ -588,6 +589,7 @@ def updateorder():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+
 #1.1.2修改订单状态
 @order_api.route('/fm/merchant/v1/members/updatestatus/', methods=['POST'])
 def updatestatus():
