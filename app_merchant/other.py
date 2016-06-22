@@ -129,24 +129,28 @@ def counts():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
-#二维码生成
+#获取用户表二维码
 @other_api.route('/fm/merchant/v1/getqrcode/',methods=['POST'])
 def getqrcode():
-    # if request.method=='POST':
-    #     if auto.decodejwt(request.form['jwtstr']):
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
 
             try:
-                test = tool.qrcode("测试二维码")
-                return test
+                item = mongo.webuser.find({"_id":ObjectId(request.form['webuser_id'])})
+                qrcode_img = ''
+                for i in item:
+                    qrcode_img = i['qrcode_img']
+                result=tool.return_json(0,"field",False,qrcode_img)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e
                 result=tool.return_json(0,"field",False,None)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
-    #     else:
-    #         result=tool.return_json(0,"field",False,None)
-    #         return json_util.dumps(result,ensure_ascii=False,indent=2)
-    # else:
-    #     return abort(403)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
 
 #扫二维码
 @other_api.route('/fm/merchant/v1/webuserqrcode/',methods=['POST'])
