@@ -496,11 +496,11 @@ def tuisong(mfrom='', mto='57396ec17c1f31a9cce960f4_57329b1f0c1d9b2f4c85f8e3', t
         }
         if androidreq['success'] and iosreq['success']:
             mongo.message.insert(insertjson)
-            return True
+            return True,androidreq['Message'],iosreq['Message']
         else:
             return False,androidreq['Message'],iosreq['Message']
     except:
-        return False
+        return False,androidreq['Message'],iosreq['Message']
 
 if __name__ == '__main__':
     print qrcode("测试")

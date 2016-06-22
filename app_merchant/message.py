@@ -23,7 +23,7 @@ mongo=conn.mongo_conn()
 mongouser=conn.mongo_conn_user()
 
 message_api = Blueprint('message_api', __name__, template_folder='templates')
-#推送yh_3
+#接单 推送yh_3
 @message_api.route('/fm/merchant/v1/message/sendmessage_yh_3/', methods=['POST'])
 def sendmessage_yh_3():
     if request.method=='POST':
@@ -79,7 +79,7 @@ def sendmessage_yh_3():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
-#推送yh_6
+#拒单 推送yh_6
 @message_api.route('/fm/merchant/v1/message/sendmessage_yh_6/', methods=['POST'])
 def sendmessage_yh_6():
     if request.method=='POST':
