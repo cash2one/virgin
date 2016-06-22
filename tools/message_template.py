@@ -104,7 +104,7 @@ mgs_template ={
     },
     "yh_6":{ #推送原因：订单被拒绝
         "title":"很遗憾，店铺无法为你安排就餐。",
-        "text":"回执时间：%(data)s ,处理结果：%(cont)s",
+        "text":"回执时间：%(data)s ,处理结果：很遗憾，店铺无法为你安排就餐",
         "goto":"5",
         "is_push":True,
         "channel":"订单"
