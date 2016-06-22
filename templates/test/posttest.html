@@ -29,6 +29,22 @@
 </script>
 </head>
 <body>
+{#<fieldset><legend>修改版本信息(外网)</legend>#}
+{#<form action="/api/versioninfo/" method="post">#}
+{#    version <input type="text" name="version">#}
+{#    describe <input type="text" name="describe">#}
+{#    上传apk<input name="topImage" id="topImage" type="file" />#}
+{#    <input type="submit" value="提交" title="提交"/>#}
+{#</form>#}
+{#</fieldset>#}
+<fieldset><legend>修改版本信息(内网)</legend>
+<form action="/versioninfo/" method="post">
+    version <input type="text" name="version"><br>
+    describe <input type="text" name="describe"><br>
+    上传apk<input name="topImage" id="topImage" type="file" /><br>
+    <input type="submit" value="提交" title="提交"/>
+</form>
+</fieldset>
 <fieldset><legend>1.1.0和1.1.3JPG订单测试</legend>
 <form action="/fm/merchant/v1/order/allorder/" method="post">
     jwtstr： <input type="text"  name="jwtstr" />
@@ -124,6 +140,12 @@
 </fieldset>
 <fieldset><legend>关于我们html</legend>
 <form action="/fm/merchant/v1/me/aboutus1/" method="post" enctype="multipart/form-data">
+     jwt：<input type="text"  name="jwtstr"  value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs"/>
+    <input type="submit" value="提交">
+</form>
+</fieldset>
+<fieldset><legend>用户二维码内容</legend>
+<form action="/fm/merchant/v1/webuserqrcode/" method="post" enctype="multipart/form-data">
      jwt：<input type="text"  name="jwtstr"  value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs"/>
     <input type="submit" value="提交">
 </form>
