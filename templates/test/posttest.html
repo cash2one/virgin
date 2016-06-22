@@ -37,6 +37,15 @@
 {#    <input type="submit" value="提交" title="提交"/>#}
 {#</form>#}
 {#</fieldset>#}
+<fieldset><legend>推送测试</legend>
+<form action="/fm/merchant/v1/message/sendmessage_yh_3/" method="post">
+    jwt：<input type="text"  name="jwtstr"  value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs"/>
+   restaurant_id：<input type="text"  name="restaurant_id" value="57329b1f0c1d9b2f4c85f8e3" />
+   order_id：  <input type="text"  name="order_id" value="572ff4f6ed222e1e28b56056" />
+   webuserids:  <input type="text"  name="webuserids" value="57396ec17c1f31a9cce960f4_57396fd67c1f31a9cce960f8" />
+    <input type="submit" value="提交">
+</form>
+ </fieldset>
 <fieldset><legend>修改版本信息(内网)</legend>
 <form action="/versioninfo/" method="post">
     version <input type="text" name="version"><br>

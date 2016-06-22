@@ -343,8 +343,8 @@ def qrcode(data, version=None, error_correction='L', box_size=10, border=0, fit=
     return uu
 #mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|
 # appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
-def tuisong(mfrom='', mto='57396ec17c1f31a9cce960f4_57329b1f0c1d9b2f4c85f8e3', title='', info='',goto='',channel='',type='0',
-            appname='foodmap_user',msgtype='message',target='device',ext='', ispush=True):
+def tuisong(mfrom='', mto='', title='', info='',goto='',channel='',type='',
+            appname='',msgtype='',target='',ext='', ispush=True):
 
     androidreq = {}
     iosreq = {}
