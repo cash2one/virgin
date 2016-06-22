@@ -25,12 +25,51 @@ table = {'status': 'int',
          'kind':'str'
       }
 coupons_api = Blueprint('coupons_api', __name__, template_folder='templates')
+def checkcoupons(restaurant_id,):
+    dict = {
+        "restaurant_id" : ObjectId(restaurant_id),
+        "type" : "1",
+        "showtime_start" : datetime.datetime.now(),
+        "showtime_end" : datetime.datetime.now(),
+        "num" : -1,
+        "cross-claim" : 0.0,
+        "content" : "",
+        "indate_start" : datetime.datetime.now(),
+        "indate_end" : datetime.datetime.now(),
+        "rule" : "0",
+        "money" : 0.0,
+        "kind" : "1",
+    }
+    dict2 = {
+        "restaurant_id" : ObjectId(restaurant_id),
+        "type" : "1",
+        "showtime_start" : datetime.datetime.now(),
+        "showtime_end" : datetime.datetime.now(),
+        "num" : -1,
+        "cross-claim" : 0.0,
+        "content" : "",
+        "indate_start" : datetime.datetime.now(),
+        "indate_end" : datetime.datetime.now(),
+        "rule" : "0",
+        "money" : 0.0,
+        "kind" : "2",
+    }
+    flag = True
+    item = mongo.coupons.find({"restaurant_id":ObjectId(restaurant_id)})
+    for i in item:
+        flag = False
+    # print json_util.dumps(item,ensure_ascii=False,indent=2) == []
+    if flag:
+        print 'in'
+        mongo.coupons.insert(dict)
+        mongo.coupons.insert(dict2)
 #店粉优惠查询
 @coupons_api.route('/fm/merchant/v1/coupons/findcoupons/', methods=['POST'])
 def findcoupons():
     if request.method=='POST':
         try:
             if auto.decodejwt(request.form['jwtstr']):
+                checkcoupons(request.form['restaurant_id'])
                 pdict = {
                     'restaurant_id':request.form['restaurant_id'],
                     'kind':'1',
