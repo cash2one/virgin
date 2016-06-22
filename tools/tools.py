@@ -345,7 +345,7 @@ def qrcode(data, version=None, error_correction='L', box_size=10, border=0, fit=
 # appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
 def tuisong(mfrom='', mto='', title='', info='',goto='',channel='',type='',
             appname='',msgtype='',target='',ext='', ispush=True):
-
+    baseurl = 'http://127.0.0.1:10035'
     androidreq = {}
     iosreq = {}
     try:
@@ -412,14 +412,14 @@ def tuisong(mfrom='', mto='', title='', info='',goto='',channel='',type='',
                     #固定模板
                     androidmsg = {"appname": appname, "type": msgtype, "Message": info, "Target": "device", "TargetValue": identandroid}
                     #requests方式POST
-                    androidreq = requests.post('http://125.211.222.237:11035/push.android',data=androidmsg).json()
+                    androidreq = requests.post(baseurl+'/push.android',data=androidmsg).json()
                     if androidreq['success']:
                         print '安卓消息个推推送成功！'
                     else:
                         print '安卓消息个推推送失败！原因'+str(androidreq['Message'])
                 if identios!='' and ispush:
                     iosmsg = {"appname": appname, "type": msgtype, "Message": info, "Summary": title, "Target": "device", "TargetValue": identios}
-                    iosreq = requests.post('http://125.211.222.237:11035/push.ios',data=iosmsg).json()
+                    iosreq = requests.post(baseurl+'/push.ios',data=iosmsg).json()
 
                     if iosreq['success']:
                         print 'IOS消息个推推送成功！'
@@ -429,7 +429,7 @@ def tuisong(mfrom='', mto='', title='', info='',goto='',channel='',type='',
             else:
                 if identandroid!='' and ispush:
                     androidmsg = {"appname": appname, "type": msgtype, "Title": title, "Summary": "1", "Target": "device", "TargetValue": identandroid,"ext":ext}
-                    androidreq = requests.post('http://125.211.222.237:11035/push.android',data=androidmsg).json()
+                    androidreq = requests.post(baseurl+'/push.android',data=androidmsg).json()
 
                     if androidreq['success']:
                         print '安卓通知个推推送成功！'
@@ -438,7 +438,7 @@ def tuisong(mfrom='', mto='', title='', info='',goto='',channel='',type='',
                 print identios!='' and ispush
                 if identios!='' and ispush:
                     iosmsg = {"appname": appname, "type": msgtype, "Summary": title, "Target": "device", "TargetValue": identios,"ext":ext}
-                    iosreq = requests.post('http://125.211.222.237:11035/push.ios',data=iosmsg).json()
+                    iosreq = requests.post(baseurl+'/push.ios',data=iosmsg).json()
                     if iosreq['success']:
                         print 'IOS通知个推推送成功！'
                     else:
@@ -447,14 +447,14 @@ def tuisong(mfrom='', mto='', title='', info='',goto='',channel='',type='',
             if msgtype == 'message':
                 if ispush:
                     androidmsg = {"appname": appname, "type": msgtype, "Message": info, "Target": "all", "TargetValue": "all"}
-                    androidreq = requests.post('http://125.211.222.237:11035/push.android',data=androidmsg).json()
+                    androidreq = requests.post(baseurl+'/push.android',data=androidmsg).json()
 
                     if androidreq['success']:
                         print '安卓消息全推推送成功！'
                     else:
                         print '安卓消息全推推送失败！原因'+str(androidreq['Message'])
                     iosmsg = {"appname": appname, "type": msgtype, "Message": info, "Summary": title, "Target": "all", "TargetValue": "all"}
-                    iosreq = requests.post('http://125.211.222.237:11035/push.ios',data=iosmsg).json()
+                    iosreq = requests.post(baseurl+'/push.ios',data=iosmsg).json()
 
                     if iosreq['success']:
                         print 'IOS消息全推推送成功！'
@@ -463,14 +463,14 @@ def tuisong(mfrom='', mto='', title='', info='',goto='',channel='',type='',
             else:
                 if ispush:
                     androidmsg = {"appname": appname, "type": msgtype, "Title": title, "Summary": "1", "Target": "all", "TargetValue": "all","ext":ext}
-                    androidreq = requests.post('http://125.211.222.237:11035/push.android',data=androidmsg).json()
+                    androidreq = requests.post(baseurl+'/push.android',data=androidmsg).json()
 
                     if androidreq['success']:
                         print '安卓通知全推推送成功！'
                     else:
                         print '安卓通知全推推送失败！原因'+str(androidreq['Message'])
                     iosmsg = {"appname": appname, "type": msgtype, "Summary": title, "Target": "all", "TargetValue": "all","ext":ext}
-                    iosreq = requests.post('http://125.211.222.237:11035/push.ios',data=iosmsg).json()
+                    iosreq = requests.post(baseurl+'/push.ios',data=iosmsg).json()
 
                     if iosreq['success']:
                         print 'IOS通知全推推送成功！'
