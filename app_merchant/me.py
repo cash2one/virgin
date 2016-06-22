@@ -110,10 +110,18 @@ def aboutus():
 @me_api.route('/fm/merchant/v1/me/aboutus1/', methods=['POST'])
 def aboutus1():
     if auto.decodejwt(request.form['jwtstr']):
-        return render_template("/test/about.html")
+        json={
+            "url":"/fm/merchant/v1/me/abouthtml/"
+        }
+        result=tool.return_json(0,"success",True,json)
+        return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         result=tool.return_json(0,"field",False,None)
         return json_util.dumps(result,ensure_ascii=False,indent=2)
+
+@me_api.route('/fm/merchant/v1/me/abouthtml/',methods=["GET"])
+def abouthtml():
+    return render_template("/test/about.html")
 
 #接收的推送消息查询
 @me_api.route('/fm/merchant/v1/me/tomessages/', methods=['POST'])
