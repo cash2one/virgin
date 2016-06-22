@@ -35,6 +35,18 @@ def appversion():
     result=tool.return_json(0,"success",jwtmsg,json)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
 
+@other_api.route('/fm/merchant/v1/addversion/',methods=['POST'])
+def addversion():
+    if request.method=="POST":
+        addversion=request.form["addversion"]
+        describe=request.form["describe"]
+        apk = request.form["topImage"]
+
+
+# version <input type="text" name="version">
+#     describe <input type="text" name="describe">
+#     上传apk<input name="topImage" id="topImage" type="file" />
+
 #上传图片的接口   参数：topImage
 @other_api.route('/fm/merchant/v1/uploadimg/', methods=['POST'])
 def up():
@@ -135,3 +147,22 @@ def getqrcode():
     #         return json_util.dumps(result,ensure_ascii=False,indent=2)
     # else:
     #     return abort(403)
+
+#扫二维码
+@other_api.route('/fm/merchant/v1/webuserqrcode/',methods=['POST'])
+def webuserqrcode():
+    if auto.decodejwt(request.form['jwtstr']):
+        json={
+            "url":"/fm/merchant/v1/me/webuserqrcodehtml/"
+        }
+        result=tool.return_json(0,"success",True,json)
+        return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        result=tool.return_json(0,"field",False,None)
+        return json_util.dumps(result,ensure_ascii=False,indent=2)
+
+
+@other_api.route('/fm/merchant/v1/me/webuserqrcodehtml/',methods=["GET"])
+def abouthtml():
+    return render_template("/test/webuserqrcode.html")
+
