@@ -182,8 +182,12 @@ def getqrcode():
 def webuserqrcode():
     if auto.decodejwt(request.form['jwtstr']):
         json={
-            "url":"/fm/merchant/v1/me/webuserqrcodehtml/"
+            "url":"/fm/merchant/v1/me/webuserqrcodehtml/",
+            "restaurant_id": request.form['restaurant_id'],
+            "webuser_id" : request.form['webuser_id']
         }
+
+
         result=tool.return_json(0,"success",True,json)
         return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
