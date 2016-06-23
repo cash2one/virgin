@@ -35,13 +35,32 @@ def appversion():
     result=tool.return_json(0,"success",jwtmsg,json)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
 
+
+
+
 @other_api.route('/fm/merchant/v1/addversion/',methods=['POST'])
 def addversion():
     if request.method=="POST":
-        addversion=request.form["addversion"]
+        addversion=request.form["version"]
         describe=request.form["describe"]
         apk = request.form["topImage"]
+    apkname = "meishiditu"+addversion+".apk"
+    json={
+        "url" : apkname,
+        "addtime" : datetime.datetime.now(),
+        "version" : addversion,
+        "describe" : describe
+    }
 
+    count = mongo.android_version.count({"version":addversion})
+    if count<=0:
+        item = mongo.android_version.insert(json)
+        upload = "/www/site/apk/"+apkname
+        file.save(upload)
+        result=tool.return_json(0,"success",True,json)
+    else:
+        result=tool.return_json(-1,"版本号已经存在，请更换！",True,json)
+    return json_util.dumps(result,ensure_ascii=False,indent=2)
 
 # version <input type="text" name="version">
 #     describe <input type="text" name="describe">
