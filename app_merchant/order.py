@@ -679,9 +679,9 @@ def insertordertest():
                 rent = mongo.restaurant.find({"_id":ObjectId(request.form['restaurant_id'])})
                 dishs = tools.getdishsitem(str(request.form['restaurant_id']))
                 l=[]
-                b = random.randint(0,dishs.count())
+                b = random.randint(0,len(dishs))
                 for i in range(b):
-                    x=random.randint(0,dishs.count())
+                    x=random.randint(0,len(dishs))
                     if x in l:
                         continue #这样你就不会选到想同的数了！
                     else:
