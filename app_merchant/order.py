@@ -688,7 +688,7 @@ def insertordertest():
                 #         l.append(x)
                 # for a in l:
                 orderdishs=tools.ceshi(str(request.form['restaurant_id']))
-                print orderdishs
+                # print orderdishs
                 if int(type)==1 and len(orderdishs)>=0:#点菜订单
                     type = 1
                 else:
