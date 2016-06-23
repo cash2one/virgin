@@ -542,9 +542,9 @@ def ceshi(restaurant_id):
 
 
 
-if __name__ == '__main__':
-    ceshi("57340b330c1d9b314998892f")
-    pass
+# if __name__ == '__main__':
+#     ceshi("57340b330c1d9b314998892f")
+#     pass
     # print qrcode("测试")
     # dish = {
     #                 "is_enabled" : 'str',
