@@ -102,6 +102,10 @@ def findalldis():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
             try:
+                # pageindex = request.form["pageindex"]
+                # pagenum = 10
+                # star = (int(pageindex)-1)*pagenum
+                # end = (pagenum*int(pageindex))
                 type = int(request.form['type'])
                 alldata = {}
                 dishs_list = []

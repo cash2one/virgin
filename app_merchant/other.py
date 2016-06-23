@@ -35,6 +35,43 @@ def appversion():
     result=tool.return_json(0,"success",jwtmsg,json)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
 
+
+
+
+@other_api.route('/fm/merchant/v1/setversion/',methods=['POST'])
+def addversion():
+    if request.method=="POST":
+        addversion=request.form["version"]
+        describe=request.form["describe"]
+        f = request.files['file']
+    if file:
+        print  1
+        apkname = "meishiditu.apk"
+        json={
+            "url" : settings.getapk+ apkname,
+            "addtime" : datetime.datetime.now(),
+            "version" : addversion,
+            "describe" : describe
+        }
+
+        count = mongo.android_version.count({"version":addversion})
+        upload = "/www/site/apk/"+apkname
+        f.save(upload)
+        if count<=0:
+            item = mongo.android_version.insert(json)
+        else:
+            # item = mongo.android_version.find_one({"version":addversion})
+            # json["addtime"]= item["addtime"]
+            mongo.android_version.update({"version":addversion},{"url":json["url"],"version":json["version"],"describe":json["describe"]})
+        result=tool.return_json(0,"设置成功",True,json)
+    else:
+        result=tool.return_json(-1,"您没有上传apk文件！",True,"")
+    return json_util.dumps(result,ensure_ascii=False,indent=2)
+
+# version <input type="text" name="version">
+#     describe <input type="text" name="describe">
+#     上传apk<input name="topImage" id="topImage" type="file" />
+
 #上传图片的接口   参数：topImage
 @other_api.route('/fm/merchant/v1/uploadimg/', methods=['POST'])
 def up():
@@ -117,21 +154,48 @@ def counts():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
-#二维码生成
+#获取用户表二维码
 @other_api.route('/fm/merchant/v1/getqrcode/',methods=['POST'])
 def getqrcode():
-    # if request.method=='POST':
-    #     if auto.decodejwt(request.form['jwtstr']):
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
 
             try:
-                test = tool.qrcode("测试二维码")
-                return test
+                item = mongo.webuser.find({"_id":ObjectId(request.form['webuser_id'])})
+                qrcode_img = ''
+                for i in item:
+                    qrcode_img = i['qrcode_img']
+                result=tool.return_json(0,"field",False,qrcode_img)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e
                 result=tool.return_json(0,"field",False,None)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
-    #     else:
-    #         result=tool.return_json(0,"field",False,None)
-    #         return json_util.dumps(result,ensure_ascii=False,indent=2)
-    # else:
-    #     return abort(403)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+
+#扫二维码
+@other_api.route('/fm/merchant/v1/webuserqrcode/',methods=['POST'])
+def webuserqrcode():
+    if auto.decodejwt(request.form['jwtstr']):
+        json={
+            "url":"/fm/merchant/v1/me/webuserqrcodehtml/",
+            "restaurant_id": request.form['restaurant_id'],
+            "webuser_id" : request.form['webuser_id']
+        }
+
+
+        result=tool.return_json(0,"success",True,json)
+        return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        result=tool.return_json(0,"field",False,None)
+        return json_util.dumps(result,ensure_ascii=False,indent=2)
+
+
+@other_api.route('/fm/merchant/v1/me/webuserqrcodehtml/',methods=["GET"])
+def abouthtml():
+    return render_template("/test/webuserqrcode.html")
+

@@ -107,10 +107,21 @@ def aboutus():
         return abort(403)
 
 #iOS用--关于我们内容查询
-@me_api.route('/fm/merchant/v1/me/aboutus1/', methods=['GET'])
+@me_api.route('/fm/merchant/v1/me/aboutus1/', methods=['POST'])
 def aboutus1():
-    return render_template("/test/about.html")
+    if auto.decodejwt(request.form['jwtstr']):
+        json={
+            "url":"/fm/merchant/v1/me/abouthtml/"
+        }
+        result=tool.return_json(0,"success",True,json)
+        return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        result=tool.return_json(0,"field",False,None)
+        return json_util.dumps(result,ensure_ascii=False,indent=2)
 
+@me_api.route('/fm/merchant/v1/me/abouthtml/',methods=["GET"])
+def abouthtml():
+    return render_template("/test/about.html")
 
 #接收的推送消息查询
 @me_api.route('/fm/merchant/v1/me/tomessages/', methods=['POST'])

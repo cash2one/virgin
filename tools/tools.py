@@ -341,8 +341,13 @@ def qrcode(data, version=None, error_correction='L', box_size=10, border=0, fit=
     u1 = settings.getimageIP + str(uu)
     os.remove(osstr)
     return uu
-def tuisong(mfrom='', mto='57396ec17c1f31a9cce960f4_57329b1f0c1d9b2f4c85f8e3', title='', info='',type='0',appname='foodmap_user',msgtype='message',target='device', ispost=True):
-
+#mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|
+# appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
+def tuisong(mfrom='', mto='', title='', info='',goto='',channel='',type='',
+            appname='',msgtype='',target='',ext='', ispush=True):
+    baseurl = 'http://127.0.0.1:10035'
+    androidreq = {}
+    iosreq = {}
     try:
         #以下是获取消息来源名
         infofromname = ''
@@ -392,54 +397,89 @@ def tuisong(mfrom='', mto='57396ec17c1f31a9cce960f4_57329b1f0c1d9b2f4c85f8e3', t
         identandroid = ",".join(identandroidlist)
         identios = ",".join(identioslist)
         print identandroid,identios
+        issave = True
         #阿里网关参数安卓
         androidmsg = {}
         #阿里网关参数IOS
         iosmsg = {}
         #阿里网关返回参数
-        req = None
+
         #target是all表示发送给所有设备
         if target=='device':
             #message是消息
             if msgtype == 'message':
                 #分别判断设备号数组串，为空就不能发
-                if identandroid!='' and ispost:
+                if identandroid!='' and ispush:
                     #固定模板
                     androidmsg = {"appname": appname, "type": msgtype, "Message": info, "Target": "device", "TargetValue": identandroid}
                     #requests方式POST
-                    req = requests.post('http://125.211.222.237:11035/push.android',data=androidmsg)
-                    print '安卓消息个推推送成功！',req.json()
-                if identios!='' and ispost:
+                    androidreq = requests.post(baseurl+'/push.android',data=androidmsg).json()
+                    issave = androidreq['success']
+                    if androidreq['success']:
+                        print '安卓消息个推推送成功！'
+                    else:
+                        print '安卓消息个推推送失败！原因'+str(androidreq['Message'])
+                if identios!='' and ispush:
                     iosmsg = {"appname": appname, "type": msgtype, "Message": info, "Summary": title, "Target": "device", "TargetValue": identios}
-                    req = requests.post('http://125.211.222.237:11035/push.ios',data=iosmsg)
-                    print 'IOS消息个推推送成功！',req.json()
+                    iosreq = requests.post(baseurl+'/push.ios',data=iosmsg).json()
+                    issave = iosreq['success']
+                    if iosreq['success']:
+                        print 'IOS消息个推推送成功！'
+                    else:
+                        print 'IOS消息个推推送失败！原因'+str(iosreq['Message'])
             #notice是通知
             else:
-                if identandroid!='' and ispost:
-                    androidmsg = {"appname": appname, "type": msgtype, "Title": title, "Summary": info, "Target": "device", "TargetValue": identandroid}
-                    req = requests.post('http://125.211.222.237:11035/push.android',data=androidmsg)
-                    print '安卓通知个推推送成功！',req.json()
-                if identios!='' and ispost:
-                    iosmsg = {"appname": appname, "type": msgtype, "Summary": info, "Target": "device", "TargetValue": identios}
-                    req = requests.post('http://125.211.222.237:11035/push.ios',data=iosmsg)
-                    print 'IOS通知个推推送成功！',req.json()
+
+                if identandroid!='' and ispush:
+                    androidmsg = {"appname": appname, "type": msgtype, "Title": title, "Summary": "1", "Target": "device", "TargetValue": identandroid,"ext":ext}
+                    androidreq = requests.post(baseurl+'/push.android',data=androidmsg).json()
+                    issave = androidreq['success']
+                    if androidreq['success']:
+                        print '安卓通知个推推送成功！'
+                    else:
+                        print '安卓通知个推推送失败！原因'+str(androidreq['Message'])
+                print identios!='' and ispush
+                if identios!='' and ispush:
+                    iosmsg = {"appname": appname, "type": msgtype, "Summary": title, "Target": "device", "TargetValue": identios,"ext":ext}
+                    iosreq = requests.post(baseurl+'/push.ios',data=iosmsg).json()
+                    issave = iosreq['success']
+                    if iosreq['success']:
+                        print 'IOS通知个推推送成功！'
+                    else:
+                        print 'IOS通知个推推送失败！原因'+str(iosreq['Message'])
         elif target=='all':
             if msgtype == 'message':
-                if ispost:
+                if ispush:
                     androidmsg = {"appname": appname, "type": msgtype, "Message": info, "Target": "all", "TargetValue": "all"}
-                    req = requests.post('http://125.211.222.237:11035/push.android',data=androidmsg)
-                    print '安卓消息全推推送成功！',req.json()
+                    androidreq = requests.post(baseurl+'/push.android',data=androidmsg).json()
+                    issave = androidreq['success']
+                    if androidreq['success']:
+                        print '安卓消息全推推送成功！'
+                    else:
+                        print '安卓消息全推推送失败！原因'+str(androidreq['Message'])
                     iosmsg = {"appname": appname, "type": msgtype, "Message": info, "Summary": title, "Target": "all", "TargetValue": "all"}
-                    req = requests.post('http://125.211.222.237:11035/push.ios',data=iosmsg)
-                    print 'IOS消息全推推送成功！',req.json()
+                    iosreq = requests.post(baseurl+'/push.ios',data=iosmsg).json()
+                    issave = iosreq['success']
+                    if iosreq['success']:
+                        print 'IOS消息全推推送成功！'
+                    else:
+                        print 'IOS消息全推推送失败！原因'+str(iosreq['Message'])
             else:
-                if ispost:
-                    androidmsg = {"appname": appname, "type": msgtype, "Title": title, "Summary": info, "Target": "all", "TargetValue": "all"}
-                    req = requests.post('http://125.211.222.237:11035/push.android',data=androidmsg)
-                    print '安卓通知全推推送成功！',req.json()
-                    iosmsg = {"appname": appname, "type": msgtype, "Summary": info, "Target": "all", "TargetValue": "all"}
-                    req = requests.post('http://125.211.222.237:11035/push.ios',data=iosmsg)
-                    print 'IOS通知全推推送成功！',req.json()
+                if ispush:
+                    androidmsg = {"appname": appname, "type": msgtype, "Title": title, "Summary": "1", "Target": "all", "TargetValue": "all","ext":ext}
+                    androidreq = requests.post(baseurl+'/push.android',data=androidmsg).json()
+                    issave = androidreq['success']
+                    if androidreq['success']:
+                        print '安卓通知全推推送成功！'
+                    else:
+                        print '安卓通知全推推送失败！原因'+str(androidreq['Message'])
+                    iosmsg = {"appname": appname, "type": msgtype, "Summary": title, "Target": "all", "TargetValue": "all","ext":ext}
+                    iosreq = requests.post(baseurl+'/push.ios',data=iosmsg).json()
+                    issave = iosreq['success']
+                    if iosreq['success']:
+                        print 'IOS通知全推推送成功！'
+                    else:
+                        print 'IOS通知全推推送失败！原因'+str(iosreq['Message'])
         else:
             pass
         insertjson = {
@@ -452,14 +492,40 @@ def tuisong(mfrom='', mto='57396ec17c1f31a9cce960f4_57329b1f0c1d9b2f4c85f8e3', t
                 },
                 "type" : 0,
                 "add_time" : datetime.datetime.now(),
+                "goto":goto,
+                "is_push":ispush,
+                "channel":channel,
                 "androidmsg" : androidmsg,
                 "iosmsg": iosmsg
         }
-        mongo.message.insert(insertjson)
+        if issave:
+            mongo.message.insert(insertjson)
+            return True
+        else:
+            return False
     except:
         return False
-    return True
+
+
+def getdishsitem(restaurant_id):
+     rent = mongo.restaurant.find_one({"_id":ObjectId(restaurant_id)},{"menu":1,"_id":0})
+     dishs=[]
+     for a in rent["menu"]:
+         if str(a["name"]) !="优惠菜" and str(a["name"]) != "推荐菜" and int(a["dish_type"])==1:
+             for b in a["dishs"]:
+                 print b
+                 dishs.append(b)
+     return dishs
+
+
+
+
+
+
+
 if __name__ == '__main__':
+    getdishsitem("57340b330c1d9b314998892f")
+    pass
     print qrcode("测试")
     dish = {
                     "is_enabled" : 'str',
@@ -506,3 +572,6 @@ if __name__ == '__main__':
     # print first.submit2db()
     # print Restaurant({'dish_id': '201605111053268902'}).info
     pass
+
+
+
