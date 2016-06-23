@@ -513,7 +513,7 @@ def getdishsitem(restaurant_id):
      for a in rent["menu"]:
          if str(a["name"]) !="优惠菜" and str(a["name"]) != "推荐菜" and int(a["dish_type"])==1:
              for b in a["dishs"]:
-                 print b
+                 # print b
                  dishs.append(b)
      return dishs
 
