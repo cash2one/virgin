@@ -55,13 +55,12 @@ def addversion():
         }
 
         count = mongo.android_version.count({"version":addversion})
-        if count<=0:
-            upload = "/www/site/apk/"+apkname
-            f.save(upload)
-            item = mongo.android_version.insert(json)
-            result=tool.return_json(0,"success",True,json)
-        else:
-            result=tool.return_json(-1,"版本号已经存在，请更换！",True,"")
+        upload = "/www/site/apk/"+apkname
+        f.save(upload)
+        if count>0:
+            mongo.android_version.remove({"version":addversion})
+        item = mongo.android_version.insert(json)
+        result=tool.return_json(0,"设置成功",True,json)
     else:
         result=tool.return_json(-1,"您没有上传apk文件！",True,"")
     return json_util.dumps(result,ensure_ascii=False,indent=2)
