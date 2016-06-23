@@ -668,7 +668,7 @@ def insertorder():
 
 #添加订单---添加测试数据用
 @order_api.route('/fm/merchant/v1/order/insertordertest/', methods=['POST'])
-def insertorder():
+def insertordertest():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
 
