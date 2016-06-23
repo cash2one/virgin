@@ -339,3 +339,67 @@ def membersbyname():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+def sendmes(mfrom='', mto='', title='', info=''):
+    try:
+        #以下是获取消息来源名
+        infofromname = ''
+        item = mongo.restaurant.find({"_id":ObjectId(mfrom)})
+        for i in item:
+            infofromname = i['name']
+        #获取消息来源名结束
+        #本地消息表接收方id
+        infoto = {}
+        if mto!='':
+            idlist = mto.split('_')
+            for mid in idlist:
+                if mid != '' and mid != None:
+                    infoto[mid] = 0
+        insertjson = {
+                "infofrom" : ObjectId(mfrom),
+                "infoto" : infoto,
+                "infos" : {
+                    "infotitle" : title,
+                    "information" : info,
+                    "infofromname" : infofromname
+                },
+                "type" : 0,
+                "add_time" : datetime.datetime.now(),
+                "goto":"",
+                "is_push":False,
+                "channel":"",
+                "androidmsg" : "",
+                "iosmsg": ""
+        }
+
+        mongo.message.insert(insertjson)
+        return True
+
+    except:
+        return False
+#店粉 - 发送消息
+@members_api.route('/fm/merchant/v1/members/sendmess/', methods=['POST'])
+def sendmess():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+
+            try:
+
+                if sendmes(mfrom=request.form['restaurant_id'], mto=request.form['webuserids'], title=request.form['title'], info=request.form['info']):
+                    json = {
+                            "status": 1,
+                            "msg":""
+                    }
+                    result=tool.return_json(0,"success",True,json)
+                    return json_util.dumps(result,ensure_ascii=False,indent=2)
+                else:
+                    result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
