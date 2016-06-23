@@ -502,7 +502,26 @@ def tuisong(mfrom='', mto='', title='', info='',goto='',channel='',type='',
     except:
         return False
 
+
+def getdishsitem(restaurant_id):
+     rent = mongo.restaurant.find_one({"_id":ObjectId(restaurant_id)},{"menu":1,"_id":0})
+     dishs=[]
+     for a in rent["menu"]:
+         if str(a["name"]) !="优惠菜" and str(a["name"]) != "推荐菜" and int(a["dish_type"])==1:
+             for b in a["dishs"]:
+                 print b
+                 dishs.append(b)
+     return dishs
+
+
+
+
+
+
+
 if __name__ == '__main__':
+    getdishsitem("57340b330c1d9b314998892f")
+    pass
     print qrcode("测试")
     dish = {
                     "is_enabled" : 'str',
@@ -549,3 +568,6 @@ if __name__ == '__main__':
     # print first.submit2db()
     # print Restaurant({'dish_id': '201605111053268902'}).info
     pass
+
+
+

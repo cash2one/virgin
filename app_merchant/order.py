@@ -1,4 +1,5 @@
 #--coding:utf-8--#
+import random
 import pymongo
 
 
@@ -662,6 +663,80 @@ def insertorder():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+
+
+
+#添加订单---添加测试数据用
+@order_api.route('/fm/merchant/v1/order/insertordertest/', methods=['POST'])
+def insertorder():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+
+            try:
+                type = request.form['type']
+                orderdishs=[]
+
+                rent = mongo.restaurant.find({"_id":ObjectId(request.form['restaurant_id'])})
+                dishs = tools.getdishsitem(str(request.form['restaurant_id']))
+                l=[]
+                b = random.randint(0,dishs.count())
+                for i in range(b):
+                    x=random.randint(0,dishs.count())
+                    if x in l:
+                        continue #这样你就不会选到想同的数了！
+                    else:
+                        l.append(x)
+                for a in l:
+                    orderdishs.append(dishs[int(a)])
+                print orderdishs
+                if int(type)==1 and orderdishs.count()>=0:#点菜订单
+                    type = 1
+                else:
+                    orderdishs=[]
+                    type = 0
+                pdict = {
+                    "username" : request.form["username"],
+                    "status" : 0,
+                    "type" : request.form['type'],
+                    "restaurant_id" : ObjectId(request.form['restaurant_id']),
+                    "preset_dishs" : orderdishs,
+                    "webuser_id" : "",
+                    "phone" : request.form['phone'],
+                    "dis_message" : "",
+                    "room_id" : request.form['room_id'],
+                    "deposit" : 0.0,
+                    "demand" : request.form['demand'],
+                    "total" : 0.0,
+                    "numpeople" : request.form['numpeople'],
+                    "preset_time" : datetime.datetime.strptime(request.form["preset_time"], "%Y-%m-%d %H:%M:%S"),
+                    "add_time" : datetime.datetime.now()
+                }
+                if request.form['is_room'] == 'true':
+                    pdict['is_room'] = True
+                else:
+                    pdict['is_room'] = False
+                mongo.order.insert(pdict)
+                json = {
+                        "status": 1,
+                        "msg":""
+                }
+                result=tool.return_json(0,"success",True,json)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+
+
+
+
+
+
 #订座和订菜查询```
 @order_api.route('/fm/merchant/v1/order/dishroomorder/', methods=['POST'])
 def dishroomorder():
