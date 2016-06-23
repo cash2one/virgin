@@ -60,7 +60,7 @@ def addversion():
         if count<=0:
             item = mongo.android_version.insert(json)
         else:
-            item = mongo.android_version.find({"version":addversion})
+            item = mongo.android_version.find_one({"version":addversion})
             json["addtime"]= item["addtime"]
             mongo.android_version.update(json)
         result=tool.return_json(0,"设置成功",True,json)
