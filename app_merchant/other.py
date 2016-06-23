@@ -43,8 +43,9 @@ def addversion():
     if request.method=="POST":
         addversion=request.form["version"]
         describe=request.form["describe"]
-        file = request.files['apk']
-    if file.filename:
+        file = request.form["fileapk"]
+    if file:
+        print  1
         apkname = "meishiditu"+addversion+".apk"
         json={
             "url" : apkname,
