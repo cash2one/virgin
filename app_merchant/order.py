@@ -676,18 +676,18 @@ def insertordertest():
                 type = request.form['type']
                 orderdishs=[]
 
-                rent = mongo.restaurant.find({"_id":ObjectId(request.form['restaurant_id'])})
-                dishs = tools.getdishsitem(str(request.form['restaurant_id']))
-                l=[]
-                b = random.randint(0,len(dishs))
-                for i in range(b):
-                    x=random.randint(0,len(dishs))
-                    if x in l:
-                        continue #这样你就不会选到想同的数了！
-                    else:
-                        l.append(x)
-                for a in l:
-                    orderdishs.append(dishs[int(a)])
+                # rent = mongo.restaurant.find({"_id":ObjectId(request.form['restaurant_id'])})
+                # dishs = tools.getdishsitem(str(request.form['restaurant_id']))
+                # l=[]
+                # b = random.randint(0,len(dishs))
+                # for i in range(b):
+                #     x=random.randint(0,len(dishs))
+                #     if x in l:
+                #         continue #这样你就不会选到想同的数了！
+                #     else:
+                #         l.append(x)
+                # for a in l:
+                orderdishs=tools.ceshi(str(request.form['restaurant_id']))
                 print orderdishs
                 if int(type)==1 and len(orderdishs)>=0:#点菜订单
                     type = 1
