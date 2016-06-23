@@ -60,9 +60,9 @@ def addversion():
         if count<=0:
             item = mongo.android_version.insert(json)
         else:
-            item = mongo.android_version.find_one({"version":addversion})
-            json["addtime"]= item["addtime"]
-            mongo.android_version.update(json)
+            # item = mongo.android_version.find_one({"version":addversion})
+            # json["addtime"]= item["addtime"]
+            mongo.android_version.update({"version":addversion},{"url":json["url"],"version":json["version"],"describe":json["describe"]})
         result=tool.return_json(0,"设置成功",True,json)
     else:
         result=tool.return_json(-1,"您没有上传apk文件！",True,"")
