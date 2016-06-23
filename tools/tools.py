@@ -521,10 +521,10 @@ def ceshi(restaurant_id):
                 orderdishs=[]
                 dishs =getdishsitem(str(restaurant_id))
                 l=[]
-                print "dishs："
-                print len(dishs)
+                # print "dishs："
+                # print len(dishs)
                 b = random.randint(0,20)
-                print b
+                # print b
                 for i in range(b):
                     x=random.randint(0,len(dishs)-1)
                     print x
@@ -532,12 +532,12 @@ def ceshi(restaurant_id):
                         continue #这样你就不会选到想同的数了！
                     else:
                         l.append(x)
-                print "l:"
-                print l
+                # print "l:"
+                # print l
                 for a in l:
                     orderdishs.append(dishs[int(a)])
-                print orderdishs
-                print len(orderdishs)
+                # print orderdishs
+                # print len(orderdishs)
                 return orderdishs
 
 
