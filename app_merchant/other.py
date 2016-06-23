@@ -44,22 +44,25 @@ def addversion():
         addversion=request.form["version"]
         describe=request.form["describe"]
         file = request.files['apk']
-    apkname = "meishiditu"+addversion+".apk"
-    json={
-        "url" : apkname,
-        "addtime" : datetime.datetime.now(),
-        "version" : addversion,
-        "describe" : describe
-    }
+    if file.filename:
+        apkname = "meishiditu"+addversion+".apk"
+        json={
+            "url" : apkname,
+            "addtime" : datetime.datetime.now(),
+            "version" : addversion,
+            "describe" : describe
+        }
 
-    count = mongo.android_version.count({"version":addversion})
-    if count<=0:
-        item = mongo.android_version.insert(json)
-        upload = "/www/site/apk/"+apkname
-        file.save(upload)
-        result=tool.return_json(0,"success",True,json)
+        count = mongo.android_version.count({"version":addversion})
+        if count<=0:
+            item = mongo.android_version.insert(json)
+            upload = "/www/site/apk/"+apkname
+            file.save(upload)
+            result=tool.return_json(0,"success",True,json)
+        else:
+            result=tool.return_json(-1,"版本号已经存在，请更换！",True,"")
     else:
-        result=tool.return_json(-1,"版本号已经存在，请更换！",True,json)
+        result=tool.return_json(-1,"您没有上传apk文件！",True,"")
     return json_util.dumps(result,ensure_ascii=False,indent=2)
 
 # version <input type="text" name="version">
