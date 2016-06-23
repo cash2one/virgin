@@ -35,13 +35,38 @@ def appversion():
     result=tool.return_json(0,"success",jwtmsg,json)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
 
-@other_api.route('/fm/merchant/v1/addversion/',methods=['POST'])
+
+
+
+@other_api.route('/fm/merchant/v1/setversion/',methods=['POST'])
 def addversion():
     if request.method=="POST":
-        addversion=request.form["addversion"]
+        addversion=request.form["version"]
         describe=request.form["describe"]
-        apk = request.form["topImage"]
+        f = request.files['file']
+    if file:
+        print  1
+        apkname = "meishiditu.apk"
+        json={
+            "url" : settings.getapk+ apkname,
+            "addtime" : datetime.datetime.now(),
+            "version" : addversion,
+            "describe" : describe
+        }
 
+        count = mongo.android_version.count({"version":addversion})
+        upload = "/www/site/apk/"+apkname
+        f.save(upload)
+        if count<=0:
+            item = mongo.android_version.insert(json)
+        else:
+            # item = mongo.android_version.find_one({"version":addversion})
+            # json["addtime"]= item["addtime"]
+            mongo.android_version.update({"version":addversion},{"url":json["url"],"version":json["version"],"describe":json["describe"]})
+        result=tool.return_json(0,"设置成功",True,json)
+    else:
+        result=tool.return_json(-1,"您没有上传apk文件！",True,"")
+    return json_util.dumps(result,ensure_ascii=False,indent=2)
 
 # version <input type="text" name="version">
 #     describe <input type="text" name="describe">

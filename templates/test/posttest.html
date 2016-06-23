@@ -29,14 +29,14 @@
 </script>
 </head>
 <body>
-{#<fieldset><legend>修改版本信息(外网)</legend>#}
-{#<form action="/api/versioninfo/" method="post">#}
-{#    version <input type="text" name="version">#}
-{#    describe <input type="text" name="describe">#}
-{#    上传apk<input name="topImage" id="topImage" type="file" />#}
-{#    <input type="submit" value="提交" title="提交"/>#}
-{#</form>#}
-{#</fieldset>#}
+<fieldset><legend>修改版本信息</legend>
+<form action="/fm/merchant/v1/setversion/" method="post" enctype="multipart/form-data">
+    version <input type="text" name="version">
+    describe <input type="text" name="describe">
+    上传apk<input name="file" type="file" />
+    <input type="submit" value="提交" title="提交"/>提示：输入旧版本号则修改，输入新版本号则添加。
+</form>
+</fieldset>
 <fieldset><legend>推送测试</legend>
 <form action="/fm/merchant/v1/message/sendmessage_yh_3/" method="post">
     jwt：<input type="text"  name="jwtstr"  value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs"/>
