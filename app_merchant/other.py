@@ -38,7 +38,7 @@ def appversion():
 
 
 
-@other_api.route('/fm/merchant/v1/addversion/',methods=['POST'])
+@other_api.route('/fm/merchant/v1/setversion/',methods=['POST'])
 def addversion():
     if request.method=="POST":
         addversion=request.form["version"]
@@ -46,9 +46,9 @@ def addversion():
         f = request.files['file']
     if file:
         print  1
-        apkname = "meishiditu"+addversion+".apk"
+        apkname = "meishiditu.apk"
         json={
-            "url" : apkname,
+            "url" : settings.getapk+ apkname,
             "addtime" : datetime.datetime.now(),
             "version" : addversion,
             "describe" : describe
@@ -57,9 +57,12 @@ def addversion():
         count = mongo.android_version.count({"version":addversion})
         upload = "/www/site/apk/"+apkname
         f.save(upload)
-        if count>0:
-            mongo.android_version.remove({"version":addversion})
-        item = mongo.android_version.insert(json)
+        if count<=0:
+            item = mongo.android_version.insert(json)
+        else:
+            item = mongo.android_version.find({"version":addversion})
+            json["addtime"]= item["addtime"]
+            mongo.android_version.update(json)
         result=tool.return_json(0,"设置成功",True,json)
     else:
         result=tool.return_json(-1,"您没有上传apk文件！",True,"")
