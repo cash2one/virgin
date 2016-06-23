@@ -689,7 +689,7 @@ def insertordertest():
                 for a in l:
                     orderdishs.append(dishs[int(a)])
                 print orderdishs
-                if int(type)==1 and orderdishs.count()>=0:#点菜订单
+                if int(type)==1 and len(orderdishs)>=0:#点菜订单
                     type = 1
                 else:
                     orderdishs=[]
