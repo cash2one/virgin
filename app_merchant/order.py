@@ -317,6 +317,7 @@ def orderinfos():
 @order_api.route('/fm/merchant/v1/order/ordercounts1/', methods=['POST'])
 def ordercounts1():
     if request.method == 'POST':
+        type = request.form["type"] #1- 定座统计   2-消费统计
         if auto.decodejwt(request.form['jwtstr']):
             # try:
                 start=datetime.datetime(*time.strptime(request.form['start_time'],'%Y-%m-%d')[:6])
@@ -398,8 +399,13 @@ def ordercounts1():
                 for a in ymtotal:
                     print a
                     data['ymtotal'] = a['total']
-                json = {
-                    "content":"<p style=\"margin-left: 20px;\">共接收座位预定订单&nbsp;<span style=\"color:red\">"+str(data['allcount'])+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+str(data['anumpeople'])+"</span>&nbsp;人；</p><p style=\"margin-left: 20px;\">美食地图预定&nbsp;<span style=\"color:red\">"+str(data['mcount'])+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+str(data['mnumpeople'])+"</span>&nbsp;人；</p><p style=\"margin-left: 20px;\">其它方式预定&nbsp;<span style=\"color:red\">"+str(data['ycount'])+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+str(data['yanumpeople'])+"</span>&nbsp;人。</p>"
+                if int(type)==1:
+                    content="<p style=\"margin-left: 20px;\">共接收座位预定订单&nbsp;<span style=\"color:red\">"+str(data['allcount'])+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+str(data['anumpeople'])+"</span>&nbsp;人；</p><p style=\"margin-left: 20px;\">美食地图预定&nbsp;<span style=\"color:red\">"+str(data['mcount'])+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+str(data['mnumpeople'])+"</span>&nbsp;人；</p><p style=\"margin-left: 20px;\">其它方式预定&nbsp;<span style=\"color:red\">"+str(data['ycount'])+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+str(data['yanumpeople'])+"</span>&nbsp;人。</p>"
+
+                else:
+                    content = "<p style=\"margin-left: 20px;\">共消费"+str(amtotal)+"</p>"
+                json={
+                    "content":content
                 }
                 result=tool.return_json(0,"success",True,json)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
