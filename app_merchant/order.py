@@ -274,6 +274,10 @@ def orderinfos():
                                         json['rname'] = ''
                         elif key == 'webuser_id':
                             json['webuser_id'] = str(i[key])
+                        elif key == 'total':
+                            json['total'] = str(i[key])
+                        elif key == 'deposit':
+                            json['deposit'] = str(i[key])
                         elif key == 'preset_dishs':
                             pdlist = []
                             pdjson = {}
