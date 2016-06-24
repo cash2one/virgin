@@ -506,50 +506,91 @@ def tuisong(mfrom='', mto='', title='', info='',goto='',channel='',type='',
     except:
         return False
 
-if __name__ == '__main__':
-    print qrcode("测试")
-    dish = {
-                    "is_enabled" : 'str',
-                    "name" : "str",
-                    "shijia" : 'boo',
-                    "price" : 'flo',
-                    "is_recommend" : 'boo',
-                    "discount_price" : 'flo',
-                    "summary" : "str",
-                    "praise_num" : 'int',
-                    "guide_image" : "str",
-                    "type" : "str",
-                    "id" : "str"
-            }
-    obj = '57329b1f0c1d9b2f4c85f8e3'
-    test_dish = {
-        '201605111118535612': {'discount_price': 66,'name': '111111111111111111111111111111111111111111111111'}, '201605111003381987': {'discount_price': 88}
-    }
-    test_menu = {
-        '201605111118535612': {'name': '111111111111111111111111111111111111111111111111'}
-    }
-    test_add = {
-        '201605111038236629': [{
-                    "is_enabled" : True,
-                    "name" : "1981肥牛王",
-                    "shijia" : False,
-                    "price" : 12.0,
-                    "is_recommend" : True,
-                    "danwei" : "",
-                    "discount_price" : 55555555555.0,
-                    "summary" : "",
-                    "praise_num" : 0,
-                    "guide_image" : "",
-                    "type" : "0",
-                    "id" : "201605111041429997"
-                }]
-    }
-    # test_data = mongo.restaurant.find({"_id" : ObjectId("57327f4a8831ac0e5cb96404")},{"menu":1})[0]
-    # print json_util.dumps(test_data,ensure_ascii=False,indent=2)
-    # first = Foormat(obj)
-    # first.add_dish(test_add)
-    # first.re_dish(test_dish)
-    # first.re_menu(test_menu)
-    # print first.submit2db()
-    # print Restaurant({'dish_id': '201605111053268902'}).info
-    pass
+
+def getdishsitem(restaurant_id):
+     rent = mongo.restaurant.find_one({"_id":ObjectId(restaurant_id)},{"menu":1,"_id":0})
+     dishs=[]
+     for a in rent["menu"]:
+         if str(a["name"]) !="优惠菜" and str(a["name"]) != "推荐菜" and int(a["dish_type"])==1:
+             for b in a["dishs"]:
+                 # print b
+                 dishs.append(b)
+     return dishs
+
+def ceshi(restaurant_id):
+                orderdishs=[]
+                dishs =getdishsitem(str(restaurant_id))
+                l=[]
+                # print "dishs："
+                # print len(dishs)
+                b = random.randint(0,20)
+                # print b
+                for i in range(b):
+                    x=random.randint(0,len(dishs)-1)
+                    print x
+                    if x in l:
+                        continue #这样你就不会选到想同的数了！
+                    else:
+                        l.append(x)
+                # print "l:"
+                # print l
+                for a in l:
+                    orderdishs.append(dishs[int(a)])
+                # print orderdishs
+                # print len(orderdishs)
+                return orderdishs
+
+
+
+# if __name__ == '__main__':
+#     ceshi("57340b330c1d9b314998892f")
+#     pass
+    # print qrcode("测试")
+    # dish = {
+    #                 "is_enabled" : 'str',
+    #                 "name" : "str",
+    #                 "shijia" : 'boo',
+    #                 "price" : 'flo',
+    #                 "is_recommend" : 'boo',
+    #                 "discount_price" : 'flo',
+    #                 "summary" : "str",
+    #                 "praise_num" : 'int',
+    #                 "guide_image" : "str",
+    #                 "type" : "str",
+    #                 "id" : "str"
+    #         }
+    # obj = '57329b1f0c1d9b2f4c85f8e3'
+    # test_dish = {
+    #     '201605111118535612': {'discount_price': 66,'name': '111111111111111111111111111111111111111111111111'}, '201605111003381987': {'discount_price': 88}
+    # }
+    # test_menu = {
+    #     '201605111118535612': {'name': '111111111111111111111111111111111111111111111111'}
+    # }
+    # test_add = {
+    #     '201605111038236629': [{
+    #                 "is_enabled" : True,
+    #                 "name" : "1981肥牛王",
+    #                 "shijia" : False,
+    #                 "price" : 12.0,
+    #                 "is_recommend" : True,
+    #                 "danwei" : "",
+    #                 "discount_price" : 55555555555.0,
+    #                 "summary" : "",
+    #                 "praise_num" : 0,
+    #                 "guide_image" : "",
+    #                 "type" : "0",
+    #                 "id" : "201605111041429997"
+    #             }]
+    # }
+    # # test_data = mongo.restaurant.find({"_id" : ObjectId("57327f4a8831ac0e5cb96404")},{"menu":1})[0]
+    # # print json_util.dumps(test_data,ensure_ascii=False,indent=2)
+    # # first = Foormat(obj)
+    # # first.add_dish(test_add)
+    # # first.re_dish(test_dish)
+    # # first.re_menu(test_menu)
+    # # print first.submit2db()
+    # # print Restaurant({'dish_id': '201605111053268902'}).info
+    # pass
+
+
+

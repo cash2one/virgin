@@ -47,7 +47,7 @@ def register():
             if item['success']:
                 from tools.tools import qrcode as qr
                 webuser_add = conn.mongo_conn().webuser.insert({"automembers_id": item['_id'],
-                                                                "nickname": "",
+                                                                "nickname": request.form["nickname"],
                                                                 "gender": 1,
                                                                 "birthday": "",
                                                                 "headimage": "",
@@ -61,8 +61,10 @@ def register():
                                                                       'user_id': str(webuser_add)
                                                                   }
                                                               }))}})
-                print json_util.dumps(user_addqr)
-            return json_util.dumps(item)
+                user_addqr = json_util.loads(json_util.dumps(user_addqr))
+                return json_util.dumps({'success': True, '_id': str(webuser_add)})
+            else:
+                return json_util.dumps(item.update({'success': False}))
         else:
             return json_util.dumps({'success': False, 'info': 'Database already had one'})
             # print str(item)
