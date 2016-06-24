@@ -280,7 +280,7 @@ def orderinfos():
                                 for pd in i[key]:
                                     pdjson['id'] = pd['id']
                                     pdjson['price'] = str(pd['price'])
-                                    pdjson['num'] = str(pd['num'])
+                                    pdjson['num'] = pd['num']
                                     pdjson['name'] = pd['name']
                                     pdjson['discount_price'] = str(pd['discount_price'])
                                     pdlist.append(pdjson)
@@ -292,7 +292,7 @@ def orderinfos():
                                 for pd in i[key]:
                                     pdjson['id'] = pd['id']
                                     pdjson['price'] = str(pd['price'])
-                                    pdjson['num'] = str(pd['num'])
+                                    pdjson['num'] = pd['num']
                                     pdjson['name'] = pd['name']
                                     pdjson['discount_price'] = str(pd['discount_price'])
                                     pdlist.append(pdjson)
