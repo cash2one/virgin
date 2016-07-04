@@ -562,19 +562,20 @@ def orderbypreset():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
 
-            try:
+            # try:
                 data = public.getroomslist(ObjectId(request.form['restaurant_id']),request.form['preset_time'])
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
-            except Exception,e:
-                print e
-                result=tool.return_json(0,"field",False,None)
-                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            # except Exception,e:
+            #     print e
+            #     result=tool.return_json(0,e.message,False,None)
+            #     return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+
 #1.3.2餐位管理修改订单
 @order_api.route('/fm/merchant/v1/members/updateorder/', methods=['POST'])
 def updateorder():
