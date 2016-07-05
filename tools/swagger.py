@@ -60,7 +60,7 @@ class swagger:
         # out+="responses:"
         #
         # print out
-        return "E:/workspace/pythonProject/test/virgin/virgin/ml/orderbypreset.yml"
+        return "/www/site/foodmap/virgin/virgin/ml/orderbypreset.yml"
 
 
 
