@@ -1,0 +1,86 @@
+"餐位管理"
+---
+tags:
+  - 订单
+parameters:
+  - name: restaurant_id
+    in: formData
+    type: string
+    required: true
+    description: 饭店id
+    default: 57329b1f0c1d9b2f4c85f8e3
+  - name: preset_time
+    in: formData
+    type: string
+    required: true
+    description: 预定时间
+    default: 2015-6-16
+  - name: jwtstr
+    in: formData
+    type: string
+    required: true
+    description: jwt
+    default: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs
+responses:
+      500:
+        description: 服务器错误
+      400:
+        description: 服务器错误
+      200:
+        description: 返回格式
+        schema:
+          id: orderbypreset
+          properties:
+            message:
+              type: string
+              description: 接口调用成功
+              default: ""
+            auto:
+              type: boolean
+              description: jwt验证  true 成功 false 失败
+              default: false
+            code:
+              type: int
+              description: 接口状态码
+              default: 0
+            date:
+              type: object
+              description: 接口状态码
+              properties:
+                list:
+                  type: array
+                  description: 包房列表
+                  items:
+                    type: object
+                    properties:
+                      room_people_num:
+                        type: string
+                        default: "10-12人包房"
+                      room_count:
+                         type: array
+                         description: 接口调用成功
+                         items:
+                           type: object
+                           properties:
+                               room_id:
+                                  type: string
+                                  default: "201605111054507163"
+                               room_name:
+                                 type: string
+                                 description: 接口调用成功
+                                 default: 中包(1间)
+                               orderinfo:
+                                      type: array
+                                      description: 接口调用成功
+                                      items:
+                                         type: object
+                                         properties:
+                                            id:
+                                              type: string
+                                              default: "572ff4f6ed222e1e28b56056"
+                                            preset_time:
+                                              type: string
+                                              default: "10:10"
+                                            numpeople:
+                                              type: int
+                                              default: 8
