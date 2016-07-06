@@ -132,7 +132,7 @@ def tomessages():
         if auto.decodejwt(request.form['jwtstr']):
             try:
                 pageindex = request.form["pageindex"]
-                pagenum = 10
+                pagenum = 20
                 star = (int(pageindex)-1)*pagenum
                 end = (pagenum*int(pageindex))
                 item = mongo.message.find({"$or":[{"infoto."+str(request.form["restaurant_id"]) : 1},{"infoto."+str(request.form["restaurant_id"]) : 0}]}).sort("add_time", pymongo.DESCENDING)[star:end]
