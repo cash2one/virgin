@@ -41,6 +41,8 @@ def frommessages():
                             json['title'] = i['infos']['infotitle']
                         elif key == 'add_time':
                             json['add_time'] = i[key].strftime('%Y年%m月%d日')
+                        elif key == 'goto':
+                            json['goto'] = i[key]
                     list.append(json)
                 data['list'] = list
                 result=tool.return_json(0,"success",True,data)
