@@ -20,8 +20,10 @@ from app_merchant.auto import auto_api
 from app_user.user import user_api
 from app_user.comment import user_comment
 from app_merchant.comment import restaurant_comment
+from flasgger import Swagger
 
 app = Flask(__name__)
+Swagger(app)
 app.config['DEBUG'] = True
 
 app.register_blueprint(error_api)
