@@ -150,6 +150,8 @@ def tomessages():
                             json['add_time'] = i[key].strftime('%Y年%m月%d日')
                         elif key == 'infoto':
                             json['status'] = i['infoto'][str(request.form["restaurant_id"])]
+                        elif key == 'goto':
+                            json['goto'] = i[key]
                     list.append(json)
                 data['list'] = list
                 result=tool.return_json(0,"success",True,data)
