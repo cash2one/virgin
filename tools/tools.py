@@ -4,7 +4,7 @@ import os
 import base64
 from io import BytesIO
 
-import qrcode as qrc
+# import qrcode as qrc
 import datetime
 import random
 
@@ -296,6 +296,7 @@ def pimg(uu):
     datagen, headers = multipart_encode({"image": cc })
     #发送请求
     request = urllib2.Request(settings.setimageIP , datagen, headers)
+    request = urllib2.Request(settings.setimageIP1 , datagen, headers)
     #测试本地用
     # request = urllib2.Request(settings.setimageIPlocal , datagen, headers)
 
@@ -313,34 +314,40 @@ def pimg(uu):
 def gen_rnd_filename():
     filename_prefix = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     return '%s%s' % (filename_prefix, str(random.randrange(1000, 10000)))
-correction_levels = {
-    'L': qrc.constants.ERROR_CORRECT_L,
-    'M': qrc.constants.ERROR_CORRECT_M,
-    'Q': qrc.constants.ERROR_CORRECT_Q,
-    'H': qrc.constants.ERROR_CORRECT_H
-}
+
+
+# correction_levels = {
+#     'L': qrc.constants.ERROR_CORRECT_L,
+#     'M': qrc.constants.ERROR_CORRECT_M,
+#     'Q': qrc.constants.ERROR_CORRECT_Q,
+#     'H': qrc.constants.ERROR_CORRECT_H
+# }
 def qrcode(data, version=None, error_correction='L', box_size=10, border=0, fit=True):
     """ makes qr image using qrcode as qrc See documentation for qrcode package for info"""
-    qr = qrc.QRCode(
-        version=version,
-        error_correction=correction_levels[error_correction],
-        box_size=box_size,
-        border=border
-    )
-    qr.add_data(data)
-    qr.make(fit=fit)
-
-    # creates qrcode base64
-    out = BytesIO()
-    qr_img = qr.make_image()
-    filename = '%s%s' % (gen_rnd_filename(), ".PNG")
-    # osstr = os.path.dirname(__file__).replace("tools","")+"static/upload/"+filename
-    osstr = "/www/site/foodmap/virgin/virgin/static/upload/"+filename
-    qr_img.save(osstr)
+    # qr = qrc.QRCode(
+    #     version=version,
+    #     error_correction=correction_levels[error_correction],
+    #     box_size=box_size,
+    #     border=border
+    # )
+    # qr.add_data(data)
+    # qr.make(fit=fit)
+    #
+    # # creates qrcode base64
+    # out = BytesIO()
+    # qr_img = qr.make_image()
+    # filename = '%s%s' % (gen_rnd_filename(), ".PNG")
+    # # osstr = os.path.dirname(__file__).replace("tools","")+"static/upload/"+filename
+    # osstr = "/www/site/foodmap/virgin/virgin/static/upload/"+filename
+    osstr = "/www/site/foodmap/virgin/virgin/static/upload/head.png"
+    # qr_img.save(osstr)
     uu = pimg(osstr)
-    u1 = settings.getimageIP + str(uu)
-    os.remove(osstr)
+    # u1 = settings.getimageIP + str(uu)
+    # os.remove(osstr)
     return uu
+
+
+
 #mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|
 # appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
 def tuisong(mfrom='', mto='', title='', info='',goto='',channel='',type='',
@@ -540,11 +547,61 @@ def ceshi(restaurant_id):
                 # print len(orderdishs)
                 return orderdishs
 
+#修改order表中的全部信息
+def testpreset_dishs():
+    list=mongo.order.find({},{"preset_dishs":1})
+    for a in list:
+        l = a["preset_dishs"]
+        list=[]
+        for b in l:
+            json={
+                "name" : b["name"],
+                "id" : b["id"],
+                "price" : b["price"],
+                "discount_price" : b["discount_price"],
+                "num" : 1
+            }
+            list.append(json)
+        mongo.order.update({"_id":a["_id"]},{"$set":{"preset_dishs":list}})
+    return 1
+
+def gen_rnd_filename():
+    filename_prefix = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+    return '%s%s' % (filename_prefix, str(random.randrange(1000, 10000)))
+
+#给所有饭店包房增加 大厅
+def adddating():
+
+    ll = mongo.restaurant.find()
+    c=1
+    for a in ll:
+        import time
+        time.sleep(1)
+        item = a["rooms"]
+        json={}
+        for i in item:
+            if i["room_name"] == "大厅":
+                json = i
+                list = mongo.restaurant.update({"_id":a["_id"]},{"$pull":{"rooms":json}},False,False)
+        json["room_people_name"] ="大厅"
+        json["room_people_id"] = "108"
+        list = mongo.restaurant.update_one({"_id":a["_id"]},{"$push":{"rooms":json}})
+        print list
+        c=c+1
+        print c
+    return 1
+
+def test():
+        aaa = mongo.restaurant.update_one({"_id":ObjectId("57329b1f0c1d9b2f4c85f8e3")},{"$push":{"rooms":{}}})
+        print aaa.modified_count
 
 
-# if __name__ == '__main__':
-#     ceshi("57340b330c1d9b314998892f")
-#     pass
+
+if __name__ == '__main__':
+    test()
+    # testpreset_dishs()
+    # ceshi("57340b330c1sd9b314998892f")
+    # pass
     # print qrcode("测试")
     # dish = {
     #                 "is_enabled" : 'str',
