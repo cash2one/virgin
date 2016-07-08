@@ -20,9 +20,9 @@ def mongoconn():
     return  json_util.dumps(list)
 
 
-@test_api.route('/ttt')
-def ttt():
-    return render_template("/test/posttest.html")
+# @test_api.route('/ttt')
+# def ttt():
+#     return render_template("/test/posttest.html")
 
 
 @test_api.route('/jwt')
