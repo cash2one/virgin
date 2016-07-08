@@ -1,7 +1,6 @@
 #--coding:utf-8--#
 import random
 import pymongo
-from flasgger import swag_from
 
 
 from app_merchant import auto
