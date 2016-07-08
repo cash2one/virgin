@@ -4,7 +4,7 @@ import os
 import base64
 from io import BytesIO
 
-# import qrcode as qrc
+import qrcode as qrc
 import datetime
 import random
 
@@ -314,40 +314,34 @@ def pimg(uu):
 def gen_rnd_filename():
     filename_prefix = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     return '%s%s' % (filename_prefix, str(random.randrange(1000, 10000)))
-
-
-# correction_levels = {
-#     'L': qrc.constants.ERROR_CORRECT_L,
-#     'M': qrc.constants.ERROR_CORRECT_M,
-#     'Q': qrc.constants.ERROR_CORRECT_Q,
-#     'H': qrc.constants.ERROR_CORRECT_H
-# }
+correction_levels = {
+    'L': qrc.constants.ERROR_CORRECT_L,
+    'M': qrc.constants.ERROR_CORRECT_M,
+    'Q': qrc.constants.ERROR_CORRECT_Q,
+    'H': qrc.constants.ERROR_CORRECT_H
+}
 def qrcode(data, version=None, error_correction='L', box_size=10, border=0, fit=True):
     """ makes qr image using qrcode as qrc See documentation for qrcode package for info"""
-    # qr = qrc.QRCode(
-    #     version=version,
-    #     error_correction=correction_levels[error_correction],
-    #     box_size=box_size,
-    #     border=border
-    # )
-    # qr.add_data(data)
-    # qr.make(fit=fit)
-    #
-    # # creates qrcode base64
-    # out = BytesIO()
-    # qr_img = qr.make_image()
-    # filename = '%s%s' % (gen_rnd_filename(), ".PNG")
-    # # osstr = os.path.dirname(__file__).replace("tools","")+"static/upload/"+filename
-    # osstr = "/www/site/foodmap/virgin/virgin/static/upload/"+filename
-    osstr = "/www/site/foodmap/virgin/virgin/static/upload/head.png"
-    # qr_img.save(osstr)
+    qr = qrc.QRCode(
+        version=version,
+        error_correction=correction_levels[error_correction],
+        box_size=box_size,
+        border=border
+    )
+    qr.add_data(data)
+    qr.make(fit=fit)
+
+    # creates qrcode base64
+    out = BytesIO()
+    qr_img = qr.make_image()
+    filename = '%s%s' % (gen_rnd_filename(), ".PNG")
+    # osstr = os.path.dirname(__file__).replace("tools","")+"static/upload/"+filename
+    osstr = "/www/site/foodmap/virgin/virgin/static/upload/"+filename
+    qr_img.save(osstr)
     uu = pimg(osstr)
-    # u1 = settings.getimageIP + str(uu)
-    # os.remove(osstr)
+    u1 = settings.getimageIP + str(uu)
+    os.remove(osstr)
     return uu
-
-
-
 #mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|
 # appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
 def tuisong(mfrom='', mto='', title='', info='',goto='',channel='',type='',
