@@ -558,37 +558,37 @@ def ordercounts():
 
 
 #1.3.0.jpg餐位管理restaurant_id, preset_time
-from tools.swagger import swagger
-orderbypreset = swagger("订单","餐位管理")
-orderbypreset.add_parameter(name='restaurant_id',parametertype='formData',type='string',required=True,description='饭店id',default='57329b1f0c1d9b2f4c85f8e3')
-orderbypreset.add_parameter(name='preset_time',parametertype='formData',type='string',required= True,description='预定时间',default='2015-6-16')
-rjson={
-  "auto": orderbypreset.String(description='验证是否成功'),
-  "code": orderbypreset.Integer(description='',default=0),
-  "date": {
-    "list": [
-      {
-        "room_count": [
-          {
-            "orderinfo": [
-              {
-                "id": orderbypreset.String(description='',default="572ff4f6ed222e1e28b56056"),
-                "numpeople": orderbypreset.Integer(description='',default=8),
-                "preset_time": orderbypreset.String(description='',default="10:10"),
-              }
-            ],
-            "room_id": orderbypreset.String(description='',default="201605111054507163"),
-            "room_name": orderbypreset.String(description='',default="中包(1间)"),
-          }
-        ],
-        "room_people_num": orderbypreset.String(description='',default="10-12人包房"),
-      }
-    ]
-  },
-  "message": orderbypreset.String(description='',default="")
-}
+# from tools.swagger import swagger
+# orderbypreset = swagger("订单","餐位管理")
+# orderbypreset.add_parameter(name='restaurant_id',parametertype='formData',type='string',required=True,description='饭店id',default='57329b1f0c1d9b2f4c85f8e3')
+# orderbypreset.add_parameter(name='preset_time',parametertype='formData',type='string',required= True,description='预定时间',default='2015-6-16')
+# rjson={
+#   "auto": orderbypreset.String(description='验证是否成功'),
+#   "code": orderbypreset.Integer(description='',default=0),
+#   "date": {
+#     "list": [
+#       {
+#         "room_count": [
+#           {
+#             "orderinfo": [
+#               {
+#                 "id": orderbypreset.String(description='',default="572ff4f6ed222e1e28b56056"),
+#                 "numpeople": orderbypreset.Integer(description='',default=8),
+#                 "preset_time": orderbypreset.String(description='',default="10:10"),
+#               }
+#             ],
+#             "room_id": orderbypreset.String(description='',default="201605111054507163"),
+#             "room_name": orderbypreset.String(description='',default="中包(1间)"),
+#           }
+#         ],
+#         "room_people_num": orderbypreset.String(description='',default="10-12人包房"),
+#       }
+#     ]
+#   },
+#   "message": orderbypreset.String(description='',default="")
+# }
 @order_api.route('/fm/merchant/v1/order/orderbypreset/', methods=['POST'])
-@swag_from(orderbypreset.mylpath(schemaid='orderbypreset',result=rjson))
+# @swag_from(orderbypreset.mylpath(schemaid='orderbypreset',result=rjson))
 def orderbypreset():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):

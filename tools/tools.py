@@ -296,6 +296,7 @@ def pimg(uu):
     datagen, headers = multipart_encode({"image": cc })
     #发送请求
     request = urllib2.Request(settings.setimageIP , datagen, headers)
+    request = urllib2.Request(settings.setimageIP1 , datagen, headers)
     #测试本地用
     # request = urllib2.Request(settings.setimageIPlocal , datagen, headers)
 
@@ -540,11 +541,61 @@ def ceshi(restaurant_id):
                 # print len(orderdishs)
                 return orderdishs
 
+#修改order表中的全部信息
+def testpreset_dishs():
+    list=mongo.order.find({},{"preset_dishs":1})
+    for a in list:
+        l = a["preset_dishs"]
+        list=[]
+        for b in l:
+            json={
+                "name" : b["name"],
+                "id" : b["id"],
+                "price" : b["price"],
+                "discount_price" : b["discount_price"],
+                "num" : 1
+            }
+            list.append(json)
+        mongo.order.update({"_id":a["_id"]},{"$set":{"preset_dishs":list}})
+    return 1
+
+def gen_rnd_filename():
+    filename_prefix = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+    return '%s%s' % (filename_prefix, str(random.randrange(1000, 10000)))
+
+#给所有饭店包房增加 大厅
+def adddating():
+
+    ll = mongo.restaurant.find()
+    c=1
+    for a in ll:
+        import time
+        time.sleep(1)
+        item = a["rooms"]
+        json={}
+        for i in item:
+            if i["room_name"] == "大厅":
+                json = i
+                list = mongo.restaurant.update({"_id":a["_id"]},{"$pull":{"rooms":json}},False,False)
+        json["room_people_name"] ="大厅"
+        json["room_people_id"] = "108"
+        list = mongo.restaurant.update_one({"_id":a["_id"]},{"$push":{"rooms":json}})
+        print list
+        c=c+1
+        print c
+    return 1
+
+def test():
+        aaa = mongo.restaurant.update_one({"_id":ObjectId("57329b1f0c1d9b2f4c85f8e3")},{"$push":{"rooms":{}}})
+        print aaa.modified_count
 
 
-# if __name__ == '__main__':
-#     ceshi("57340b330c1d9b314998892f")
-#     pass
+
+if __name__ == '__main__':
+    test()
+    # testpreset_dishs()
+    # ceshi("57340b330c1sd9b314998892f")
+    # pass
     # print qrcode("测试")
     # dish = {
     #                 "is_enabled" : 'str',
