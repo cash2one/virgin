@@ -26,7 +26,8 @@ table = {'status': 'int',
          'demand':'str',
          'numpeople':'int',
           'preset_time':'',
-         'room_id':'str'
+         'room_id':'str',
+         'source':'int'
       }
 mongo=conn.mongo_conn()
 
@@ -183,7 +184,8 @@ def allorder():
             try:
 
                 pdict = {
-                    'restaurant_id':request.form["restaurant_id"]
+                    'restaurant_id':request.form["restaurant_id"],
+                    'source':2
                 }
                 if int(request.form["status"]) != -1:
                     pdict['status'] = request.form["status"]
@@ -205,10 +207,10 @@ def allorder():
                 end = (pagenum*int(pageindex))
                 # print tools.orderformate(pdict, table)
                 item = mongo.order.find(tools.orderformate(pdict, table),second).sort("add_time", pymongo.DESCENDING)[star:end]
-                allcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"])}).count()
-                newcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":0}).count()
-                waitecount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":2}).count()
-                redocount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":6}).count()
+                allcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),'source':2}).count()
+                newcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":0,'source':2}).count()
+                waitecount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":2,'source':2}).count()
+                redocount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":6,'source':2}).count()
                 data = {}
                 list=[]
                 for i in item:
@@ -673,6 +675,7 @@ def insertorder():
                     "username" : request.form["username"],
                     "status" : 0,
                     "type" : int(request.form['type']),
+                    "source":1,
                     "restaurant_id" : ObjectId(request.form['restaurant_id']),
                     "preset_dishs" : [],
                     "webuser_id" : "",
