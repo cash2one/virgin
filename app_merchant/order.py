@@ -281,9 +281,10 @@ def orderinfos():
                             json['deposit'] = str(i[key])
                         elif key == 'preset_dishs':
                             pdlist = []
-                            pdjson = {}
+
                             if i[key]!=None:
                                 for pd in i[key]:
+                                    pdjson = {}
                                     pdjson['id'] = pd['id']
                                     pdjson['price'] = str(pd['price'])
                                     pdjson['num'] = pd['num']
@@ -293,9 +294,10 @@ def orderinfos():
                             json['preset_dishs'] = pdlist
                         elif key == 'preset_wine':
                             pdlist = []
-                            pdjson = {}
+
                             if i[key]!=None:
                                 for pd in i[key]:
+                                    pdjson = {}
                                     pdjson['id'] = pd['id']
                                     pdjson['price'] = str(pd['price'])
                                     pdjson['num'] = pd['num']
