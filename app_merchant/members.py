@@ -141,7 +141,7 @@ def membersinfo():
                 else:
                     item = mongo.webuser.find_one(tools.orderformate(pdict, table))
                     totals = mongo.order.find(tools.orderformate(odict, table),{'preset_time':1,'total':1}).sort('add_time', pymongo.DESCENDING)[0:2]
-                    comment = mongo.comment.find({"restaurant_id":ObjectId(request.form["restaurant_id"]), "user_id":ObjectId(request.form['id'])},{"post_date":1, "user_info.user_name":1,"comment_text":1}).sort('post_date', pymongo.DESCENDING)[0:2]
+                    comment = mongo.comment.find({"restaurant_id":request.form["restaurant_id"], "user_id":request.form['id']},{"post_date":1, "user_info.user_name":1,"comment_text":1}).sort('post_date', pymongo.DESCENDING)[0:2]
                     commentlist = []
                     for c in comment:
                         commentdict = {}
