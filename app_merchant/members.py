@@ -135,8 +135,7 @@ def membersinfo():
                             json['birthday'] = item[key]
                         else:
                             json[key] = item[key]
-                    jwtmsg = auto.decodejwt(request.form["jwtstr"])
-                    result=tool.return_json(0,"success",jwtmsg,json)
+                    result=tool.return_json(0,"success",True,json)
                     return json_util.dumps(result,ensure_ascii=False,indent=2)
                 else:
                     item = mongo.webuser.find_one(tools.orderformate(pdict, table))
