@@ -281,11 +281,11 @@ def findcoupons():
                 result=tool.return_json(0,"success",True,json)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             else:
-                result=tool.return_json(0,"field",False,None)
+                result=tool.return_json(0,"field",True,None)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
         except Exception,e:
             print e
-            result=tool.return_json(0,"field",False,None)
+            result=tool.return_json(0,"field",True,e)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
 
     else:
@@ -372,7 +372,7 @@ def couponsinfo():
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
         except Exception,e:
             print e
-            result=tool.return_json(0,"field",False,None)
+            result=tool.return_json(0,"field",True,e)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
 
     else:
@@ -432,7 +432,7 @@ def insertcoupons():
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
         except Exception,e:
             print e
-            result=tool.return_json(0,"field",False,None)
+            result=tool.return_json(0,"field",True,e)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
 
     else:
@@ -490,7 +490,7 @@ def updatecoupons():
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
         except Exception,e:
             print e
-            result=tool.return_json(0,"field",False,None)
+            result=tool.return_json(0,"field",True,e)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
 
     else:
@@ -651,9 +651,9 @@ def couponsbyqr():
             else:
                 result=tool.return_json(0,"field",False,None)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
-        except Exception,e:
+        except Exception, e:
             print e
-            result=tool.return_json(0,"field",False,None)
+            result=tool.return_json(0,"field",True,e)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
 
     else:
