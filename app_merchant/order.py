@@ -184,13 +184,11 @@ def allorder():
             try:
 
                 pdict = {
-                    'restaurant_id':ObjectId(request.form["restaurant_id"]),
+                    'restaurant_id':request.form["restaurant_id"],
                     'source':2
                 }
                 if int(request.form["status"]) != -1:
                     pdict['status'] = int(request.form["status"])
-                if int(request.form["status"]) == 1:
-                    pdict['status'] = {"$in":[1,2]}
                 if int(request.form["type"]) != -1:
                     pdict['type'] = int(request.form["type"])
                 second = {
@@ -211,7 +209,7 @@ def allorder():
                 item = mongo.order.find(pdict,second).sort("add_time", pymongo.DESCENDING)[star:end]
                 allcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),'source':2}).count()
                 newcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":0,'source':2}).count()
-                waitecount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":{"$in":[1,2]},'source':2}).count()
+                waitecount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":2,'source':2}).count()
                 redocount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":6,'source':2}).count()
                 data = {}
                 list=[]

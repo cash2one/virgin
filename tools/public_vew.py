@@ -32,7 +32,7 @@ def getroomslist(restaurant_id, preset_time):
                 item={}
                 item["room_id"]=i1["room_id"]
                 item["room_name"]=i1["room_name"]
-                pdict = {'room_id':i1['room_id'],'status':{'$in':[0,1,2,3]},'preset_time': {'$gte': start, '$lt': end}}
+                pdict = {'room_id':i1['room_id'],'status':3,'preset_time': {'$gte': start, '$lt': end}}
                 orderbyroom = mongo.order.find(pdict).sort('add_time', pymongo.DESCENDING)
                 orderlist = []
 
