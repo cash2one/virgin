@@ -675,11 +675,12 @@ def insertorder():
             try:
                 pdict = {
                     "username" : request.form["username"],
-                    "status" : 0,
+                    "status" : 3,
                     "type" : int(request.form['type']),
                     "source":1,
                     "restaurant_id" : ObjectId(request.form['restaurant_id']),
                     "preset_dishs" : [],
+                    "preset_wine": [],
                     "webuser_id" : "",
                     "phone" : request.form['phone'],
                     "dis_message" : "",
