@@ -147,7 +147,7 @@ def tomessages():
                         elif key == 'infos':
                             json['title'] = i['infos']['infotitle']
                         elif key == 'add_time':
-                            json['add_time'] = i[key].strftime('%Y年%m月%d日')
+                            json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M:%S')
                         elif key == 'infoto':
                             json['status'] = i['infoto'][str(request.form["restaurant_id"])]
                         elif key == 'goto':
