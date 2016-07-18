@@ -184,7 +184,7 @@ def allorder():
             try:
 
                 pdict = {
-                    'restaurant_id':request.form["restaurant_id"],
+                    'restaurant_id':ObjectId(request.form["restaurant_id"]),
                     'source':2
                 }
                 if int(request.form["status"]) != -1:
