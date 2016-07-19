@@ -671,6 +671,7 @@ def insertorder():
             try:
                 pdict = {
                     "username" : request.form["username"],
+                    "is_room":True,
                     "status" : 3,
                     "type" : int(request.form['type']),
                     "source":1,
