@@ -1,8 +1,6 @@
 #--coding:utf-8--#
 import random
 import pymongo
-from flasgger import swag_from
-
 
 from app_merchant import auto
 from tools import tools
@@ -686,14 +684,20 @@ def insertorder():
                     "deposit" : 0.0,
                     "demand" : request.form['demand'],
                     "total" : 0.0,
-                    "numpeople" : request.form['numpeople'],
+                    "numpeople" : int(request.form['numpeople']),
                     "preset_time" : datetime.datetime.strptime(request.form["preset_time"], "%Y-%m-%d %H:%M:%S"),
                     "add_time" : datetime.datetime.now()
                 }
-                if request.form['is_room'] == 'true':
-                    pdict['is_room'] = True
-                else:
-                    pdict['is_room'] = False
+                item = mongo.restaurant.find({"rooms.room_id":request.form['room_id']},{"rooms":1})
+                for i in item:
+                    for room in i['rooms']:
+                        if room['room_id'] == request.form['room_id']:
+                            if room['room_people_name'] == '大厅':
+                                pdict['is_room'] = False
+                            else:
+                                pdict['is_room'] = True
+                        else:
+                            pdict['is_room'] = False
                 mongo.order.insert(pdict)
                 json = {
                         "status": 1,
