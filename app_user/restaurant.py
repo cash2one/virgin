@@ -50,10 +50,20 @@ def restaurant():
                         pass
                 #包房
                 if request.form['room_type']!='-1':
-                    first["rooms.room_type.id"] = request.form['room_type']
+                    b_idlist = request.form['room_type'].split('_')
+                    bidlist = []
+                    for mid in b_idlist:
+                        if mid != '' and mid != None:
+                            bidlist.append(mid)
+                    first["rooms.room_type.id"] = {"$in":bidlist}
                 #特色
                 if request.form['tese']!='-1':
-                    first["tese.id"] = request.form['tese']
+                    t_idlist = request.form['tese'].split('_')
+                    tidlist = []
+                    for mid in t_idlist:
+                        if mid != '' and mid != None:
+                            tidlist.append(mid)
+                    first["tese.id"] = {"$in":tidlist}
                 #支付
                 if request.form['pay_type']!='-1':
                     pass
@@ -161,12 +171,14 @@ def restaurant_type():
                 b_list = []
                 t_list = []
                 z_list = []
+                bt_list = []
                 item = mongo.assortment.find({"parent":{"$in":[1,35,59,50,46]}})
                 for i in item:
                     f_json = {}
                     b_json = {}
                     t_json = {}
                     z_json = {}
+                    bt_json = {}
                     if i['parent'] == 1:
                         f_json['id'] = str(i['_id'])
                         f_json['name'] = i['name']
@@ -175,6 +187,10 @@ def restaurant_type():
                         b_json['id'] = str(i['_id'])
                         b_json['name'] = i['name']
                         b_list.append(b_json)
+                    elif i['parent'] == 59:
+                        bt_json['id'] = str(i['_id'])
+                        bt_json['name'] = i['name']
+                        bt_list.append(bt_json)
                     elif i['parent'] == 50:
                         t_json['id'] = str(i['_id'])
                         t_json['name'] = i['name']
@@ -187,6 +203,7 @@ def restaurant_type():
                         pass
                 data['fenlei'] = f_list
                 data['baofang'] = b_list
+                data['baofangtese'] = bt_list
                 data['tese'] = t_list
                 data['zhifu'] = z_list
                 data['youhui'] = [{'id':'dish','name':'菜品优惠'},{'id':'wine','name':'酒水优惠'},{'id':'other','name':'其他优惠'}]
