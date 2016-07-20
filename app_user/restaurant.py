@@ -253,7 +253,7 @@ def restaurant_type():
                         f_json['id'] = str(i['_id'])
                         f_json['name'] = i['name']
                         f_list.append(f_json)
-                    elif i['parent'] == 35 or i['parent'] == 59:
+                    elif i['parent'] == 35:
                         b_json['id'] = str(i['_id'])
                         b_json['name'] = i['name']
                         b_list.append(b_json)
