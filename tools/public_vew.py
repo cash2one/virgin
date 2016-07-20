@@ -52,7 +52,7 @@ def getroomslist(restaurant_id, preset_time):
         room["room_count"]=rooms
         list.append(room)
     data['list'] = list
-    # print list
+
     return data
 
 def getroomorderlist(restaurant_id,preset_time):

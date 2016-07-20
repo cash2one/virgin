@@ -6,7 +6,7 @@ from flasgger import swag_from
 
 from app_merchant import auto
 from tools import tools
-import time
+
 import sys
 
 from tools.db_app_user import guess
