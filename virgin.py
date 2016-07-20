@@ -23,7 +23,7 @@ from app_merchant.comment import restaurant_comment
 from flasgger import Swagger
 
 app = Flask(__name__)
-Swagger(app)
+# Swagger(app)
 app.config['DEBUG'] = True
 
 app.register_blueprint(error_api)
