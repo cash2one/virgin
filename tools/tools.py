@@ -563,26 +563,46 @@ def gen_rnd_filename():
     filename_prefix = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     return '%s%s' % (filename_prefix, str(random.randrange(1000, 10000)))
 
+
+
 #给所有饭店包房增加 大厅
 def adddating():
-
     ll = mongo.restaurant.find()
     c=1
     for a in ll:
-        import time
-        time.sleep(1)
-        item = a["rooms"]
-        json={}
-        for i in item:
-            if i["room_name"] == "大厅":
-                json = i
-                list = mongo.restaurant.update({"_id":a["_id"]},{"$pull":{"rooms":json}},False,False)
-        json["room_people_name"] ="大厅"
-        json["room_people_id"] = "108"
-        list = mongo.restaurant.update_one({"_id":a["_id"]},{"$push":{"rooms":json}})
-        print list
-        c=c+1
-        print c
+        try:
+            import time
+            time.sleep(1)
+            item = a["rooms"]
+            json={}
+            key=True
+            for i in item:
+                if i["room_name"] == "大厅":
+                    key=False
+
+            json = {
+               "room_name" : "大厅",
+               "room_type" : [
+
+               ],
+               "room_photo" : [
+
+               ],
+               "room_id" : gen_rnd_filename(),
+               "room_state" : "0",
+               "room_people_id" : "108",
+               "room_people_name" : "大厅"
+            }
+                    # list = mongo.restaurant.update({"_id":a["_id"]},{"$pull":{"rooms":json}},False,False)
+            # json["room_people_name"] ="大厅"
+            # json["room_people_id"] = "108"
+            if key:
+                list = mongo.restaurant.update_one({"_id":a["_id"]},{"$push":{"rooms":json}})
+            # print list
+            c=c+1
+            print c
+        except Exception, e:
+            print e
     return 1
 
 def test():
@@ -592,7 +612,11 @@ def test():
 
 
 if __name__ == '__main__':
-    test()
+    # test()
+    # adddating()
+    a=[1,2]
+    c=a[0:3]
+    print c
     # testpreset_dishs()
     # ceshi("57340b330c1sd9b314998892f")
     # pass
