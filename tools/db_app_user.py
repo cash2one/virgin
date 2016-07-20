@@ -51,7 +51,10 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3)
         item = mongo.restaurant.find(first,{"zuobiao":1})
         rsetaurant_list = []
         for i in item:
-            rsetaurant_list.append((int(haversine(lon1, lat1, i['zuobiao'][0]['c1'], i['zuobiao'][0]['c2'])), str(i['_id'])))
+            try:
+                rsetaurant_list.append((int(haversine(lon1, lat1, i['zuobiao'][0]['c1'], i['zuobiao'][0]['c2'])), str(i['_id'])))
+            except:
+                print i
         list=[]
         for l in sorted(rsetaurant_list)[start:end]:
             restaurant = mongo.restaurant.find({'_id':ObjectId(l[1])})
@@ -68,8 +71,8 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3)
                         json['restaurant_id'] = str(rest[key])
                     elif key == 'name':
                         json['name'] = rest[key]
-                    elif key == 'guanzhu_discount':
-                        json['guanzhu_discount'] = rest[key]['message']
+                    elif key == 'restaurant_discount':
+                        json['restaurant_discount'] = rest[key]['message']
                     elif key == 'dishes_discount':
                         json['dishes_discount'] = rest[key]['message']
                     elif key == 'business_dist':
