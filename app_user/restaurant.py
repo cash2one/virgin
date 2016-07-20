@@ -2,7 +2,7 @@
 import random
 
 import pymongo
-
+from flasgger import swag_from
 
 from app_merchant import auto
 from tools import tools
@@ -10,6 +10,7 @@ import time
 import sys
 
 from tools.db_app_user import guess
+from tools.swagger import swagger
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -161,7 +162,179 @@ def restaurant_img():
     else:
         return abort(403)
 #饭店查询类别标签
+restaurant_type = swagger("订单","餐位管理")
+restaurant_type.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+rjson={
+  "auto": restaurant_type.String(description='验证是否成功'),
+  "code": restaurant_type.Integer(description='',default=0),
+  "date": {
+      "fenlei": [
+      {
+        "id": "2",
+        "name": "快餐/小吃"
+      },
+      {
+        "id": "3",
+        "name": "烧烤"
+      },
+      {
+        "id": "4",
+        "name": "火锅"
+      },
+      {
+        "id": "5",
+        "name": "铁锅炖"
+      },
+      {
+        "id": "6",
+        "name": "川菜/湘菜"
+      },
+      {
+        "id": "7",
+        "name": "海鲜"
+      },
+      {
+        "id": "8",
+        "name": "烤肉"
+      },
+      {
+        "id": "9",
+        "name": "粤菜/茶餐厅"
+      },
+      {
+        "id": "10",
+        "name": "炒菜"
+      },
+      {
+        "id": "11",
+        "name": "清真"
+      },
+      {
+        "id": "12",
+        "name": "面包/甜点"
+      },
+      {
+        "id": "13",
+        "name": "韩餐/狗肉"
+      },
+      {
+        "id": "14",
+        "name": "日本料理"
+      },
+      {
+        "id": "15",
+        "name": "鱼锅"
+      },
+      {
+        "id": "16",
+        "name": "斋"
+      },
+      {
+        "id": "17",
+        "name": "筋饼"
+      },
+      {
+        "id": "18",
+        "name": "汤/粥/养生"
+      },
+      {
+        "id": "19",
+        "name": "西餐"
+      },
+      {
+        "id": "20",
+        "name": "包子/饺子"
+      },
+      {
+        "id": "21",
+        "name": "烤鱼"
+      },
+      {
+        "id": "22",
+        "name": "东南亚菜"
+      },
+      {
+        "id": "23",
+        "name": "熏酱"
+      },
+      {
+        "id": "24",
+        "name": "小龙虾"
+      },
+      {
+        "id": "25",
+        "name": "自助"
+      },
+      {
+        "id": "26",
+        "name": "其它"
+      },
+      {
+        "id": "27",
+        "name": "西餐"
+      },
+      {
+        "id": "28",
+        "name": "斋"
+      }
+    ],
+    "youhui": [
+      {
+        "id": "dish",
+        "name": "菜品优惠"
+      },
+      {
+        "id": "wine",
+        "name": "酒水优惠"
+      },
+      {
+        "id": "other",
+        "name": "其他优惠"
+      }
+    ],
+    "tese": [
+      {
+        "id": "51",
+        "name": "演艺"
+      },
+      {
+        "id": "52",
+        "name": "24小时营业"
+      },
+      {
+        "id": "53",
+        "name": "停车场"
+      },
+      {
+        "id": "54",
+        "name": "WiFi"
+      }
+    ],
+    "zhifu": [
+      {
+        "id": "47",
+        "name": "刷卡支付"
+      },
+      {
+        "id": "48",
+        "name": "微信支付"
+      },
+      {
+        "id": "49",
+        "name": "支付宝支付"
+      }
+    ],
+    "baofang": [
+      {
+        "id": "36",
+        "name": "带洗手间包房"
+      }
+    ]
+  },
+  "message": restaurant_type.String(description='',default="")
+}
 @restaurant_user_api.route('/fm/user/v1/restaurant/restaurant_type/',methods=['POST'])
+@swag_from(restaurant_type.mylpath(schemaid='orderbypreset',result=rjson))
 def restaurant_type():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
@@ -211,7 +384,7 @@ def restaurant_type():
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e
-                result=tool.return_json(0,"field",False,None)
+                result=tool.return_json(0,"field",True,e)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)
