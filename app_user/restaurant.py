@@ -170,110 +170,6 @@ rjson={
   "date": {
       "fenlei": [
       {
-        "id": "2",
-        "name": "快餐/小吃"
-      },
-      {
-        "id": "3",
-        "name": "烧烤"
-      },
-      {
-        "id": "4",
-        "name": "火锅"
-      },
-      {
-        "id": "5",
-        "name": "铁锅炖"
-      },
-      {
-        "id": "6",
-        "name": "川菜/湘菜"
-      },
-      {
-        "id": "7",
-        "name": "海鲜"
-      },
-      {
-        "id": "8",
-        "name": "烤肉"
-      },
-      {
-        "id": "9",
-        "name": "粤菜/茶餐厅"
-      },
-      {
-        "id": "10",
-        "name": "炒菜"
-      },
-      {
-        "id": "11",
-        "name": "清真"
-      },
-      {
-        "id": "12",
-        "name": "面包/甜点"
-      },
-      {
-        "id": "13",
-        "name": "韩餐/狗肉"
-      },
-      {
-        "id": "14",
-        "name": "日本料理"
-      },
-      {
-        "id": "15",
-        "name": "鱼锅"
-      },
-      {
-        "id": "16",
-        "name": "斋"
-      },
-      {
-        "id": "17",
-        "name": "筋饼"
-      },
-      {
-        "id": "18",
-        "name": "汤/粥/养生"
-      },
-      {
-        "id": "19",
-        "name": "西餐"
-      },
-      {
-        "id": "20",
-        "name": "包子/饺子"
-      },
-      {
-        "id": "21",
-        "name": "烤鱼"
-      },
-      {
-        "id": "22",
-        "name": "东南亚菜"
-      },
-      {
-        "id": "23",
-        "name": "熏酱"
-      },
-      {
-        "id": "24",
-        "name": "小龙虾"
-      },
-      {
-        "id": "25",
-        "name": "自助"
-      },
-      {
-        "id": "26",
-        "name": "其它"
-      },
-      {
-        "id": "27",
-        "name": "西餐"
-      },
-      {
         "id": "28",
         "name": "斋"
       }
@@ -333,6 +229,7 @@ rjson={
   },
   "message": restaurant_type.String(description='',default="")
 }
+#饭店查询类别标签
 @restaurant_user_api.route('/fm/user/v1/restaurant/restaurant_type/',methods=['POST'])
 @swag_from(restaurant_type.mylpath(schemaid='orderbypreset',result=rjson))
 def restaurant_type():

@@ -102,7 +102,7 @@ class swagger:
                out+=""+n+"    properties:\n"
 
         import os
-        path = 'E:/workspace/pythonProject/test/virgin/virgin/ml/'+schemaid+".yml"
+        path = os.path.dirname(__file__).replace("tools","")+"ml/"+schemaid+".yml"
         fp = open(path,'w+')
         fp.write(out)
         self.__parameters = []
