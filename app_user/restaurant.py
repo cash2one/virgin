@@ -161,77 +161,78 @@ def restaurant_img():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+
 #饭店查询类别标签
-restaurant_type = swagger("订单","餐位管理")
-restaurant_type.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
-rjson={
-  "auto": restaurant_type.String(description='验证是否成功'),
-  "code": restaurant_type.Integer(description='',default=0),
-  "date": {
-      "fenlei": [
-      {
-        "id": "28",
-        "name": "斋"
-      }
-    ],
-    "youhui": [
-      {
-        "id": "dish",
-        "name": "菜品优惠"
-      },
-      {
-        "id": "wine",
-        "name": "酒水优惠"
-      },
-      {
-        "id": "other",
-        "name": "其他优惠"
-      }
-    ],
-    "tese": [
-      {
-        "id": "51",
-        "name": "演艺"
-      },
-      {
-        "id": "52",
-        "name": "24小时营业"
-      },
-      {
-        "id": "53",
-        "name": "停车场"
-      },
-      {
-        "id": "54",
-        "name": "WiFi"
-      }
-    ],
-    "zhifu": [
-      {
-        "id": "47",
-        "name": "刷卡支付"
-      },
-      {
-        "id": "48",
-        "name": "微信支付"
-      },
-      {
-        "id": "49",
-        "name": "支付宝支付"
-      }
-    ],
-    "baofang": [
-      {
-        "id": "36",
-        "name": "带洗手间包房"
-      }
-    ]
-  },
-  "message": restaurant_type.String(description='',default="")
-}
+# restaurant_type = swagger("订单","餐位管理")
+# restaurant_type.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+# rjson={
+#   "auto": restaurant_type.String(description='验证是否成功'),
+#   "code": restaurant_type.Integer(description='',default=0),
+#   "date": {
+#       "fenlei": [
+#       {
+#         "id": "28",
+#         "name": "斋"
+#       }
+#     ],
+#     "youhui": [
+#       {
+#         "id": "dish",
+#         "name": "菜品优惠"
+#       },
+#       {
+#         "id": "wine",
+#         "name": "酒水优惠"
+#       },
+#       {
+#         "id": "other",
+#         "name": "其他优惠"
+#       }
+#     ],
+#     "tese": [
+#       {
+#         "id": "51",
+#         "name": "演艺"
+#       },
+#       {
+#         "id": "52",
+#         "name": "24小时营业"
+#       },
+#       {
+#         "id": "53",
+#         "name": "停车场"
+#       },
+#       {
+#         "id": "54",
+#         "name": "WiFi"
+#       }
+#     ],
+#     "zhifu": [
+#       {
+#         "id": "47",
+#         "name": "刷卡支付"
+#       },
+#       {
+#         "id": "48",
+#         "name": "微信支付"
+#       },
+#       {
+#         "id": "49",
+#         "name": "支付宝支付"
+#       }
+#     ],
+#     "baofang": [
+#       {
+#         "id": "36",
+#         "name": "带洗手间包房"
+#       }
+#     ]
+#   },
+#   "message": restaurant_type.String(description='',default="")
+# }
 #饭店查询类别标签
 @restaurant_user_api.route('/fm/user/v1/restaurant/restaurant_type/',methods=['POST'])
-@swag_from(restaurant_type.mylpath(schemaid='orderbypreset',result=rjson))
+# @swag_from(restaurant_type.mylpath(schemaid='restaurant_type',result=rjson))
 def restaurant_type():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):

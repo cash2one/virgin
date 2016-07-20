@@ -35,52 +35,6 @@ responses:
                 type: object
                 description: ''
                 properties:
-                    fenlei:
-                      type: array
-                      description: ''
-                      items:
-                        type: object
-                        properties:
-                    youhui:
-                      type: array
-                      description: ''
-                      items:
-                        type: object
-                        properties:
-                    baofang:
-                      type: array
-                      description: ''
-                      items:
-                        type: object
-                        properties:
-                    zhifu:
-                      type: array
-                      description: ''
-                      items:
-                        type: object
-                        properties:
-                    tese:
-                      type: array
-                      description: ''
-                      items:
-                        type: object
-                        properties:
-              auto:
-                type: string
-                description: '验证是否成功'
-                default: ""
-              message:
-                type: string
-                description: ''
-                default: ""
-              code:
-                type: int
-                description: ''
-                default: "0"
-              date:
-                type: object
-                description: ''
-                properties:
                     list:
                       type: array
                       description: ''
