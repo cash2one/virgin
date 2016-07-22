@@ -209,10 +209,11 @@ def allorder():
                 end = (pagenum*int(pageindex))
                 # print tools.orderformate(pdict, table)
                 item = mongo.order.find(pdict,second).sort("add_time", pymongo.DESCENDING)[star:end]
-                allcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),'source':2}).count()
+                # allcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),'source':2}).count()
                 newcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":0,'source':2}).count()
                 waitecount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":2,'source':2}).count()
                 redocount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":6,'source':2}).count()
+                allcount = int(newcount)+int(waitecount)+int(redocount)
                 data = {}
                 list=[]
                 for i in item:
