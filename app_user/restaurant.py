@@ -9,7 +9,7 @@ from tools import tools
 
 import sys
 
-from tools.db_app_user import guess
+from tools.db_app_user import guess, business_dist, district_list, business_dist_byid
 from tools.swagger import swagger
 
 reload(sys)
@@ -30,7 +30,7 @@ restaurant_user_api = Blueprint('restaurant_user_api', __name__, template_folder
 
 
 
-restaurant = swagger("饭店","查询类别标签")
+restaurant = swagger("饭店","饭店条件查询")
 restaurant_json = {
     "auto": restaurant.String(description='验证是否成功'),
     "message": restaurant.String(description='SUCCESS/FIELD',default="SUCCESS"),
@@ -50,7 +50,8 @@ restaurant_json = {
                 "business_name": restaurant.String(description='商圈名',default="十字/平公"),
                 "restaurant_discount": restaurant.String(description='其他优惠',default=""),
                 "dishes_discount": restaurant.String(description='菜品优惠',default=""),
-                "kind2": restaurant.String(description='新粉优惠',default="")
+                "kind2": restaurant.String(description='新粉优惠',default=""),
+                "concern":restaurant.String(description='关注状态0未关注1已关注',default="0")
               }
         ]
     }
@@ -65,6 +66,8 @@ restaurant.add_parameter(name='pay_type',parametertype='formData',type='string',
 restaurant.add_parameter(name='pageindex',parametertype='formData',type='string',required= True,description='页数',default='1')
 restaurant.add_parameter(name='x',parametertype='formData',type='string',required= True,description='坐标x，没有传x',default='126.62687122442075')
 restaurant.add_parameter(name='y',parametertype='formData',type='string',required= True,description='坐标y，没有传y',default='45.764067772341264')
+restaurant.add_parameter(name='business_dist_id',parametertype='formData',type='string',required= True,description='商圈id',default='45.764067772341264')
+restaurant.add_parameter(name='webuser_id',parametertype='formData',type='string',required= True,description='用户id',default='57396fde7c1f31a9cce960fa')
 #饭店列表 条件很多
 @restaurant_user_api.route('/fm/user/v1/restaurant/restaurant/',methods=['POST'])
 @swag_from(restaurant.mylpath(schemaid='restaurant',result=restaurant_json))
@@ -77,6 +80,9 @@ def restaurant():
                 data = {}
 # first = {"dishes_type.id":"10","dishes_discount.message":{"$ne":""},"rooms.room_type.id":"36","tese.id":"54","pay_type.id":{"$in":["48"]},"_id":{"$in":[ObjectId("57329e300c1d9b2f4c85f8e6")]}}
                 first = {}
+                #商圈
+                if request.form['business_dist_id']!='-1':
+                    first["business_dist.id"] = request.form['business_dist_id']
                 #菜系
                 if request.form['dishes_type']!='-1':
                     first["dishes_type.id"] = request.form['dishes_type']
@@ -118,35 +124,24 @@ def restaurant():
                         if mid != '' and mid != None:
                             midlist.append(mid)
                     first["pay_type.id"] = {"$in":midlist}
-                # #范儿店
-                # if request.form['recommend']!='-1':
-                #     pass
-                #     #
-                #     if request.form['recommend_type']!='-1':
-                #         item = mongo.shop_recommend.find({"type":1},{"restaurant_id":1})
-                #     else:
-                #         item = mongo.shop_recommend.find({},{"restaurant_id":1})
-                #     r_idlist = []
-                #     for i in item:
-                #         r_idlist.append(i['restaurant_id'])
-                #     first['_id'] = {"$in":r_idlist}
                 pageindex = request.form["pageindex"]
                 pagenum = 10
                 star = (int(pageindex)-1)*pagenum
                 end = (pagenum*int(pageindex))
-                list = guess(first=first,lat1=float(request.form['x']),lon1=float(request.form['y']),start=star,end=end)
+                list = guess(first=first,lat1=float(request.form['y']),lon1=float(request.form['x']),start=star,end=end,webuser_id=request.form['webuser_id'])
                 data['list'] = list
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e
-                result=tool.return_json(0,"field",False,None)
+                result=tool.return_json(0,"field",True,str(e))
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+
 #图片展示列表
 @restaurant_user_api.route('/fm/user/v1/restaurant/restaurant_img/',methods=['POST'])
 def restaurant_img():
@@ -198,7 +193,7 @@ def restaurant_img():
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e
-                result=tool.return_json(0,"field",False,None)
+                result=tool.return_json(0,"field",True,str(e))
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)
@@ -303,7 +298,176 @@ def restaurant_type():
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e
-                result=tool.return_json(0,"field",True,e)
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#根据坐标查询商圈
+getbusiness_dist = swagger("饭店","根据坐标查询商圈")
+getbusiness_dist.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+getbusiness_dist.add_parameter(name='longitude',parametertype='formData',type='string',required= True,description='经度',default='126.593666')
+getbusiness_dist.add_parameter(name='latitude',parametertype='formData',type='string',required= True,description='纬度',default='45.706477')
+getbusiness_dist_json = {
+  "auto": getbusiness_dist.String(description='验证是否成功'),
+  "message": getbusiness_dist.String(description='SUCCESS/FIELD',default="SUCCESS"),
+  "code": getbusiness_dist.Integer(description='',default=0),
+  "data": {
+    "biz_area_id": getbusiness_dist.String(description='商圈id',default='4193433'),
+    "biz_area_name": getbusiness_dist.String(description='商圈名',default='哈西')
+  }
+}
+#根据坐标查询商圈
+@restaurant_user_api.route('/fm/user/v1/restaurant/getbusiness_dist/',methods=['POST'])
+@swag_from(getbusiness_dist.mylpath(schemaid='getbusiness_dist',result=getbusiness_dist_json))
+def getbusiness_dist():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                distance,id,name=business_dist(float(request.form['longitude']),float(request.form['latitude']))
+                data = {
+                    'biz_area_id':str(id),
+                    'biz_area_name':str(name)
+                }
+
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#查询所有行政区
+getdistrict_list = swagger("饭店","查询所有行政区")
+getdistrict_list.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+getdistrict_list_json = {
+  "auto": getdistrict_list.String(description='验证是否成功'),
+  "message": getdistrict_list.String(description='SUCCESS/FIELD',default="SUCCESS"),
+  "code": getdistrict_list.Integer(description='',default=0),
+  "data": {
+        "district":[
+            {
+              "district_name": getdistrict_list.String(description='行政区名',default='南岗区'),
+              "id": getdistrict_list.String(description='行政区id',default='56d7af296bff8928c07855dc')
+            },
+            {
+              "district_name": getdistrict_list.String(description='行政区名',default='道里区'),
+              "id": getdistrict_list.String(description='行政区id',default='5643898b4be1e3bc3c3cd7ff')
+            },
+            {
+              "district_name": getdistrict_list.String(description='行政区名',default='香坊区'),
+              "id": getdistrict_list.String(description='行政区id',default='5643898b4be1e3bc3c3cd801')
+            },
+        ]
+    }
+}
+#查询所有行政区
+@restaurant_user_api.route('/fm/user/v1/restaurant/getdistrict_list/',methods=['POST'])
+@swag_from(getdistrict_list.mylpath(schemaid='getdistrict_list',result=getdistrict_list_json))
+def getdistrict_list():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                data = {}
+                list=district_list()
+                data['district'] = list
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#根据行政区标签查询商圈
+getbusiness_dist_byid = swagger("饭店","根据行政区标签查询商圈")
+getbusiness_dist_byid.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+getbusiness_dist_byid.add_parameter(name='id',parametertype='formData',type='string',required= True,description='行政区id',default='56d95c1f0f884d3070fbdc4f')
+getbusiness_dist_byid_json = {
+  "auto": getbusiness_dist_byid.String(description='验证是否成功'),
+  "message": getbusiness_dist_byid.String(description='SUCCESS/FIELD',default="SUCCESS"),
+  "code": getbusiness_dist_byid.Integer(description='',default=0),
+  "data": {
+    "biz_areas": [
+      {
+        "biz_area_name": getbusiness_dist_byid.String(description='商圈名',default="腾飞广场"),
+        "biz_area_id": getbusiness_dist_byid.String(description='商圈id',default="13007"),
+        "sort": getbusiness_dist_byid.String(description='排序',default="7"),
+        "longitude": getbusiness_dist_byid.String(description='经度',default="122.535396"),
+        "latitude": getbusiness_dist_byid.String(description='纬度',default="52.977977")
+      },
+      {
+        "biz_area_name": getbusiness_dist_byid.String(description='商圈名',default="漠河火车站"),
+        "biz_area_id": getbusiness_dist_byid.String(description='商圈id',default="13008"),
+        "sort": getbusiness_dist_byid.String(description='排序',default="8"),
+        "longitude": getbusiness_dist_byid.String(description='经度',default="122.518061"),
+        "latitude": getbusiness_dist_byid.String(description='纬度',default="52.996306")
+      }
+    ]
+  }
+}
+#根据行政区标签查询商圈
+@restaurant_user_api.route('/fm/user/v1/restaurant/getbusiness_dist_byid/',methods=['POST'])
+@swag_from(getbusiness_dist_byid.mylpath(schemaid='getbusiness_dist_byid',result=getbusiness_dist_byid_json))
+def getbusiness_dist_byid():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                data=business_dist_byid(request.form['id'])
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#关注饭店
+concern = swagger("饭店","根据行政区标签查询商圈")
+concern.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+concern.add_parameter(name='id',parametertype='formData',type='string',required= True,description='行政区id',default='56d95c1f0f884d3070fbdc4f')
+concern_json = {
+  "auto": concern.String(description='验证是否成功'),
+  "message": concern.String(description='SUCCESS/FIELD',default="SUCCESS"),
+  "code": concern.Integer(description='',default=0),
+  "data": {
+
+  }
+}
+#关注饭店
+@restaurant_user_api.route('/fm/user/v1/restaurant/concern/',methods=['POST'])
+@swag_from(concern.mylpath(schemaid='concern',result=concern_json))
+def concern():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                data = {
+                    "restaurant_id" : ObjectId(request.form['restaurant_id']),
+                    "webuser_id" : ObjectId(request.form['webuser_id']),
+                    "addtime" : datetime.datetime.now()
+                }
+                mongo.concern.insert(data)
+                json = {
+                        "status": 1,
+                        "msg":""
+                }
+                result=tool.return_json(0,"success",True,json)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)

@@ -33,6 +33,16 @@ def getxingzhengqu(xid):
     item = mongo.district.find({"biz_areas.biz_area_id":int(xid)},{"district_name":1})
     for i in item:
         return i["district_name"]
+#获取用户是否关注饭店
+def getconcern(restaurant_id,webuser_id):
+    try:
+        item = mongo.concern.find({"restaurant_id":ObjectId(restaurant_id),"webuser_id":ObjectId(webuser_id)})
+    except:
+        return '0'
+    status = '0'
+    for i in item:
+        status = '1'
+    return status
 #经纬度算距离
 def haversine(lon1, lat1, lon2, lat2): # 经度1，纬度1，经度2，纬度2 （十进制度数）
 
@@ -45,9 +55,18 @@ def haversine(lon1, lat1, lon2, lat2): # 经度1，纬度1，经度2，纬度2 �
     c = 2 * asin(sqrt(a))
     r = 6371 # 地球平均半径，单位为公里
     return c * r * 1000
+#根据经纬度查询所在商圈
+def business_dist(lon1=126.593666, lat1=45.706477):
+    pass
+    item = mongo.district.find({},{"biz_areas":1})
+    biz_areas_list = []
+    for i in item:
+        for j in i['biz_areas']:
+            biz_areas_list.append((int(haversine(lon1=lon1,lat1=lat1,lon2=j['longitude'],lat2=j['latitude'])),j['biz_area_id'],j['biz_area_name']))
+    return sorted(biz_areas_list)[0][0],sorted(biz_areas_list)[0][1],sorted(biz_areas_list)[0][2]
 #根据获取的经纬度查询若干条距离最近的饭店信息
-def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3):
-    if lat1!='x':
+def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3,webuser_id='5770c183dcc88e6506b95225'):
+    if lat1!='y':
         item = mongo.restaurant.find(first,{"zuobiao":1})
         rsetaurant_list = []
         for i in item:
@@ -67,6 +86,7 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3)
                         json['kind1'] = getcoupons('1',rest[key])['content']
                         json['kind2'] = getcoupons('2',rest[key])['content']
                         json['kind3'] = getcoupons('3',rest[key])['content']
+                        json['concern'] =getconcern(rest[key],webuser_id)
                     elif key == 'restaurant_id':
                         json['restaurant_id'] = str(rest[key])
                     elif key == 'name':
@@ -98,6 +118,7 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3)
                     json['kind1'] = getcoupons('1',rest[key])['content']
                     json['kind2'] = getcoupons('2',rest[key])['content']
                     json['kind3'] = getcoupons('3',rest[key])['content']
+                    json['concern'] =getconcern(rest[key],webuser_id)
                 elif key == 'restaurant_id':
                     json['restaurant_id'] = str(rest[key])
                 elif key == 'name':
@@ -121,3 +142,39 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3)
                     pass
             list.append(json)
     return list
+#查询所有行政区标签
+def district_list(first={}):
+    item = mongo.district.find(first,{"district_name":1})
+    list = []
+    for i in item:
+        data = {}
+        data['id'] = str(i['_id'])
+        data['district_name'] = i['district_name']
+        list.append(data)
+    return list
+#根据行政区标签查询商圈
+def business_dist_byid(id):
+    item = mongo.district.find({'_id':ObjectId(id)},{"biz_areas":1})
+    data = {}
+    for i in item:
+        for key in i.keys():
+            if key == '_id':
+                pass
+            else:
+                list = []
+                for j in i[key]:
+                    data2 = {}
+                    for k in j.keys():
+                        data2[k] = str(j[k])
+                    list.append(data2)
+                data[key] = list
+    return data
+if __name__ == '__main__':
+    pass
+    # print getconcern("57340b330c1d9b314998892f","5770c183dcc88e6506b95225")
+    # print json_util.dumps(district_list(),ensure_ascii=False,indent=2)
+    # print json_util.dumps(business_dist_byid('56d95c1f0f884d3070fbdc4f'),ensure_ascii=False,indent=2)
+    # item = mongo.district.find({'_id':ObjectId('56d95c1f0f884d3070fbdc4f')},{"biz_areas":1,"district_name":1})
+    # for i in item:
+    #     print json_util.dumps(i,ensure_ascii=False,indent=2)
+    print guess(lat1='y',lon1='x')
