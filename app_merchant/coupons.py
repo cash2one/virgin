@@ -27,7 +27,7 @@ table = {'status': 'int',
 coupons_api = Blueprint('coupons_api', __name__, template_folder='templates')
 def checkcoupons(restaurant_id,):
     dict = {
-        "button":"0",
+        "button":"1",
         "restaurant_id" : ObjectId(restaurant_id),
         "type" : "1",
         "showtime_start" : datetime.datetime.now(),
@@ -42,7 +42,7 @@ def checkcoupons(restaurant_id,):
         "kind" : "1",
     }
     dict2 = {
-        "button":"0",
+        "button":"1",
         "restaurant_id" : ObjectId(restaurant_id),
         "type" : "1",
         "showtime_start" : datetime.datetime.now(),
@@ -404,7 +404,7 @@ def insertcoupons():
                             "rule" : request.form['rule'],
                             "money" : float(request.form['money']),
                             "kind" : "3",
-                            "button":request.form["button"],
+                            "button":"0",
                             # "status" : 0
                             "addtime":datetime.datetime.now()   #hancuiyi
                         }
@@ -428,7 +428,6 @@ def insertcoupons():
                         result=tool.return_json(0,"金额或折扣必须为数字格式",True,None)
                         return json_util.dumps(result,ensure_ascii=False,indent=2)
                 else:
-                    pdict['button'] = '0'
                     item = mongo.coupons.insert(pdict)
                     json = {
                         "status": 1,
@@ -453,6 +452,10 @@ def updatecoupons():
     if request.method=='POST':
         try:
             if auto.decodejwt(request.form['jwtstr']):
+                try:
+                    button = request.form["button"]
+                except:
+                    button = '0'
                 pdict = {
                             "restaurant_id" : ObjectId(request.form['restaurant_id']),
                             "type" : request.form['type'],
@@ -464,7 +467,7 @@ def updatecoupons():
                             "indate_end" : datetime.datetime.strptime(request.form["indate_end"], "%Y-%m-%d"),
                             "rule" : request.form['rule'],
                             "money" : float(request.form['money']),
-                            "button":request.form["button"],
+                            "button":button,
                             # "status" : request.form['status']
                             "addtime":datetime.datetime.now()   #hancuiyi
                         }
