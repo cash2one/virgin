@@ -12,7 +12,7 @@ import datetime
 mongo=conn.mongo_conn()
 #根据类别和饭店id获取一条店粉优惠
 def getcoupons(kind, restaurant_id):
-    item = mongo.coupons.find({'restaurant_id':ObjectId(restaurant_id),'kind':kind,'showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()}}).sort("showtime_start", pymongo.DESCENDING)[0:1]
+    item = mongo.coupons.find({'button':'0','restaurant_id':ObjectId(restaurant_id),'kind':kind,'showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()}}).sort("showtime_start", pymongo.DESCENDING)[0:1]
     json = {}
     json['id'] =  ''
     json['content'] =  ''

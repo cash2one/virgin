@@ -27,6 +27,7 @@ table = {'status': 'int',
 coupons_api = Blueprint('coupons_api', __name__, template_folder='templates')
 def checkcoupons(restaurant_id,):
     dict = {
+        "button":"0",
         "restaurant_id" : ObjectId(restaurant_id),
         "type" : "1",
         "showtime_start" : datetime.datetime.now(),
@@ -41,6 +42,7 @@ def checkcoupons(restaurant_id,):
         "kind" : "1",
     }
     dict2 = {
+        "button":"0",
         "restaurant_id" : ObjectId(restaurant_id),
         "type" : "1",
         "showtime_start" : datetime.datetime.now(),
@@ -72,8 +74,7 @@ def findcoupons():
                 checkcoupons(request.form['restaurant_id'])
                 pdict = {
                     'restaurant_id':request.form['restaurant_id'],
-                    'kind':'1',
-                    # 'status':0
+                    'kind':'1'
                     }
                 kind = int(request.form['kind'])
                 json={}
@@ -86,6 +87,8 @@ def findcoupons():
                                 json['id'] = str(i[key])
                             elif key == 'restaurant_id':
                                 json['restaurant_id'] = str(i[key])
+                            elif key == 'button':
+                                json['button'] = i[key]
                             elif key == 'rule':
                                 if i[key] == '0':
                                     json['rule'] = i[key]
@@ -149,6 +152,8 @@ def findcoupons():
                                 json['id'] = str(i[key])
                             elif key == 'restaurant_id':
                                 json['restaurant_id'] = str(i[key])
+                            elif key == 'button':
+                                json['button'] = i[key]
                             elif key == 'rule':
                                 if i[key] == '0':
                                     json['rule'] = i[key]
@@ -307,6 +312,9 @@ def couponsinfo():
                             json['id'] = str(i[key])
                         elif key == 'restaurant_id':
                             json['restaurant_id'] = str(i[key])
+                        elif key == 'kind':
+                            if i[key] == '1' or i[key] == '2':
+                                json['button'] = i[key]
                         elif key == 'rule':
                             if i[key] == '0':
                                 json['rule'] = i[key]
@@ -396,6 +404,7 @@ def insertcoupons():
                             "rule" : request.form['rule'],
                             "money" : float(request.form['money']),
                             "kind" : "3",
+                            "button":request.form["button"],
                             # "status" : 0
                             "addtime":datetime.datetime.now()   #hancuiyi
                         }
@@ -419,6 +428,7 @@ def insertcoupons():
                         result=tool.return_json(0,"金额或折扣必须为数字格式",True,None)
                         return json_util.dumps(result,ensure_ascii=False,indent=2)
                 else:
+                    pdict['button'] = '0'
                     item = mongo.coupons.insert(pdict)
                     json = {
                         "status": 1,
@@ -454,6 +464,7 @@ def updatecoupons():
                             "indate_end" : datetime.datetime.strptime(request.form["indate_end"], "%Y-%m-%d"),
                             "rule" : request.form['rule'],
                             "money" : float(request.form['money']),
+                            "button":request.form["button"],
                             # "status" : request.form['status']
                             "addtime":datetime.datetime.now()   #hancuiyi
                         }
@@ -477,6 +488,7 @@ def updatecoupons():
                         result=tool.return_json(0,"金额或折扣必须为数字格式",True,None)
                         return json_util.dumps(result,ensure_ascii=False,indent=2)
                 else:
+                    pdict['button'] = '0'
                     item = mongo.coupons.update({"_id":ObjectId(request.form["coupons_id"])},{"$set":pdict})
                     json = {
                         "status": 1,
