@@ -243,6 +243,76 @@ def allorder():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
          return abort(403)
+#1.1.0.jpg全部订单restaurant_id,status,type
+@order_api.route('/fm/merchant/v1/order/newallorder/', methods=['POST'])
+def newallorder():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+
+            try:
+
+                pdict = {
+                    'restaurant_id':ObjectId(request.form["restaurant_id"]),
+                    'source':2
+                }
+                if int(request.form["status"]) != -1:
+                    if int(request.form["status"]) == 6:
+                        pdict['add_time'] = {'$gte': datetime.datetime.now()-datetime.timedelta(days = 30), '$lt': datetime.datetime.now()}
+                        pdict['status'] = int(request.form["status"])
+                    else:
+                        pdict['status'] = int(request.form["status"])
+                if int(request.form["type"]) != -1:
+                    pdict['type'] = int(request.form["type"])
+                second = {
+                    "_id" : 1,
+                    "username" :1,
+                    "status" : 1,
+                    "type" : 1,
+                    "restaurant_id" : 1,
+                    "numpeople" : 1,
+                    "preset_time" : 1,
+                    "add_time" : 1
+                }
+                pageindex = request.form["pageindex"]
+                pagenum = 10
+                star = (int(pageindex)-1)*pagenum
+                end = (pagenum*int(pageindex))
+                # print tools.orderformate(pdict, table)
+                item = mongo.order.find(pdict,second).sort("add_time", pymongo.DESCENDING)[star:end]
+                # allcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),'source':2}).count()
+                newcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":0,'source':2}).count()
+                waitecount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":2,'source':2}).count()
+                redocount = mongo.order.find({'add_time':{'$gte': datetime.datetime.now()-datetime.timedelta(days = 30), '$lt': datetime.datetime.now()},'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":6,'source':2}).count()
+                allcount = int(newcount)+int(waitecount)+int(redocount)
+                data = {}
+                list=[]
+                for i in item:
+                    json = {}
+                    for key in i.keys():
+                        if key == '_id':
+                            json['id'] = str(i[key])
+                        elif key == 'restaurant_id':
+                            json['restaurant_id'] = str(i[key])
+                        elif key == 'preset_time':
+                            json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                        elif key == 'add_time':
+                            json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                        else:
+                            json[key] = i[key]
+                    list.append(json)
+                data['list'] = list
+                data['count'] = {'allcount':allcount,'newcount':newcount,'waitecount':waitecount,'redocount':redocount}
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+         return abort(403)
 #1.1.4.jpg订单详细信息form:id
 @order_api.route('/fm/merchant/v1/order/orderinfos/', methods=['POST'])
 def orderinfos():
