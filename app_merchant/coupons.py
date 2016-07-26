@@ -452,10 +452,6 @@ def updatecoupons():
     if request.method=='POST':
         try:
             if auto.decodejwt(request.form['jwtstr']):
-                try:
-                    button = request.form["button"]
-                except:
-                    button = '0'
                 pdict = {
                             "restaurant_id" : ObjectId(request.form['restaurant_id']),
                             "type" : request.form['type'],
@@ -467,7 +463,6 @@ def updatecoupons():
                             "indate_end" : datetime.datetime.strptime(request.form["indate_end"], "%Y-%m-%d"),
                             "rule" : request.form['rule'],
                             "money" : float(request.form['money']),
-                            "button":button,
                             # "status" : request.form['status']
                             "addtime":datetime.datetime.now()   #hancuiyi
                         }
@@ -491,7 +486,6 @@ def updatecoupons():
                         result=tool.return_json(0,"金额或折扣必须为数字格式",True,None)
                         return json_util.dumps(result,ensure_ascii=False,indent=2)
                 else:
-                    pdict['button'] = '0'
                     item = mongo.coupons.update({"_id":ObjectId(request.form["coupons_id"])},{"$set":pdict})
                     json = {
                         "status": 1,
@@ -669,6 +663,29 @@ def couponsbyqr():
         except Exception, e:
             print e
             result=tool.return_json(0,"field",True,e)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+
+    else:
+        return abort(403)
+#店粉优惠 修改button启用开关
+@coupons_api.route('/fm/merchant/v1/coupons/updatebutton/', methods=['POST'])
+def updatebutton():
+    if request.method=='POST':
+        try:
+            if auto.decodejwt(request.form['jwtstr']):
+                item = mongo.coupons.update({"_id":ObjectId(request.form["coupons_id"])},{"$set":{"button":request.form["button"]}})
+                json = {
+                    "status": 1,
+                    "msg":""
+                }
+                result=tool.return_json(0,"success",True,json)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            else:
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        except Exception,e:
+            print e
+            result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
 
     else:
