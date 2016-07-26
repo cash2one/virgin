@@ -267,9 +267,9 @@ def orderinfos():
                         elif key == 'webuser_id':
                             json['webuser_id'] = str(i[key])
                         elif key == 'preset_time':
-                            json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                            json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M:%S')
                         elif key == 'add_time':
-                            json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                            json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M:%S')
                         elif key == 'room_id':
                             item = mongo.restaurant.find({"_id":ObjectId(i['restaurant_id'])},{"rooms":1})
                             for t in item:
