@@ -183,7 +183,7 @@ def imgs():
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e
-                result=tool.return_json(0,"field",False,None)
+                result=tool.return_json(0,"field",True,str(e))
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)
