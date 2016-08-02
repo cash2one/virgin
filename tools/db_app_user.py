@@ -13,12 +13,36 @@ mongo=conn.mongo_conn()
 #根据类别和饭店id获取一条店粉优惠
 def getcoupons(kind, restaurant_id):
     item = mongo.coupons.find({'button':'0','restaurant_id':ObjectId(restaurant_id),'kind':kind,'showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()}}).sort("showtime_start", pymongo.DESCENDING)[0:1]
-    json = {}
-    json['id'] =  ''
-    json['content'] =  ''
+    json = {
+        'id':'',
+        'content':''
+    }
     for i in item:
-        json['id'] = str(i['_id']) if str(i['_id'])!='' else ''
-        json['content'] = i['content'] if i['content']!='' else ''
+        json['id'] = str(i['_id'])
+        if i['type'] == '1':
+            if i['rule'] == '0':
+                json['content'] = '下单即减'+str(i['cross-claim'])+'元'
+            elif i['rule'] == '1':
+                json['content'] = '全品满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
+            elif i['rule'] == '2':
+                json['content'] = '菜品满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
+            elif i['rule'] == '3':
+                json['content'] = '酒类满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
+            else:
+                pass
+        elif i['type'] == '2':
+            if i['rule'] == '0':
+                json['content'] = '下单即打'+str(i['cross-claim'])+'折'
+            elif i['rule'] == '1':
+                json['content'] = '全品满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
+            elif i['rule'] == '2':
+                json['content'] = '菜品满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
+            elif i['rule'] == '3':
+                json['content'] = '酒类满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
+            else:
+                pass
+        else:
+            json['content'] = i['content']
     return json
 #获取首页店粉优惠大图
 def getimg(restaurant_id):
@@ -33,7 +57,7 @@ def getxingzhengqu(xid):
     item = mongo.district.find({"biz_areas.biz_area_id":int(xid)},{"district_name":1})
     for i in item:
         return i["district_name"]
-#获取用户是否关注饭店
+#获取用户1是0否关注饭店
 def getconcern(restaurant_id,webuser_id):
     try:
         item = mongo.concern.find({"restaurant_id":ObjectId(restaurant_id),"webuser_id":ObjectId(webuser_id)})
@@ -171,10 +195,3 @@ def business_dist_byid(id):
     return data
 if __name__ == '__main__':
     pass
-    # print getconcern("57340b330c1d9b314998892f","5770c183dcc88e6506b95225")
-    # print json_util.dumps(district_list(),ensure_ascii=False,indent=2)
-    # print json_util.dumps(business_dist_byid('56d95c1f0f884d3070fbdc4f'),ensure_ascii=False,indent=2)
-    # item = mongo.district.find({'_id':ObjectId('56d95c1f0f884d3070fbdc4f')},{"biz_areas":1,"district_name":1})
-    # for i in item:
-    #     print json_util.dumps(i,ensure_ascii=False,indent=2)
-    print guess(lat1='y',lon1='x')

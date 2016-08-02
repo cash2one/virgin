@@ -165,11 +165,11 @@ def getqrcode():
                 qrcode_img = ''
                 for i in item:
                     qrcode_img = i['qrcode_img']
-                result=tool.return_json(0,"field",False,qrcode_img)
+                result=tool.return_json(0,"SUCCESS",True,qrcode_img)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e
-                result=tool.return_json(0,"field",False,None)
+                result=tool.return_json(0,"field",True,str(e))
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)
@@ -199,3 +199,27 @@ def webuserqrcode():
 def abouthtml():
     return render_template("/test/webuserqrcode.html")
 
+#分享
+@other_api.route('/fm/merchant/v1/share/',methods=['POST'])
+def share():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                item = mongo.fenxiang.find()
+                json = {}
+                for i in item:
+                    json['title'] = i['Title']
+                    json['content'] = i['Content']
+                    json['img'] = i['img']
+                    json['url'] = i['url']
+                result=tool.return_json(0,"SUCCESS",True,json)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)

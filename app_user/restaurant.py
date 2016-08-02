@@ -9,7 +9,7 @@ from tools import tools
 
 import sys
 
-from tools.db_app_user import guess, business_dist, district_list, business_dist_byid
+from tools.db_app_user import guess, business_dist, district_list, business_dist_byid, getcoupons, getconcern
 from tools.swagger import swagger
 
 reload(sys)
@@ -464,6 +464,127 @@ def concern():
                         "msg":""
                 }
                 result=tool.return_json(0,"success",True,json)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#关注饭店
+restaurant_info = swagger("饭店","根据行政区标签查询商圈")
+restaurant_info.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+restaurant_info.add_parameter(name='webuser_id',parametertype='formData',type='string',required= True,description='用户id',default='5798021b7c1fa230d18fdc70')
+restaurant_info.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店id',default='57329e300c1d9b2f4c85f8e6')
+restaurant_info_json = {
+  "auto": restaurant_info.String(description='验证是否成功'),
+  "message": restaurant_info.String(description='SUCCESS/FIELD',default="SUCCESS"),
+  "code": restaurant_info.Integer(description='',default=0),
+  "data": {
+          "wine_discount": restaurant_info.String(description='酒水优惠',default="1900臻藏6元、勇闯天涯3元"),
+          "WiFi": restaurant_info.String(description='WiFi',default="有"),
+          "rooms": {
+            "room_name": restaurant_info.String(description='WiFi',default="中包（1间） 大包（1间）"),
+            "room_type": restaurant_info.String(description='包房特色',default="")
+          },
+          "name": restaurant_info.String(description='饭店名',default="阿东海鲜老菜馆"),
+          "shuaka": restaurant_info.String(description='是否能刷卡1是0否',default="0"),
+          "weixin": restaurant_info.String(description='是否能微信支付1是0否',default="1"),
+          "yanyi": restaurant_info.String(description='特色：演绎',default="无"),
+          "dishes_type": restaurant_info.String(description='菜品类别',default="川菜/湘菜  炒菜"),
+          "zhifubao": restaurant_info.String(description='是否能支付宝支付1是0否',default="0"),
+          "24xiaoshi": restaurant_info.String(description='特色：24小时营业',default="无"),
+          "dishes_discount": restaurant_info.String(description='菜品优惠',default="菜品8.5折,猪手10元/只、蚬子9.8元"),
+          "phone": restaurant_info.String(description='饭店电话',default="15045681388"),
+          "show_photos": [
+            {
+              "img": restaurant_info.String(description='饭店图片',default="6a84a308201d546aeb5dfd850ec7ae40"),
+              "desc": restaurant_info.String(description='饭店图片排序，默认无序',default="")
+            },
+            {
+              "img": restaurant_info.String(description='饭店图片',default="6ad56fdd7b8d97903dd036d8ffd8ea60"),
+              "desc": restaurant_info.String(description='饭店图片排序，默认无序',default="")
+            }
+          ],
+          "tingchechang": restaurant_info.String(description='特色：停车场',default="无"),
+          "address": restaurant_info.String(description='饭店地址',default="哈尔滨市南岗区马家街132-2号"),
+          "photos_num": restaurant_info.Integer(description='饭店图片数量',default=2),
+          "tuijiancai": [
+            {
+              "name": restaurant_info.String(description='推荐菜名',default="小仁鲜"),
+              "id": restaurant_info.String(description='推荐菜id',default="201605111053268902")
+            }
+          ],
+          "open": restaurant_info.String(description='营业时间',default="9:00-23:00"),
+          "id": restaurant_info.String(description='饭店id',default="57329e300c1d9b2f4c85f8e6"),
+          "coupons": {
+            "content": restaurant_info.String(description='店粉抢优惠',default="下单即减3.0元"),
+            "id": restaurant_info.String(description='店粉抢优惠id',default="578309097c1fa4826dce8fbb"),
+          },
+          "concern": restaurant_info.String(description='是否关注1是0否',default="1")
+    }
+}
+#饭店详情
+@restaurant_user_api.route('/fm/user/v1/restaurant/restaurant_info/',methods=['POST'])
+@swag_from(restaurant_info.mylpath(schemaid='restaurant_info',result=restaurant_info_json))
+def restaurant_info():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                webuser_id = request.form['webuser_id']
+                item = mongo.restaurant.find({"_id":ObjectId(request.form['restaurant_id'])})
+                data = {}
+                for i in item:
+                    data['id'] = str(i['_id'])
+                    data['show_photos'] = i['show_photos']
+                    data['photos_num'] = len(i['show_photos'])
+                    data['name'] = i['name']
+                    #是否支持点菜订座文字(暂时空着)
+                    dishes_type = []
+                    for type in i['dishes_type']:
+                        dishes_type.append(type['name'])
+                    data['dishes_type'] = '  '.join(dishes_type)
+                    dishes_discount = ''
+                    if i['dishes_discount']['discount'] != 1.0:
+                        dishes_discount = '菜品'+str(i['dishes_discount']['discount']*10)+'折,'
+                    dishes_discount += i['dishes_discount']['message']
+                    data['dishes_discount'] =dishes_discount
+                    wine_discount = ''
+                    if i['wine_discount']['discount'] != 1.0:
+                        wine_discount = '菜品'+str(i['wine_discount']['discount']*10)+'折,'
+                    wine_discount += i['wine_discount']['message']
+                    data['wine_discount'] =wine_discount
+                    data['coupons'] =getcoupons('3',str(i['_id']))
+                    #开团请客（暂时空着）
+                    data['concern'] = getconcern(str(i['_id']),webuser_id)
+                    data['address'] = i['address']
+                    data['phone'] = i['phone']
+                    data['open'] = i['open']
+                    for tese in i['tese']:
+                        data['yanyi'] = '有' if '51' == tese['id'] else '无'
+                        data['24xiaoshi'] = '有' if '52' == tese['id'] else '无'
+                        data['tingchechang'] = '有' if '53' == tese['id'] else '无'
+                        data['WiFi'] = '有' if '54' == tese['id'] else '无'
+                    for pay_type in i['pay_type']:
+                        data['shuaka'] = '1' if '47' == pay_type['id'] else '0'
+                        data['weixin'] = '1' if '48' == pay_type['id'] else '0'
+                        data['zhifubao'] = '1' if '49' == pay_type['id'] else '0'
+                    room_name = []
+                    rooms = {}
+                    for room in i['rooms']:
+                        if room['room_name'] != '大厅':
+                            room_name.append(room['room_name'])
+                        if room['room_type'] !=[]:
+                            rooms['room_type'] = room['room_type'][0]['name']
+                    rooms['room_name'] = ' '.join(room_name)
+                    data['rooms'] = rooms
+                    for menu in  i['menu']:
+                        if menu['name'] == '推荐菜':
+                            data['tuijiancai'] = menu['dishs']
+                result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e
