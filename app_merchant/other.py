@@ -1,4 +1,5 @@
 #coding=utf-8
+from flasgger import swag_from
 import connect
 
 __author__ = 'hcy'
@@ -10,6 +11,7 @@ from bson import  json_util,ObjectId
 import auto
 import os
 import datetime
+from tools.swagger import swagger
 
 
 from flask import request, Response
@@ -26,7 +28,7 @@ def appversion():
     jwtmsg = auto.decodejwt(jwtstr)
     json={}
     if jwtmsg:
-        item=mongo.android_version.find().sort("addtime",pymongo.DESCENDING)[0]
+        item=mongo.android_version.find({"appid":1}).sort("addtime",pymongo.DESCENDING)[0]
         json = {
                 "url": item["url"],
                 "version": item["version"],
@@ -35,7 +37,34 @@ def appversion():
     result=tool.return_json(0,"success",jwtmsg,json)
     return json_util.dumps(result,ensure_ascii=False,indent=2)
 
-
+#安卓版本更新用户版
+appversionvuser= swagger("其它","安卓版本更新用户版")
+appversionvuser.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+appversionvuser_json = {
+  "message": appversionvuser.String(description='SUCCESS/FIELD',default="SUCCESS"),
+  "data":{
+    "describe":appversionvuser.String(description='更新内容描述',default="39"),
+    "url": appversionvuser.String(description='app下载地址',default="http://125.211.222.237/apk/zoyo.apk"),
+    "version": appversionvuser.String(description='版本号',default="0.0.1"),
+  },
+  "code":appversionvuser.Integer(description='',default=0),
+}
+@other_api.route('/fm/merchant/v1/appversionvuser/', methods=['POST'])
+# @swag_from(appversionvuser.mylpath(schemaid='appversionvuser',result=appversionvuser_json))
+def appversionvuser():
+    if request.method == "POST":
+        jwtstr = request.form["jwtstr"]
+    jwtmsg = auto.decodejwt(jwtstr)
+    json={}
+    if jwtmsg:
+        item=mongo.android_version.find({"appid":2}).sort("addtime",pymongo.DESCENDING)[0]
+        json = {
+                "url": item["url"],
+                "version": item["version"],
+                "describe": item["describe"]
+        }
+    result=tool.return_json(0,"success",jwtmsg,json)
+    return json_util.dumps(result,ensure_ascii=False,indent=2)
 
 
 @other_api.route('/fm/merchant/v1/setversion/',methods=['POST'])
@@ -118,12 +147,49 @@ def addfeedback():
               "addtime" :datetime.datetime.now(),
               "isread" : 2,
               "reContents" : "",
-              "userid" : ObjectId("000000000000000000000000")
+              "userid" : ObjectId("000000000000000000000000"),
+              "source":1
         }
         feedback=mongo.addfeedback.insert_one(item)
         result=tool.return_json(0,"success",jwtmsg,{"status":True})
         return json_util.dumps(result,ensure_ascii=False,indent=2)
 
+#安卓版本更新用户版
+addfeedbackvuser= swagger("其它","用户版意见反馈")
+addfeedbackvuser.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+addfeedbackvuser.add_parameter(name='content',parametertype='formData',type='string',required= True,description='用户id',default='57396ec17c1f31a9cce960f4')
+addfeedbackvuser.add_parameter(name='userid',parametertype='formData',type='string',required= True,description='反馈内容',default='美食地图我喜欢')
+addfeedbackvuser_json ={
+  "auto": addfeedbackvuser.Boolean(description='',default="true"),
+  "message": addfeedbackvuser.String(description='SUCCESS/FIELD',default="SUCCESS"),
+  "code": addfeedbackvuser.Integer(description='',default=0),
+  "data": {
+    "status": addfeedbackvuser.Boolean(description='true-添加成功/flase-添加失败',default="true"),
+  }
+}
+@other_api.route('/fm/merchant/v1/addfeedbackvuser/',methods=['POST'])
+# @swag_from(addfeedbackvuser.mylpath(schemaid='addfeedbackvuser',result=addfeedbackvuser_json))
+def addfeedbackvuser():
+    # try:
+        if request.method == 'POST':
+            content=request.form['content']
+            # email=request.form['email']
+            webuserid=request.form['userid']
+            jwtstr = request.form["jwtstr"]
+        jwtmsg = auto.decodejwt(jwtstr)
+        item={
+              "webuserid" : ObjectId(webuserid),
+              "email":"",
+              "contents" : content,
+              "addtime" :datetime.datetime.now(),
+              "isread" : 2,
+              "reContents" : "",
+              "userid" : ObjectId("000000000000000000000000"),
+              "source":2
+        }
+        feedback=mongo.addfeedback.insert_one(item)
+        result=tool.return_json(0,"success",jwtmsg,{"status":True})
+        return json_util.dumps(result,ensure_ascii=False,indent=2)
         #
         # feedback=mongo.zoyo_feedback.insert_one(item)
         # return render_template('other/feedback.html',statecode=1)
