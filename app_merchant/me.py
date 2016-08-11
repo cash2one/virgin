@@ -41,6 +41,8 @@ def frommessages():
                             json['title'] = i['infos']['infotitle']
                         elif key == 'add_time':
                             json['add_time'] = i[key].strftime('%Y年%m月%d日')
+                        elif key == 'goto':
+                            json['goto'] = i[key]
                     list.append(json)
                 data['list'] = list
                 result=tool.return_json(0,"success",True,data)
@@ -130,7 +132,7 @@ def tomessages():
         if auto.decodejwt(request.form['jwtstr']):
             try:
                 pageindex = request.form["pageindex"]
-                pagenum = 10
+                pagenum = 20
                 star = (int(pageindex)-1)*pagenum
                 end = (pagenum*int(pageindex))
                 item = mongo.message.find({"$or":[{"infoto."+str(request.form["restaurant_id"]) : 1},{"infoto."+str(request.form["restaurant_id"]) : 0}]}).sort("add_time", pymongo.DESCENDING)[star:end]
@@ -145,9 +147,11 @@ def tomessages():
                         elif key == 'infos':
                             json['title'] = i['infos']['infotitle']
                         elif key == 'add_time':
-                            json['add_time'] = i[key].strftime('%Y年%m月%d日')
+                            json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M:%S')
                         elif key == 'infoto':
                             json['status'] = i['infoto'][str(request.form["restaurant_id"])]
+                        elif key == 'goto':
+                            json['goto'] = i[key]
                     list.append(json)
                 data['list'] = list
                 result=tool.return_json(0,"success",True,data)
@@ -167,7 +171,7 @@ def imgs():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
             try:
-                item = mongo.turnsimg.find({"appid":"1"})
+                item = mongo.turnsimg.find({"appid":"2"})
                 json = {}
                 for i in item:
                     for key in i.keys():
@@ -179,7 +183,8 @@ def imgs():
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e
-                result=tool.return_json(0,"field",False,None)
+                print e
+                result=tool.return_json(0,"field",True,str(e))
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)

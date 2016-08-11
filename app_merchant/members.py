@@ -113,7 +113,7 @@ def membersinfo():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
 
-            try:
+            # try:
                 pdict = {
                     '_id':request.form['id']
                 }
@@ -135,13 +135,12 @@ def membersinfo():
                             json['birthday'] = item[key]
                         else:
                             json[key] = item[key]
-                    jwtmsg = auto.decodejwt(request.form["jwtstr"])
-                    result=tool.return_json(0,"success",jwtmsg,json)
+                    result=tool.return_json(0,"success",True,json)
                     return json_util.dumps(result,ensure_ascii=False,indent=2)
                 else:
                     item = mongo.webuser.find_one(tools.orderformate(pdict, table))
                     totals = mongo.order.find(tools.orderformate(odict, table),{'preset_time':1,'total':1}).sort('add_time', pymongo.DESCENDING)[0:2]
-                    comment = mongo.comment.find({"restaurant_id":ObjectId(request.form["restaurant_id"]), "user_id":ObjectId(request.form['id'])},{"post_date":1, "user_info.user_name":1,"comment_text":1}).sort('post_date', pymongo.DESCENDING)[0:2]
+                    comment = mongo.comment.find({"restaurant_id":request.form["restaurant_id"], "user_id":request.form['id']},{"post_date":1, "user_info.user_name":1,"comment_text":1}).sort('post_date', pymongo.DESCENDING)[0:2]
                     commentlist = []
                     for c in comment:
                         commentdict = {}
@@ -183,10 +182,10 @@ def membersinfo():
                     result=tool.return_json(0,"success",True,data)
                     return json_util.dumps(result,ensure_ascii=False,indent=2)
 
-            except Exception,e:
-                print e
-                result=tool.return_json(0,"field",False,None)
-                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            # except Exception,e:
+            #     print e
+            #     result=tool.return_json(0,"field",False,None)
+            #     return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)

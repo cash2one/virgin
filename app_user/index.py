@@ -36,9 +36,9 @@ def index():
                 #暂缺
                 #开团请客 结束
                 #店粉优惠 随机两个饭店 开始
-                count = len(mongo.coupons.distinct('restaurant_id',{'showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()}}))
+                count = len(mongo.coupons.distinct('restaurant_id',{'showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()},"button":"0"}))
                 randomnum = random.randint(0, count-2)
-                restaurant_id = mongo.coupons.distinct('restaurant_id',{'showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()}})[randomnum:randomnum+2]
+                restaurant_id = mongo.coupons.distinct('restaurant_id',{'showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()},"button":"0"})[randomnum:randomnum+2]
                 idlist = []
                 for i in restaurant_id:
                     idlist.append(i)

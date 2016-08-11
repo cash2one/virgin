@@ -17,7 +17,10 @@ def getroomslist(restaurant_id, preset_time):
     type_list=[]
     for i in b:
         if i["room_people_name"] not in type_list:
-            type_list.append(i["room_people_name"])
+            if i["room_people_name"] == '大厅':
+                type_list.insert(0, i["room_people_name"])
+            else:
+                type_list.append(i["room_people_name"])
     data = {}
     list=[]
     for a in type_list:
@@ -29,7 +32,7 @@ def getroomslist(restaurant_id, preset_time):
                 item={}
                 item["room_id"]=i1["room_id"]
                 item["room_name"]=i1["room_name"]
-                pdict = {'room_id':i1['room_id'],'preset_time': {'$gte': start, '$lt': end}}
+                pdict = {'room_id':i1['room_id'],'status':3,'preset_time': {'$gte': start, '$lt': end}}
                 orderbyroom = mongo.order.find(pdict).sort('add_time', pymongo.DESCENDING)
                 orderlist = []
 
@@ -45,10 +48,11 @@ def getroomslist(restaurant_id, preset_time):
                     orderlist.append(orderdict)
                 item['orderinfo'] = orderlist
                 rooms.append(item)
+
         room["room_count"]=rooms
         list.append(room)
     data['list'] = list
-    # print list
+
     return data
 
 def getroomorderlist(restaurant_id,preset_time):

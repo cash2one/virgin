@@ -1,0 +1,91 @@
+餐位管理
+---
+tags:
+  - 订单
+parameters:
+  - name: restaurant_id
+    in: formData
+    type: string
+    required: true
+    description: 饭店id
+    default: '57329b1f0c1d9b2f4c85f8e3'
+  - name: preset_time
+    in: formData
+    type: string
+    required: true
+    description: 预定时间
+    default: '2015-6-16'
+  - name: jwtstr
+    in: formData
+    type: string
+    required: true
+    description: jwt串
+    default: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs'
+responses:
+    500:
+      description: 服务器错误
+    400:
+      description: 无效的参数
+    200:
+      description: 返回格式
+      schema:
+        id: orderbypreset
+        properties:
+              date:
+                type: object
+                description: ''
+                properties:
+                    list:
+                      type: array
+                      description: ''
+                      items:
+                        type: object
+                        properties:
+                          room_count:
+                            type: array
+                            description: ''
+                            items:
+                              type: object
+                              properties:
+                                room_name:
+                                  type: string
+                                  description: ''
+                                  default: "中包(1间)"
+                                room_id:
+                                  type: string
+                                  description: ''
+                                  default: "201605111054507163"
+                                orderinfo:
+                                  type: array
+                                  description: ''
+                                  items:
+                                    type: object
+                                    properties:
+                                      numpeople:
+                                        type: int
+                                        description: ''
+                                        default: "8"
+                                      preset_time:
+                                        type: string
+                                        description: ''
+                                        default: "10:10 | 解释"
+                                      id:
+                                        type: string
+                                        description: ''
+                                        default: "572ff4f6ed222e1e28b56056"
+                          room_people_num:
+                            type: string
+                            description: ''
+                            default: "10-12人包房"
+              auto:
+                type: string
+                description: '验证是否成功'
+                default: ""
+              message:
+                type: string
+                description: ''
+                default: ""
+              code:
+                type: int
+                description: ''
+                default: "0"

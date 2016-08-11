@@ -27,6 +27,7 @@ table = {'status': 'int',
 coupons_api = Blueprint('coupons_api', __name__, template_folder='templates')
 def checkcoupons(restaurant_id,):
     dict = {
+        "button":"1",
         "restaurant_id" : ObjectId(restaurant_id),
         "type" : "1",
         "showtime_start" : datetime.datetime.now(),
@@ -41,6 +42,7 @@ def checkcoupons(restaurant_id,):
         "kind" : "1",
     }
     dict2 = {
+        "button":"1",
         "restaurant_id" : ObjectId(restaurant_id),
         "type" : "1",
         "showtime_start" : datetime.datetime.now(),
@@ -72,8 +74,7 @@ def findcoupons():
                 checkcoupons(request.form['restaurant_id'])
                 pdict = {
                     'restaurant_id':request.form['restaurant_id'],
-                    'kind':'1',
-                    # 'status':0
+                    'kind':'1'
                     }
                 kind = int(request.form['kind'])
                 json={}
@@ -86,6 +87,8 @@ def findcoupons():
                                 json['id'] = str(i[key])
                             elif key == 'restaurant_id':
                                 json['restaurant_id'] = str(i[key])
+                            elif key == 'button':
+                                json['button'] = i[key]
                             elif key == 'rule':
                                 if i[key] == '0':
                                     json['rule'] = i[key]
@@ -149,6 +152,8 @@ def findcoupons():
                                 json['id'] = str(i[key])
                             elif key == 'restaurant_id':
                                 json['restaurant_id'] = str(i[key])
+                            elif key == 'button':
+                                json['button'] = i[key]
                             elif key == 'rule':
                                 if i[key] == '0':
                                     json['rule'] = i[key]
@@ -281,11 +286,11 @@ def findcoupons():
                 result=tool.return_json(0,"success",True,json)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             else:
-                result=tool.return_json(0,"field",False,None)
+                result=tool.return_json(0,"field",True,None)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
         except Exception,e:
             print e
-            result=tool.return_json(0,"field",False,None)
+            result=tool.return_json(0,"field",True,e)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
 
     else:
@@ -307,6 +312,9 @@ def couponsinfo():
                             json['id'] = str(i[key])
                         elif key == 'restaurant_id':
                             json['restaurant_id'] = str(i[key])
+                        elif key == 'kind':
+                            if i[key] == '1' or i[key] == '2':
+                                json['button'] = i[key]
                         elif key == 'rule':
                             if i[key] == '0':
                                 json['rule'] = i[key]
@@ -372,7 +380,7 @@ def couponsinfo():
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
         except Exception,e:
             print e
-            result=tool.return_json(0,"field",False,None)
+            result=tool.return_json(0,"field",True,e)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
 
     else:
@@ -396,6 +404,7 @@ def insertcoupons():
                             "rule" : request.form['rule'],
                             "money" : float(request.form['money']),
                             "kind" : "3",
+                            "button":"0",
                             # "status" : 0
                             "addtime":datetime.datetime.now()   #hancuiyi
                         }
@@ -432,7 +441,7 @@ def insertcoupons():
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
         except Exception,e:
             print e
-            result=tool.return_json(0,"field",False,None)
+            result=tool.return_json(0,"field",True,e)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
 
     else:
@@ -490,7 +499,7 @@ def updatecoupons():
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
         except Exception,e:
             print e
-            result=tool.return_json(0,"field",False,None)
+            result=tool.return_json(0,"field",True,e)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
 
     else:
@@ -646,6 +655,29 @@ def couponsbyqr():
                 json['kind1'] = kind1
                 json['kind2'] = kind2
                 json['kind3'] = kind3
+                result=tool.return_json(0,"success",True,json)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            else:
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        except Exception, e:
+            print e
+            result=tool.return_json(0,"field",True,e)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+
+    else:
+        return abort(403)
+#店粉优惠 修改button启用开关
+@coupons_api.route('/fm/merchant/v1/coupons/updatebutton/', methods=['POST'])
+def updatebutton():
+    if request.method=='POST':
+        try:
+            if auto.decodejwt(request.form['jwtstr']):
+                item = mongo.coupons.update({"_id":ObjectId(request.form["coupons_id"])},{"$set":{"button":request.form["button"]}})
+                json = {
+                    "status": 1,
+                    "msg":""
+                }
                 result=tool.return_json(0,"success",True,json)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             else:

@@ -2,7 +2,6 @@
 import random
 import pymongo
 
-
 from app_merchant import auto
 from tools import tools
 import time
@@ -15,6 +14,10 @@ from connect import conn
 from bson import ObjectId,json_util
 import tools.tools as tool
 import tools.public_vew as public
+
+from tools.swagger import swagger
+from flasgger import swag_from
+
 import datetime
 table = {'status': 'int',
          'type': 'int',
@@ -25,7 +28,8 @@ table = {'status': 'int',
          'demand':'str',
          'numpeople':'int',
           'preset_time':'',
-         'room_id':'str'
+         'room_id':'str',
+         'source':'int'
       }
 mongo=conn.mongo_conn()
 
@@ -182,12 +186,13 @@ def allorder():
             try:
 
                 pdict = {
-                    'restaurant_id':request.form["restaurant_id"]
+                    'restaurant_id':ObjectId(request.form["restaurant_id"]),
+                    'source':2
                 }
                 if int(request.form["status"]) != -1:
-                    pdict['status'] = request.form["status"]
+                    pdict['status'] = int(request.form["status"])
                 if int(request.form["type"]) != -1:
-                    pdict['type'] = request.form["type"]
+                    pdict['type'] = int(request.form["type"])
                 second = {
                     "_id" : 1,
                     "username" :1,
@@ -203,11 +208,82 @@ def allorder():
                 star = (int(pageindex)-1)*pagenum
                 end = (pagenum*int(pageindex))
                 # print tools.orderformate(pdict, table)
-                item = mongo.order.find(tools.orderformate(pdict, table),second).sort("add_time", pymongo.DESCENDING)[star:end]
-                allcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"])}).count()
-                newcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":0}).count()
-                waitecount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":2}).count()
-                redocount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":6}).count()
+                item = mongo.order.find(pdict,second).sort("add_time", pymongo.DESCENDING)[star:end]
+                # allcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),'source':2}).count()
+                newcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":0,'source':2}).count()
+                waitecount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":2,'source':2}).count()
+                redocount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":6,'source':2}).count()
+                allcount = int(newcount)+int(waitecount)+int(redocount)
+                data = {}
+                list=[]
+                for i in item:
+                    json = {}
+                    for key in i.keys():
+                        if key == '_id':
+                            json['id'] = str(i[key])
+                        elif key == 'restaurant_id':
+                            json['restaurant_id'] = str(i[key])
+                        elif key == 'preset_time':
+                            json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                        elif key == 'add_time':
+                            json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                        else:
+                            json[key] = i[key]
+                    list.append(json)
+                data['list'] = list
+                data['count'] = {'allcount':allcount,'newcount':newcount,'waitecount':waitecount,'redocount':redocount}
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+         return abort(403)
+#1.1.0.jpg全部订单restaurant_id,status,type
+@order_api.route('/fm/merchant/v1/order/newallorder/', methods=['POST'])
+def newallorder():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+
+            try:
+
+                pdict = {
+                    'restaurant_id':ObjectId(request.form["restaurant_id"]),
+                    'source':2
+                }
+                if int(request.form["status"]) != -1:
+                    if int(request.form["status"]) == 6:
+                        pdict['add_time'] = {'$gte': datetime.datetime.now()-datetime.timedelta(days = 30), '$lt': datetime.datetime.now()}
+                        pdict['status'] = int(request.form["status"])
+                    else:
+                        pdict['status'] = int(request.form["status"])
+                if int(request.form["type"]) != -1:
+                    pdict['type'] = int(request.form["type"])
+                second = {
+                    "_id" : 1,
+                    "username" :1,
+                    "status" : 1,
+                    "type" : 1,
+                    "restaurant_id" : 1,
+                    "numpeople" : 1,
+                    "preset_time" : 1,
+                    "add_time" : 1
+                }
+                pageindex = request.form["pageindex"]
+                pagenum = 10
+                star = (int(pageindex)-1)*pagenum
+                end = (pagenum*int(pageindex))
+                # print tools.orderformate(pdict, table)
+                item = mongo.order.find(pdict,second).sort("add_time", pymongo.DESCENDING)[star:end]
+                # allcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),'source':2}).count()
+                newcount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":0,'source':2}).count()
+                waitecount = mongo.order.find({'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":2,'source':2}).count()
+                redocount = mongo.order.find({'add_time':{'$gte': datetime.datetime.now()-datetime.timedelta(days = 30), '$lt': datetime.datetime.now()},'restaurant_id':ObjectId(request.form["restaurant_id"]),"status":6,'source':2}).count()
+                allcount = int(newcount)+int(waitecount)+int(redocount)
                 data = {}
                 list=[]
                 for i in item:
@@ -261,9 +337,9 @@ def orderinfos():
                         elif key == 'webuser_id':
                             json['webuser_id'] = str(i[key])
                         elif key == 'preset_time':
-                            json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                            json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M:%S')
                         elif key == 'add_time':
-                            json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                            json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M:%S')
                         elif key == 'room_id':
                             item = mongo.restaurant.find({"_id":ObjectId(i['restaurant_id'])},{"rooms":1})
                             for t in item:
@@ -274,26 +350,32 @@ def orderinfos():
                                         json['rname'] = ''
                         elif key == 'webuser_id':
                             json['webuser_id'] = str(i[key])
+                        elif key == 'total':
+                            json['total'] = str(i[key])
+                        elif key == 'deposit':
+                            json['deposit'] = str(i[key])
                         elif key == 'preset_dishs':
                             pdlist = []
-                            pdjson = {}
+
                             if i[key]!=None:
                                 for pd in i[key]:
+                                    pdjson = {}
                                     pdjson['id'] = pd['id']
                                     pdjson['price'] = str(pd['price'])
-                                    pdjson['num'] = str(pd['num'])
+                                    pdjson['num'] = pd['num']
                                     pdjson['name'] = pd['name']
                                     pdjson['discount_price'] = str(pd['discount_price'])
                                     pdlist.append(pdjson)
                             json['preset_dishs'] = pdlist
                         elif key == 'preset_wine':
                             pdlist = []
-                            pdjson = {}
+
                             if i[key]!=None:
                                 for pd in i[key]:
+                                    pdjson = {}
                                     pdjson['id'] = pd['id']
                                     pdjson['price'] = str(pd['price'])
-                                    pdjson['num'] = str(pd['num'])
+                                    pdjson['num'] = pd['num']
                                     pdjson['name'] = pd['name']
                                     pdjson['discount_price'] = str(pd['discount_price'])
                                     pdlist.append(pdjson)
@@ -317,6 +399,7 @@ def orderinfos():
 @order_api.route('/fm/merchant/v1/order/ordercounts1/', methods=['POST'])
 def ordercounts1():
     if request.method == 'POST':
+        type = request.form["type"] #1- 定座统计   2-消费统计
         if auto.decodejwt(request.form['jwtstr']):
             # try:
                 start=datetime.datetime(*time.strptime(request.form['start_time'],'%Y-%m-%d')[:6])
@@ -398,8 +481,13 @@ def ordercounts1():
                 for a in ymtotal:
                     print a
                     data['ymtotal'] = a['total']
-                json = {
-                    "content":"<p style=\"margin-left: 20px;\">共接收座位预定订单&nbsp;<span style=\"color:red\">"+str(data['allcount'])+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+str(data['anumpeople'])+"</span>&nbsp;人；</p><p style=\"margin-left: 20px;\">美食地图预定&nbsp;<span style=\"color:red\">"+str(data['mcount'])+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+str(data['mnumpeople'])+"</span>&nbsp;人；</p><p style=\"margin-left: 20px;\">其它方式预定&nbsp;<span style=\"color:red\">"+str(data['ycount'])+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+str(data['yanumpeople'])+"</span>&nbsp;人。</p>"
+                if int(type)==1:
+                    content="<p style=\"margin-left: 20px;\">共接收座位预定订单&nbsp;<span style=\"color:red\">"+str(data['allcount'])+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+str(data['anumpeople'])+"</span>&nbsp;人；</p><p style=\"margin-left: 20px;\">美食地图预定&nbsp;<span style=\"color:red\">"+str(data['mcount'])+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+str(data['mnumpeople'])+"</span>&nbsp;人；</p><p style=\"margin-left: 20px;\">其它方式预定&nbsp;<span style=\"color:red\">"+str(data['ycount'])+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+str(data['yanumpeople'])+"</span>&nbsp;人。</p>"
+
+                else:
+                    content = "<p style=\"margin-left: 20px;\">共消费"+str(amtotal)+"</p>"
+                json={
+                    "content":content
                 }
                 result=tool.return_json(0,"success",True,json)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
@@ -547,7 +635,37 @@ def ordercounts():
 
 
 #1.3.0.jpg餐位管理restaurant_id, preset_time
+# orderbypreset = swagger("订单","餐位管理")
+# orderbypreset.add_parameter(name='restaurant_id',parametertype='formData',type='string',required=True,description='饭店id',default='57329b1f0c1d9b2f4c85f8e3')
+# orderbypreset.add_parameter(name='preset_time',parametertype='formData',type='string',required= True,description='预定时间',default='2015-6-16')
+# orderbypreset.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+# rjson={
+#   "auto": orderbypreset.String(description='验证是否成功'),
+#   "code": orderbypreset.Integer(description='',default=0),
+#   "date": {
+#     "list": [
+#       {
+#         "room_count": [
+#           {
+#             "orderinfo": [
+#               {
+#                 "id": orderbypreset.String(description='',default="572ff4f6ed222e1e28b56056"),
+#                 "numpeople": orderbypreset.Integer(description='',default=8),
+#                 "preset_time": orderbypreset.String(description='',default="10:10 | 解释"),
+#               }
+#             ],
+#             "room_id": orderbypreset.String(description='',default="201605111054507163"),
+#             "room_name": orderbypreset.String(description='',default="中包(1间)"),
+#           }
+#         ],
+#         "room_people_num": orderbypreset.String(description='',default="10-12人包房"),
+#       }
+#     ]
+#   },
+#   "message": orderbypreset.String(description='',default="")
+# }
 @order_api.route('/fm/merchant/v1/order/orderbypreset/', methods=['POST'])
+# @swag_from(orderbypreset.mylpath(schemaid='orderbypreset',result=rjson))
 def orderbypreset():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
@@ -565,6 +683,7 @@ def orderbypreset():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+
 #1.3.2餐位管理修改订单
 @order_api.route('/fm/merchant/v1/members/updateorder/', methods=['POST'])
 def updateorder():
@@ -628,10 +747,13 @@ def insertorder():
             try:
                 pdict = {
                     "username" : request.form["username"],
-                    "status" : 0,
+                    "is_room":True,
+                    "status" : 3,
                     "type" : int(request.form['type']),
+                    "source":1,
                     "restaurant_id" : ObjectId(request.form['restaurant_id']),
                     "preset_dishs" : [],
+                    "preset_wine": [],
                     "webuser_id" : "",
                     "phone" : request.form['phone'],
                     "dis_message" : "",
@@ -639,14 +761,20 @@ def insertorder():
                     "deposit" : 0.0,
                     "demand" : request.form['demand'],
                     "total" : 0.0,
-                    "numpeople" : request.form['numpeople'],
+                    "numpeople" : int(request.form['numpeople']),
                     "preset_time" : datetime.datetime.strptime(request.form["preset_time"], "%Y-%m-%d %H:%M:%S"),
                     "add_time" : datetime.datetime.now()
                 }
-                if request.form['is_room'] == 'true':
-                    pdict['is_room'] = True
-                else:
-                    pdict['is_room'] = False
+                item = mongo.restaurant.find({"rooms.room_id":request.form['room_id']},{"rooms":1})
+                for i in item:
+                    for room in i['rooms']:
+                        if room['room_id'] == request.form['room_id']:
+                            if room['room_people_name'] == '大厅':
+                                pdict['is_room'] = False
+                            else:
+                                pdict['is_room'] = True
+                        else:
+                            pdict['is_room'] = False
                 mongo.order.insert(pdict)
                 json = {
                         "status": 1,
@@ -676,20 +804,20 @@ def insertordertest():
                 type = request.form['type']
                 orderdishs=[]
 
-                rent = mongo.restaurant.find({"_id":ObjectId(request.form['restaurant_id'])})
-                dishs = tools.getdishsitem(str(request.form['restaurant_id']))
-                l=[]
-                b = random.randint(0,dishs.count())
-                for i in range(b):
-                    x=random.randint(0,dishs.count())
-                    if x in l:
-                        continue #这样你就不会选到想同的数了！
-                    else:
-                        l.append(x)
-                for a in l:
-                    orderdishs.append(dishs[int(a)])
-                print orderdishs
-                if int(type)==1 and orderdishs.count()>=0:#点菜订单
+                # rent = mongo.restaurant.find({"_id":ObjectId(request.form['restaurant_id'])})
+                # dishs = tools.getdishsitem(str(request.form['restaurant_id']))
+                # l=[]
+                # b = random.randint(0,len(dishs))
+                # for i in range(b):
+                #     x=random.randint(0,len(dishs))
+                #     if x in l:
+                #         continue #这样你就不会选到想同的数了！
+                #     else:
+                #         l.append(x)
+                # for a in l:
+                orderdishs=tools.ceshi(str(request.form['restaurant_id']))
+                # print orderdishs
+                if int(type)==1 and len(orderdishs)>=0:#点菜订单
                     type = 1
                 else:
                     orderdishs=[]
