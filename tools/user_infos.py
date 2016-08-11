@@ -13,6 +13,8 @@ class GetUser:
     SMSnetgate = 'http://127.0.0.1:10032'
 
     def __init__(self, params):
+        self.shop_info = None
+        self.validity = False
         self.params = params
         self.is_admin, self.is_user = False, False
         self.user_center_conn = conn.mongo_conn_user().user_web
@@ -36,8 +38,8 @@ class GetUser:
             if self.sms_validate():
                 self.validity = True
                 self.user_center_conn.update_one({"_id": ObjectId(self.user_center_id)},
-                                                 {"$set": {"ident": self.params['ident'],
-                                                           "time": datetime.datetime.now()}})
+                                                 {"$set": {'lastlogin': {"ident": self.params['ident'],
+                                                                         "time": datetime.datetime.now()}}})
                 self.shop_info = self.restaurant_conn.find({"user": {"$in": [ObjectId(self.user_center_id)]}})
                 if self.shop_info:
                     print self.shop_info
@@ -45,19 +47,15 @@ class GetUser:
                         self.shop_info = self.shop_info[0]
                     except Exception, e:
                         return self.shop_info
-                else:
-                    self.shop_info = None
-            else:
-                self.validity = False
         if '2' in self.center_info['appid'].keys():
             self.is_user = True
-            if self.params['password'] == self.center_info['registeruser']['password']:
-                self.validity = True
-                self.user_center_conn.update_one({"_id": ObjectId(self.user_center_id)},
-                                                 {"$set": {"ident": self.params['ident'],
-                                                           "time": datetime.datetime.now()}})
-            else:
-                self.validity = False
+            if 'password' in self.params.keys():
+                if self.params['password'] == self.center_info['registeruser']['password']:
+                    self.validity = True
+                    self.user_center_conn.update_one({"_id": ObjectId(self.user_center_id)},
+                                                     {"$set": {'lastlogin': {"ident": self.params['ident'],
+                                                                             "time": datetime.datetime.now()}}})
+        pass
 
     def send_sms(self):
         import random
