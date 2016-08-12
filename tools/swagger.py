@@ -45,6 +45,8 @@ class swagger:
 
 
     def mylpath(self,schemaid="",result={}):
+        global fire
+        fire=[]
         out=self.__explain+"\n" \
                        "---\n" \
                        "tags:\n" \
@@ -68,6 +70,7 @@ class swagger:
              "      schema:\n"\
              "        id: "+schemaid+"\n"\
              "        properties:\n"\
+
 
         for k in result.keys():
             print_dict(k, result[k],1,type(result))
@@ -95,11 +98,13 @@ class swagger:
                     ""+n+"  type: array\n" \
                     ""+n+"  description: ''\n" \
                     ""+n+"  items:\n" \
-                    ""+n+"    type: "+totype(a['xjlx'])+"\n"
+                    ""+n+"    type: "+totype(a['xjlx'])+"\n"\
+                    ""+n+"    description: ''"+"\n"\
+                    ""+n+"    properties: "+"\n"
               if totype(a['xjlx'])!="object":
                out+=""+n+"  default: "+str(a['nr'])+"\n"
               else:
-               out+=""+n+"    properties:\n"
+               out+=""+n+"\n"
 
         import os
         path = os.path.dirname(__file__).replace("tools","")+"ml/"+schemaid+".yml"
