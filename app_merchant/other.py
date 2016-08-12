@@ -50,7 +50,7 @@ appversionvuser_json = {
   "code":appversionvuser.Integer(description='',default=0),
 }
 @other_api.route('/fm/merchant/v1/appversionvuser/', methods=['POST'])
-# @swag_from(appversionvuser.mylpath(schemaid='appversionvuser',result=appversionvuser_json))
+@swag_from(appversionvuser.mylpath(schemaid='appversionvuser',result=appversionvuser_json))
 def appversionvuser():
     if request.method == "POST":
         jwtstr = request.form["jwtstr"]
@@ -168,7 +168,7 @@ addfeedbackvuser_json ={
   }
 }
 @other_api.route('/fm/merchant/v1/addfeedbackvuser/',methods=['POST'])
-# @swag_from(addfeedbackvuser.mylpath(schemaid='addfeedbackvuser',result=addfeedbackvuser_json))
+@swag_from(addfeedbackvuser.mylpath(schemaid='addfeedbackvuser',result=addfeedbackvuser_json))
 def addfeedbackvuser():
     # try:
         if request.method == 'POST':
