@@ -640,7 +640,7 @@ pic_menu_json = {
 }
 #图片菜单
 @restaurant_user_api.route('/fm/user/v1/restaurant/pic_menu/',methods=['POST'])
-@swag_from(restaurant_info.mylpath(schemaid='pic_menu',result=pic_menu_json))
+@swag_from(pic_menu.mylpath(schemaid='pic_menu',result=pic_menu_json))
 def pic_menu():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
@@ -821,7 +821,7 @@ dish_menu_count_json = {
 }
 #点菜菜单加减
 @restaurant_user_api.route('/fm/user/v1/restaurant/dish_menu_count/',methods=['POST'])
-@swag_from(dish_menu.mylpath(schemaid='dish_menu_count',result=dish_menu_count_json))
+@swag_from(dish_menu_count.mylpath(schemaid='dish_menu_count',result=dish_menu_count_json))
 def dish_menu_count():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
