@@ -453,7 +453,8 @@ concern_json = {
   "message": concern.String(description='SUCCESS/FIELD',default="SUCCESS"),
   "code": concern.Integer(description='',default=0),
   "data": {
-
+        "status": concern.Integer(description='1成功',default=1),
+        "msg": concern.String(description='访问成功后返回消息',default="关注成功")
   }
 }
 #关注饭店
@@ -471,7 +472,7 @@ def concern():
                 mongo.concern.insert(data)
                 json = {
                         "status": 1,
-                        "msg":""
+                        "msg":"关注成功"
                 }
                 result=tool.return_json(0,"success",True,json)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
