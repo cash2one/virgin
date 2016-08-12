@@ -143,7 +143,17 @@ def restaurant():
         return abort(403)
 
 #图片展示列表
+restaurant_img = swagger("饭店","饭店条件查询")
+restaurant_img_json = {
+    "auto": restaurant_img.String(description='验证是否成功'),
+    "message": restaurant_img.String(description='SUCCESS/FIELD',default="SUCCESS"),
+    "code": restaurant_img.Integer(description='',default=0),
+    "data": {
+
+        }
+}
 @restaurant_user_api.route('/fm/user/v1/restaurant/restaurant_img/',methods=['POST'])
+@swag_from(restaurant_img.mylpath(schemaid='restaurant_img',result=restaurant_img_json))
 def restaurant_img():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
@@ -435,7 +445,7 @@ def getbusiness_dist_byid():
     else:
         return abort(403)
 #关注饭店
-concern = swagger("饭店","根据行政区标签查询商圈")
+concern = swagger("饭店","关注饭店")
 concern.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 concern.add_parameter(name='id',parametertype='formData',type='string',required= True,description='行政区id',default='56d95c1f0f884d3070fbdc4f')
 concern_json = {
@@ -474,8 +484,8 @@ def concern():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
-#关注饭店
-restaurant_info = swagger("饭店","根据行政区标签查询商圈")
+#饭店详情
+restaurant_info = swagger("饭店","饭店详情")
 restaurant_info.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 restaurant_info.add_parameter(name='webuser_id',parametertype='formData',type='string',required= True,description='用户id',default='5798021b7c1fa230d18fdc70')
 restaurant_info.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店id',default='57329e300c1d9b2f4c85f8e6')
@@ -584,6 +594,337 @@ def restaurant_info():
                     for menu in  i['menu']:
                         if menu['name'] == '推荐菜':
                             data['tuijiancai'] = menu['dishs']
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#图片菜单
+pic_menu = swagger("饭店","图片菜单")
+pic_menu.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+pic_menu.add_parameter(name='type',parametertype='formData',type='string',required= True,description='标签分类1全部2推荐菜3酒水',default='1')
+pic_menu.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店id',default='57329e300c1d9b2f4c85f8e6')
+pic_menu_json = {
+  "auto": pic_menu.String(description='验证是否成功'),
+  "message": pic_menu.String(description='SUCCESS/FIELD',default="SUCCESS"),
+  "code": pic_menu.Integer(description='',default=0),
+  "data": {
+  "alldish": [
+    "015a0f05de8146a45c0681ba64bc49f6",
+    "f71d4db90411bd4c598821a72aa217bb"
+  ],
+  "wine": [
+    {
+      "price": pic_menu.Float(description='原价',default=3.0),
+      "discount_price": pic_menu.Float(description='优惠价',default=2.8),
+      "name": pic_menu.String(description='酒水名',default="大雪花"),
+      "id": pic_menu.String(description='酒水id',default="201605111054065811")
+    }
+  ],
+  "id": pic_menu.String(description='饭店id',default="57329e300c1d9b2f4c85f8e6"),
+  "tuijiancai": [
+    {
+      "price": pic_menu.Float(description='原价',default=29.8),
+      "discount_price": pic_menu.Float(description='优惠价',default=28.8),
+      "name": pic_menu.String(description='菜品名',default="小仁鲜"),
+      "id": pic_menu.String(description='菜品id',default="201605111053268902")
+    }
+  ]
+}
+}
+#图片菜单
+@restaurant_user_api.route('/fm/user/v1/restaurant/pic_menu/',methods=['POST'])
+@swag_from(restaurant_info.mylpath(schemaid='pic_menu',result=pic_menu_json))
+def pic_menu():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                type = request.form['type']
+                item = mongo.restaurant.find({"_id":ObjectId(request.form['restaurant_id'])})
+                data = {}
+                for i in item:
+                    data['id'] = str(i['_id'])
+                    tuijiancaislist = []
+                    winelist = []
+                    piclist = []
+                    for menu in  i['menu']:
+                        if menu['name'] == '推荐菜':
+                            if menu['dishs'] !=[]:
+                                for dish in menu['dishs']:
+                                    dishs = {}
+                                    dishs['name'] = dish['name']
+                                    dishs['id'] = dish['id']
+                                    dishs['price'] = dish['price']
+                                    dishs['discount_price'] = dish['discount_price']
+                                    tuijiancaislist.append(dishs)
+                            else:
+                                pass
+                        elif menu['name'] == '酒水':
+                            if menu['dishs'] !=[]:
+                                for dish in menu['dishs']:
+                                    dishs = {}
+                                    dishs['name'] = dish['name']
+                                    dishs['id'] = dish['id']
+                                    dishs['price'] = dish['price']
+                                    dishs['discount_price'] = dish['discount_price']
+                                    winelist.append(dishs)
+                            else:
+                                pass
+                        elif menu['dish_type'] == '0':
+                            if menu['dishs'] !=[]:
+                                piclist = menu['dishs']
+                    if type == '1':
+                        data['alldish'] = piclist
+                    elif type == '2':
+                        data['tuijiancai'] = tuijiancaislist
+                    else:
+                        data['wine'] = winelist
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#点菜菜单
+dish_menu = swagger("饭店","点菜菜单")
+dish_menu.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+dish_menu.add_parameter(name='webuser_id',parametertype='formData',type='string',required= True,description='用户id',default='5799678e7c1f445864293d26')
+dish_menu.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店id',default='57329e300c1d9b2f4c85f8e6')
+dish_menu_json = {
+  "auto": dish_menu.String(description='验证是否成功'),
+  "message": dish_menu.String(description='SUCCESS/FIELD',default="SUCCESS"),
+  "code": dish_menu.Integer(description='',default=0),
+  "data": {
+      "menu": [
+        {
+          "list": [
+            {
+              "id": dish_menu.String(description='菜品id',default="201605111053268902"),
+              "price": dish_menu.Float(description='菜品原价',default=29.8),
+              "num": dish_menu.Integer(description='点菜数量',default=0),
+              "guide_image":dish_menu.String(description='图片，基本没有，留着以后用',default="MD5MD5MD5MD5MD5MD5MD5MD5MD5MD5MD5MD5"),
+              "name": dish_menu.String(description='菜品名',default="小仁鲜"),
+              "discount_price":dish_menu.Float(description='菜品优惠价',default=29.8)
+            },
+            {
+              "id": dish_menu.String(description='菜品id',default="201605111052558357"),
+              "price": dish_menu.Float(description='菜品原价',default=29.8),
+              "num": dish_menu.Integer(description='点菜数量',default=0),
+              "guide_image":dish_menu.String(description='图片，基本没有，留着以后用',default="MD5MD5MD5MD5MD5MD5MD5MD5MD5MD5MD5MD5"),
+              "name": dish_menu.String(description='菜品名',default="压锅鲤鱼"),
+              "discount_price":dish_menu.Float(description='菜品优惠价',default=29.8)
+            }
+          ],
+          "name": dish_menu.String(description='菜单类别',default="推荐菜")
+        },
+        {
+          "list": [
+            {
+              "id": "201605111053577963",
+              "price": 4.0,
+              "num": 1,
+              "guide_image":"MD5MD5MD5MD5MD5MD5MD5MD5MD5MD5MD5MD5",
+              "name": "原汁麦",
+              "discount_price": 3.5
+            }
+          ],
+          "name": dish_menu.String(description='菜单类别',default="酒水")
+        }
+      ],
+  "total": dish_menu.Float(description='总计优惠价格',default=66.6),
+  "dish_num": dish_menu.Integer(description='点菜总数量',default=2),
+}
+
+}
+#点菜菜单
+@restaurant_user_api.route('/fm/user/v1/restaurant/dish_menu/',methods=['POST'])
+@swag_from(dish_menu.mylpath(schemaid='dish_menu',result=dish_menu_json))
+def dish_menu():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                item = mongo.restaurant.find({"_id":ObjectId(request.form['restaurant_id'])})
+                item2 = mongo.order.find({'webuser_id':ObjectId(request.form['webuser_id']),"restaurant_id":ObjectId(request.form['restaurant_id']),'status':7})
+                order_list = []
+                for i in item2:
+                    if i['preset_dishs'] !=[]:
+                        for dish in i['preset_dishs']:
+                            order_list.append((dish['id'],dish['num'],dish['discount_price']))
+                    if i['preset_wine'] !=[]:
+                        for dish in i['preset_wine']:
+                            order_list.append((dish['id'],dish['num'],dish['discount_price']))
+                data = {}
+                list = []
+                for i in item:
+                    for menu in i['menu']:
+                        if menu['dish_type'] == '1' and menu['dishs'] != []:
+                            dishjson = {}
+                            dishlist = []
+                            for dishs in menu['dishs']:
+                                dish = {}
+                                dish['name'] = dishs['name']
+                                dish['price'] = dishs['price']
+                                dish['discount_price'] = dishs['discount_price']
+                                dish['id'] = dishs['id']
+                                dish['guide_image'] = dish['guide_image']
+                                dish['num'] = 0
+                                for dishid in order_list:
+                                    if dishs['id'] ==dishid[0]:
+                                        dish['num'] = dishid[1]
+                                dishlist.append(dish)
+                            dishjson['list'] = dishlist
+                            dishjson['name'] = menu['name']
+                            list.append(dishjson)
+                dish_num = 0
+                total = 0
+                for d in order_list:
+                    dish_num+=d[1]
+                    total+=d[2]
+                data['dish_num'] = dish_num
+                data['total'] = float("%.2f" % total)
+                data['menu'] = list
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#点菜菜单加减
+dish_menu_count = swagger("饭店","点菜菜单加减")
+dish_menu_count.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+dish_menu_count.add_parameter(name='webuser_id',parametertype='formData',type='string',required= True,description='用户id',default='5799678e7c1f445864293d26')
+dish_menu_count.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店id',default='57329e300c1d9b2f4c85f8e6')
+dish_menu_count_json = {
+  "auto": dish_menu_count.String(description='验证是否成功'),
+  "message": dish_menu_count.String(description='SUCCESS/FIELD',default="SUCCESS"),
+  "code": dish_menu_count.Integer(description='',default=0),
+  "data": {
+
+}
+
+}
+#点菜菜单加减
+@restaurant_user_api.route('/fm/user/v1/restaurant/dish_menu_count/',methods=['POST'])
+@swag_from(dish_menu.mylpath(schemaid='dish_menu_count',result=dish_menu_count_json))
+def dish_menu_count():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                data = {}
+                pdict = {'webuser_id':ObjectId(request.form['webuser_id']),"restaurant_id":ObjectId(request.form['restaurant_id']),'status':8}
+                item2 = mongo.order.find(pdict)
+
+                name = request.form['name']
+                price = float(request.form['price'])
+                discount_price = float(request.form['discount_price'])
+                type = request.form['type']
+                num = int(request.form['num'])
+                id = request.form['id']
+
+                itemflag = True
+                for i in item2:
+                    itemflag = False
+                if itemflag:
+                    json = {
+                        "username" : "",
+                        "status" : 8,
+                        "type" : 1,
+                        "source" : 0,
+                        "is_room" : True,
+                        "restaurant_id" : ObjectId("57329e300c1d9b2f4c85f8e6"),
+                        "preset_dishs" : [],
+                        "webuser_id" : ObjectId("57396ec17c1f31a9cce960f4"),
+                        "phone" : "",
+                        "dis_message" : "",
+                        "room_id" : "",
+                        "deposit" : 0.0,
+                        "demand" : "",
+                        "total" : 0.0,
+                        "numpeople" : 0,
+                        "preset_time" : datetime.datetime.now(),
+                        "add_time" : datetime.datetime.now(),
+                        "preset_wine" : []
+                    }
+                    mongo.order.insert(json)
+                item2 = mongo.order.find(pdict)
+                for i in item2:
+                    dish_list = []
+                    flag = True
+                    if type == '0':
+                        dishs = i['preset_dishs']
+                    else:
+                        dishs = i['preset_wine']
+                    for dish in dishs:
+                        dish_dict = {}
+                        if id == dish['id']:
+                            flag = False
+                            if int(dish['num'])+num != 0:
+                                dish_dict['name'] = name
+                                dish_dict['price'] = price
+                                dish_dict['discount_price'] = discount_price
+                                dish_dict['num'] = int(dish['num'])+num
+                                dish_dict['id'] = id
+                            else:
+                                pass
+                        else:
+                            dish_dict['name'] = dish['name']
+                            dish_dict['price'] = dish['price']
+                            dish_dict['discount_price'] = dish['discount_price']
+                            dish_dict['num'] = dish['num']
+                            dish_dict['id'] = dish['id']
+                        if dish_dict != {}:
+                            dish_list.append(dish_dict)
+                    if flag and num >= 1:
+                        dish_list.append(
+                            {
+                            "name" : name,
+                            "price" : price,
+                            "discount_price" : discount_price,
+                            "num" : 1,
+                            "id" : id
+                            }
+                        )
+                    print json_util.dumps(dish_list,ensure_ascii=False,indent=2)
+                    if type == '0':
+                        mongo.order.update_one(pdict,{"$set": {"preset_dishs": dish_list}})
+                    else:
+                        mongo.order.update_one(pdict,{"$set": {'preset_wine': dish_list}})
+                item = mongo.order.find(pdict)
+                order_list = []
+                for i in item:
+                    if i['preset_dishs'] !=[]:
+                        for dish in i['preset_dishs']:
+                            order_list.append((dish['id'],dish['num'],dish['discount_price']))
+                    if i['preset_wine'] !=[]:
+                        for dish in i['preset_wine']:
+                            order_list.append((dish['id'],dish['num'],dish['discount_price']))
+                    dish_num = 0
+                    total = 0
+                    for d in order_list:
+                        dish_num+=d[1]
+                        total+=(d[2]*d[1])
+                    mongo.order.update_one(pdict,{"$set": {'total': float("%.2f" % total)}})
+                    print dish_num,total
+                    data = {
+                        'dish_num':dish_num,
+                        'total':total
+                    }
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
