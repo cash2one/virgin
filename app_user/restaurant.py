@@ -791,7 +791,7 @@ def dish_menu():
                                 dish['price'] = dishs['price']
                                 dish['discount_price'] = dishs['discount_price']
                                 dish['id'] = dishs['id']
-                                dish['guide_image'] = dish['guide_image']
+                                dish['guide_image'] = dishs['guide_image']
                                 dish['num'] = 0
                                 for dishid in order_list:
                                     if dishs['id'] ==dishid[0]:
