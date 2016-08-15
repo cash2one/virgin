@@ -144,12 +144,25 @@ def restaurant():
 
 #图片展示列表
 restaurant_img = swagger("饭店","饭店条件查询")
+restaurant_img.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+restaurant_img.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店ID',default='57329e300c1d9b2f4c85f8e6')
+restaurant_img.add_parameter(name='type',parametertype='formData',type='string',required= True,description='-1全部1菜品图2环境图3包房图',default='-1')
+restaurant_img.add_parameter(name='pageindex',parametertype='formData',type='string',required= True,description='页数',default='1')
 restaurant_img_json = {
     "auto": restaurant_img.String(description='验证是否成功'),
     "message": restaurant_img.String(description='SUCCESS/FIELD',default="SUCCESS"),
     "code": restaurant_img.Integer(description='',default=0),
     "data": {
-
+             "list": [
+                  {
+                    "img": restaurant.String(description='图片MD5',default="6a84a308201d546aeb5dfd850ec7ae40"),
+                    "desc": restaurant.String(description='排序，基本没有',default="")
+                  },
+                  {
+                    "img": restaurant.String(description='图片MD5',default="6ad56fdd7b8d97903dd036d8ffd8ea60"),
+                    "desc": restaurant.String(description='排序，基本没有',default="")
+                  }
+             ]
         }
 }
 @restaurant_user_api.route('/fm/user/v1/restaurant/restaurant_img/',methods=['POST'])
@@ -168,11 +181,11 @@ def restaurant_img():
                     #菜品图片 开始
                     if type == '1' or type == '-1':
                         for dishs in i['menu']:
-                            if dishs['name'] !='优惠菜' and dishs['name'] !='推荐菜' and dishs['dish_type'] =='1' and dishs['dishs']!=[]:
+                            if  dishs['dish_type'] =='0' and dishs['dishs']!=[]:
                                 for dish in dishs['dishs']:
                                     json = {}
-                                    json['name'] = dish['name']
-                                    json['guide_image'] = dish['guide_image']
+                                    json['img'] = dish
+                                    json['desc'] = ''
                                     dishs_list.append(json)
                     #菜品图片 结束
                     #环境图片 开始
