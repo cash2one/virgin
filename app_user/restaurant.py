@@ -155,12 +155,12 @@ restaurant_img_json = {
     "data": {
              "list": [
                   {
-                    "img": restaurant.String(description='图片MD5',default="6a84a308201d546aeb5dfd850ec7ae40"),
-                    "desc": restaurant.String(description='排序，基本没有',default="")
+                    "img": restaurant_img.String(description='图片MD5',default="6a84a308201d546aeb5dfd850ec7ae40"),
+                    "desc": restaurant_img.String(description='排序，基本没有',default="")
                   },
                   {
-                    "img": restaurant.String(description='图片MD5',default="6ad56fdd7b8d97903dd036d8ffd8ea60"),
-                    "desc": restaurant.String(description='排序，基本没有',default="")
+                    "img": restaurant_img.String(description='图片MD5',default="6ad56fdd7b8d97903dd036d8ffd8ea60"),
+                    "desc": restaurant_img.String(description='排序，基本没有',default="")
                   }
              ]
         }
