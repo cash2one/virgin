@@ -816,7 +816,8 @@ dish_menu_count_json = {
   "message": dish_menu_count.String(description='SUCCESS/FIELD',default="SUCCESS"),
   "code": dish_menu_count.Integer(description='',default=0),
   "data": {
-
+            "dish_num":dish_menu_count.Integer(description='菜品数量',default=5),
+            "total":dish_menu_count.Float(description='总计金额',default=171.4),
 }
 
 }
