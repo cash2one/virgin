@@ -629,10 +629,7 @@ pic_menu_json = {
   "message": pic_menu.String(description='SUCCESS/FIELD',default="SUCCESS"),
   "code": pic_menu.Integer(description='',default=0),
   "data": {
-  "alldish": [
-    "015a0f05de8146a45c0681ba64bc49f6",
-    "f71d4db90411bd4c598821a72aa217bb"
-  ],
+  "alldish": pic_menu.String(description='饭店id',default="['015a0f05de8146a45c0681ba64bc49f6','f71d4db90411bd4c598821a72aa217bb']"),
   "wine": [
     {
       "price": pic_menu.Float(description='原价',default=3.0),
