@@ -30,7 +30,7 @@ restaurant_user_api = Blueprint('restaurant_user_api', __name__, template_folder
 
 
 
-restaurant = swagger("饭店","饭店条件查询/1 美食地图")
+restaurant = swagger("饭店","饭店条件查询/1")
 restaurant_json = {
     "auto": restaurant.String(description='验证是否成功'),
     "message": restaurant.String(description='SUCCESS/FIELD',default="SUCCESS"),
@@ -143,7 +143,7 @@ def restaurant():
         return abort(403)
 
 #图片展示列表
-restaurant_img = swagger("饭店","图片展示列表/1-2-2 饭店图片")
+restaurant_img = swagger("饭店","图片展示列表/1-2-2")
 restaurant_img.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 restaurant_img.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店ID',default='57329e300c1d9b2f4c85f8e6')
 restaurant_img.add_parameter(name='type',parametertype='formData',type='string',required= True,description='-1全部1菜品图2环境图3包房图',default='-1')
@@ -224,7 +224,7 @@ def restaurant_img():
     else:
         return abort(403)
 #饭店查询类别标签
-restaurant_type = swagger("饭店","查询类别标签/1-1 包房,菜系,筛选")
+restaurant_type = swagger("饭店","查询类别标签/1-1")
 restaurant_type.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 restaurant_type_json = {
   "auto": restaurant_type.String(description='验证是否成功'),
@@ -329,7 +329,7 @@ def restaurant_type():
     else:
         return abort(403)
 #根据坐标查询商圈
-getbusiness_dist = swagger("饭店","根据坐标查询商圈/1-1-0 位置")
+getbusiness_dist = swagger("饭店","根据坐标查询商圈/1-1-0")
 getbusiness_dist.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 getbusiness_dist.add_parameter(name='longitude',parametertype='formData',type='string',required= True,description='经度',default='126.593666')
 getbusiness_dist.add_parameter(name='latitude',parametertype='formData',type='string',required= True,description='纬度',default='45.706477')
@@ -412,7 +412,7 @@ def getdistrict_list():
     else:
         return abort(403)
 #根据行政区标签查询商圈
-getbusiness_dist_byid = swagger("饭店","根据行政区标签查询商圈/1-1-0 位置")
+getbusiness_dist_byid = swagger("饭店","根据行政区标签查询商圈/1-1-0")
 getbusiness_dist_byid.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 getbusiness_dist_byid.add_parameter(name='id',parametertype='formData',type='string',required= True,description='行政区id',default='56d95c1f0f884d3070fbdc4f')
 getbusiness_dist_byid_json = {
@@ -499,7 +499,7 @@ def concern():
     else:
         return abort(403)
 #饭店详情
-restaurant_info = swagger("饭店","饭店详情/1-2 饭店详情")
+restaurant_info = swagger("饭店","饭店详情/1-2")
 restaurant_info.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 restaurant_info.add_parameter(name='webuser_id',parametertype='formData',type='string',required= True,description='用户id',default='57396ec17c1f31a9cce960f4')
 restaurant_info.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店id',default='57329e300c1d9b2f4c85f8e6')
@@ -708,7 +708,7 @@ def pic_menu():
     else:
         return abort(403)
 #点菜菜单
-dish_menu = swagger("饭店","点菜菜单/1-2-3 菜单-2,1-2-3-2 购物车（点击后跳回可继续点菜、、）")
+dish_menu = swagger("饭店","点菜菜单/1-2-3 菜单-2")
 dish_menu.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 dish_menu.add_parameter(name='webuser_id',parametertype='formData',type='string',required= True,description='用户id',default='57396ec17c1f31a9cce960f4')
 dish_menu.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店id',default='57329e300c1d9b2f4c85f8e6')
