@@ -564,8 +564,12 @@ def restaurant_info():
                 data = {}
                 for i in item:
                     data['id'] = str(i['_id'])
-                    data['show_photos'] = i['show_photos']
-                    data['photos_num'] = len(i['show_photos'])
+                    if i['show_photos'] != []:
+                        data['show_photos'] = i['show_photos'][0]
+                        data['photos_num'] = len(i['show_photos'])
+                    else:
+                        data['show_photos'] = {"img": "","desc": ""}
+                        data['photos_num'] = 0
                     data['name'] = i['name']
                     #是否支持点菜订座文字(暂时空着)
                     dishes_type = []
