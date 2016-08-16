@@ -603,6 +603,8 @@ def restaurant_info():
                             room_name.append(room['room_name'])
                         if room['room_type'] !=[]:
                             rooms['room_type'] = room['room_type'][0]['name']
+                        else:
+                            rooms['room_type'] = ''
                     rooms['room_name'] = ' '.join(room_name)
                     data['rooms'] = rooms
                     for menu in  i['menu']:
