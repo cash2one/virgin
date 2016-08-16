@@ -168,7 +168,7 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3,
                 elif key == 'wine_discount':
                     json['wine_discount'] = rest[key]['message']
                 elif key == 'zuobiao':
-                    json['distance'] = u'未知'
+                    json['distance'] = ''
                 else:
                     json['liansuo'] = '0'
             list.append(json)
