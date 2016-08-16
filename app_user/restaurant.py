@@ -461,6 +461,7 @@ def getbusiness_dist_byid():
 #关注饭店
 concern = swagger("1 美食地图.jpg","关注饭店")
 concern.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+concern.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店id',default='57329e300c1d9b2f4c85f8e6')
 concern.add_parameter(name='webuser_id',parametertype='formData',type='string',required= True,description='用户id',default='57396ec17c1f31a9cce960f4')
 concern_json = {
   "auto": concern.String(description='验证是否成功'),
@@ -483,11 +484,22 @@ def concern():
                     "webuser_id" : ObjectId(request.form['webuser_id']),
                     "addtime" : datetime.datetime.now()
                 }
-                mongo.concern.insert(data)
-                json = {
-                        "status": 1,
-                        "msg":"关注成功"
-                }
+                item = mongo.concern.find({"restaurant_id" : ObjectId(request.form['restaurant_id']),"webuser_id" : ObjectId(request.form['webuser_id'])})
+                flag = True
+                for i in item:
+                    flag = False
+                if flag:
+                    mongo.concern.insert(data)
+                    json = {
+                            "status": 1,
+                            "msg":"关注成功"
+                    }
+                else:
+                    mongo.concern.delete({"restaurant_id" : ObjectId(request.form['restaurant_id']),"webuser_id" : ObjectId(request.form['webuser_id'])})
+                    json = {
+                            "status": 1,
+                            "msg":"取消关注成功"
+                    }
                 result=tool.return_json(0,"success",True,json)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
