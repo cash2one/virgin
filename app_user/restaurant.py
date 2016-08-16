@@ -128,7 +128,7 @@ def restaurant():
                 pagenum = 10
                 star = (int(pageindex)-1)*pagenum
                 end = (pagenum*int(pageindex))
-                list = guess(first=first,lat1=float(request.form['y']),lon1=float(request.form['x']),start=star,end=end,webuser_id=request.form['webuser_id'])
+                list = guess(first=first,lat1=request.form['y'],lon1=request.form['x'],start=star,end=end,webuser_id=request.form['webuser_id'])
                 data['list'] = list
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)

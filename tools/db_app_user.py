@@ -95,7 +95,7 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3,
         rsetaurant_list = []
         for i in item:
             try:
-                rsetaurant_list.append((int(haversine(lon1, lat1, i['zuobiao'][0]['c1'], i['zuobiao'][0]['c2'])), str(i['_id'])))
+                rsetaurant_list.append((int(haversine(float(lon1), float(lat1), i['zuobiao'][0]['c1'], i['zuobiao'][0]['c2'])), str(i['_id'])))
             except:
                 print i
         list=[]
