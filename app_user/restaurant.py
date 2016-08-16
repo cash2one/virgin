@@ -51,7 +51,8 @@ restaurant_json = {
                 "restaurant_discount": restaurant.String(description='其他优惠',default=""),
                 "dishes_discount": restaurant.String(description='菜品优惠',default=""),
                 "kind2": restaurant.String(description='新粉优惠',default=""),
-                "concern":restaurant.String(description='关注状态0未关注1已关注',default="0")
+                "concern":restaurant.String(description='关注状态0未关注1已关注',default="0"),
+                "liansuo":restaurant.String(description='0不是连锁店1是连锁店',default="0")
               }
         ]
     }
