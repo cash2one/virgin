@@ -495,7 +495,7 @@ def concern():
                             "msg":"关注成功"
                     }
                 else:
-                    mongo.concern.delete({"restaurant_id" : ObjectId(request.form['restaurant_id']),"webuser_id" : ObjectId(request.form['webuser_id'])})
+                    mongo.concern.remove({"restaurant_id" : ObjectId(request.form['restaurant_id']),"webuser_id" : ObjectId(request.form['webuser_id'])})
                     json = {
                             "status": 1,
                             "msg":"取消关注成功"
