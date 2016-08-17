@@ -469,7 +469,7 @@ concern_json = {
   "code": concern.Integer(description='',default=0),
   "data": {
         "status": concern.Integer(description='1成功',default=1),
-        "msg": concern.String(description='访问成功后返回消息',default="关注成功")
+        "concern":concern.String(description='关注状态0未关注1已关注',default="0"),
   }
 }
 #关注饭店
@@ -492,13 +492,13 @@ def concern():
                     mongo.concern.insert(data)
                     json = {
                             "status": 1,
-                            "msg":"关注成功"
+                            "concern":"1"
                     }
                 else:
                     mongo.concern.remove({"restaurant_id" : ObjectId(request.form['restaurant_id']),"webuser_id" : ObjectId(request.form['webuser_id'])})
                     json = {
                             "status": 1,
-                            "msg":"取消关注成功"
+                            "concern":"0"
                     }
                 result=tool.return_json(0,"success",True,json)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
