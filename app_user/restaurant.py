@@ -1036,7 +1036,7 @@ def dish_menu_list():
                     json['r_name'] = r_name
                     json['total'] = i['total']
                     json['deposit'] = i['deposit']
-                    json['youhui'] = 1.0
+                    json['youhui'] = ''
                     json['dianfu'] = i['total'] - i['deposit']
                     json['preset_dishs'] = i['preset_dishs']
                     json['preset_wine'] = i['preset_wine']
@@ -1110,34 +1110,34 @@ def getroom():
                      json['total'] = 0.0
                      json['add_time'] = datetime.datetime.now()
                      mongo.order.insert({"$set":json})
-                     tool.tuisong(mfrom=request.form['webuser_id'],
-                                 mto=request.form['restaurant_id'],
-                                 title='美食地图',
-                                 info=mgs_template['sj_1']['title'],
-                                 goto=mgs_template['sj_1']['goto'],
-                                 channel=mgs_template['sj_1']['channel'],
-                                 type='0',
-                                 totype='0',
-                                 appname='foodmap_shop',
-                                 msgtype='message',
-                                 target='all',
-                                 ext='{"goto":'+mgs_template["sj_1"]['goto']+'}',
-                                 ispush=True)
+                     # tool.tuisong(mfrom=request.form['webuser_id'],
+                     #             mto=request.form['restaurant_id'],
+                     #             title='美食地图',
+                     #             info=mgs_template['sj_1']['title'],
+                     #             goto=mgs_template['sj_1']['goto'],
+                     #             channel=mgs_template['sj_1']['channel'],
+                     #             type='0',
+                     #             totype='0',
+                     #             appname='foodmap_shop',
+                     #             msgtype='message',
+                     #             target='all',
+                     #             ext='{"goto":'+mgs_template["sj_1"]['goto']+'}',
+                     #             ispush=True)
                 else:
                     mongo.order.update({'webuser_id':ObjectId(request.form['webuser_id']),"restaurant_id":ObjectId(request.form['restaurant_id']),'status':8},{"$set":json})
-                    tool.tuisong(mfrom=request.form['webuser_id'],
-                                 mto=request.form['restaurant_id'],
-                                 title='美食地图',
-                                 info=mgs_template['sj_2']['title'],
-                                 goto=mgs_template['sj_2']['goto'],
-                                 channel=mgs_template['sj_2']['channel'],
-                                 type='0',
-                                 totype='0',
-                                 appname='foodmap_shop',
-                                 msgtype='message',
-                                 target='all',
-                                 ext='{"goto":'+mgs_template["sj_2"]['goto']+'}',
-                                 ispush=True)
+                    # tool.tuisong(mfrom=request.form['webuser_id'],
+                    #              mto=request.form['restaurant_id'],
+                    #              title='美食地图',
+                    #              info=mgs_template['sj_2']['title'],
+                    #              goto=mgs_template['sj_2']['goto'],
+                    #              channel=mgs_template['sj_2']['channel'],
+                    #              type='0',
+                    #              totype='0',
+                    #              appname='foodmap_shop',
+                    #              msgtype='message',
+                    #              target='all',
+                    #              ext='{"goto":'+mgs_template["sj_2"]['goto']+'}',
+                    #              ispush=True)
                 data = {
                     "status": 1,
                     "msg":"订座申请成功"
@@ -1185,7 +1185,7 @@ settlement_json = {
             }
           ],
           "numpeople": settlement.Integer(description='用餐人数',default=3),
-          "dis_message": "",
+          "youhui": "",
           "deposit": settlement.Float(description='押金',default=35.0),
           "address": settlement.String(description='饭店地址',default="哈尔滨市南岗区马家街132-2号"),
           "preset_time": settlement.String(description='用餐时间',default="2016年06月24日 14:00:00"),
@@ -1222,7 +1222,7 @@ def getroom():
                     json['preset_wine'] = i['preset_wine']
                     json['total'] = i['total']
                     json['yingfu'] = i['total']
-                    json['dis_message'] = i['dis_message']
+                    json['youhui'] = i['dis_message']
                     json['deposit'] = i['deposit']
                     json['dianfu'] = i['total'] - i['deposit']
                 result=tool.return_json(0,"success",True,json)
