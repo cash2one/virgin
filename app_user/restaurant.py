@@ -528,6 +528,8 @@ restaurant_info_json = {
             "room_name": restaurant_info.String(description='WiFi',default="中包（1间） 大包（1间）"),
             "room_type": restaurant_info.String(description='包房特色',default="")
           },
+          "zc1":restaurant_info.Boolean(description='是否支持订座true false',default=True),
+          "zc2":restaurant_info.Boolean(description='是否支持点菜true false',default=True),
           "name": restaurant_info.String(description='饭店名',default="阿东海鲜老菜馆"),
           "shuaka": restaurant_info.String(description='是否能刷卡1是0否',default="0"),
           "weixin": restaurant_info.String(description='是否能微信支付1是0否',default="1"),
@@ -577,6 +579,8 @@ def restaurant_info():
                 data = {}
                 for i in item:
                     data['id'] = str(i['_id'])
+                    data['zc1'] = i['zc1']
+                    data['zc2'] = i['zc2']
                     if i['show_photos'] != []:
                         data['show_photos'] = i['show_photos'][0]
                         data['photos_num'] = len(i['show_photos'])
