@@ -1092,7 +1092,7 @@ def getroom():
                 json['phone'] =  request.form['phone']
                 json['demand'] =  request.form['demand']
                 json['numpeople'] = int( request.form['numpeople'])
-                json['preset_time'] = datetime.datetime.strptime( request.form['preset_time'], "%Y-%m-%d %H:%M:%S")
+                json['preset_time'] = datetime.datetime.strptime(request.form['preset_time'], "%Y-%m-%d %H:%M:%S")
                 item = mongo.order.find({'webuser_id':ObjectId(request.form['webuser_id']),"restaurant_id":ObjectId(request.form['restaurant_id']),'status':8})
                 flag = True
                 for i in item:
