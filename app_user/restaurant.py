@@ -1195,7 +1195,7 @@ settlement_json = {
 }
 #结算
 @restaurant_user_api.route('/fm/user/v1/restaurant/settlement/',methods=['POST'])
-@swag_from(settlement.mylpath(schemaid='getroom',result=settlement_json))
+@swag_from(settlement.mylpath(schemaid='settlement',result=settlement_json))
 def getroom():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
@@ -1226,6 +1226,41 @@ def getroom():
                     json['deposit'] = i['deposit']
                     json['dianfu'] = i['total'] - i['deposit']
                 result=tool.return_json(0,"success",True,json)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#联系饭店的电话
+getphone = swagger("1-2-3-4 订座提醒.jpg","联系饭店的电话")
+getphone.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+getphone.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店id',default='57329e300c1d9b2f4c85f8e6')
+getphone_json = {
+  "auto": getphone.String(description='验证是否成功'),
+  "message": getphone.String(description='SUCCESS/FIELD',default="SUCCESS"),
+  "code": getphone.Integer(description='',default=0),
+  "data": {
+          "room": getphone.String(description='饭店电话号',default="13000000000")
+}
+
+}
+#联系饭店的电话
+@restaurant_user_api.route('/fm/user/v1/restaurant/getphone/',methods=['POST'])
+@swag_from(getphone.mylpath(schemaid='getphone',result=getphone_json))
+def getphone():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                item = mongo.restaurant.find({"_id":ObjectId(request.form['restaurant_id'])})
+                phone = ''
+                for i in item:
+                    phone = i['phone']
+                result=tool.return_json(0,"success",True,phone)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e
