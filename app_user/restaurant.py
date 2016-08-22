@@ -1109,7 +1109,7 @@ def getroom():
                      json['deposit'] = 0.0
                      json['total'] = 0.0
                      json['add_time'] = datetime.datetime.now()
-                     mongo.order.insert({"$set":json})
+                     mongo.order.insert(json)
                      # tool.tuisong(mfrom=request.form['webuser_id'],
                      #             mto=request.form['restaurant_id'],
                      #             title='美食地图',
