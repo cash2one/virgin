@@ -1196,7 +1196,7 @@ settlement_json = {
 #结算
 @restaurant_user_api.route('/fm/user/v1/restaurant/settlement/',methods=['POST'])
 @swag_from(settlement.mylpath(schemaid='settlement',result=settlement_json))
-def getroom():
+def settlement():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
             try:
