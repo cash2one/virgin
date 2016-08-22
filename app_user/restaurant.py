@@ -10,6 +10,7 @@ from tools import tools
 import sys
 
 from tools.db_app_user import guess, business_dist, district_list, business_dist_byid, getcoupons, getconcern
+from tools.message_template import mgs_template
 from tools.swagger import swagger
 
 reload(sys)
@@ -840,6 +841,12 @@ dish_menu_count = swagger("1-2-3 菜单-2.jpg","点菜菜单加减")
 dish_menu_count.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 dish_menu_count.add_parameter(name='webuser_id',parametertype='formData',type='string',required= True,description='用户id',default='57396ec17c1f31a9cce960f4')
 dish_menu_count.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店id',default='57329e300c1d9b2f4c85f8e6')
+dish_menu_count.add_parameter(name='name',parametertype='formData',type='string',required= True,description='菜品名',default='压锅鲤鱼')
+dish_menu_count.add_parameter(name='price',parametertype='formData',type='string',required= True,description='原价',default='29.8')
+dish_menu_count.add_parameter(name='discount_price',parametertype='formData',type='string',required= True,description='优惠价',default='29.8')
+dish_menu_count.add_parameter(name='type',parametertype='formData',type='string',required= True,description='类别0是菜1是酒',default='0')
+dish_menu_count.add_parameter(name='num',parametertype='formData',type='string',required= True,description='数量加减1或-1',default='1')
+dish_menu_count.add_parameter(name='id',parametertype='formData',type='string',required= True,description='菜品id',default='201605111052558357')
 dish_menu_count_json = {
   "auto": dish_menu_count.String(description='验证是否成功'),
   "message": dish_menu_count.String(description='SUCCESS/FIELD',default="SUCCESS"),
@@ -907,8 +914,8 @@ def dish_menu_count():
                             flag = False
                             if int(dish['num'])+num != 0:
                                 dish_dict['name'] = name
-                                dish_dict['price'] = price
-                                dish_dict['discount_price'] = discount_price
+                                dish_dict['price'] = float(request.form['price'])
+                                dish_dict['discount_price'] = float(request.form['discount_price'])
                                 dish_dict['num'] = int(dish['num'])+num
                                 dish_dict['id'] = id
                             else:
@@ -925,8 +932,8 @@ def dish_menu_count():
                         dish_list.append(
                             {
                             "name" : name,
-                            "price" : price,
-                            "discount_price" : discount_price,
+                            "price" : float(request.form['price']),
+                            "discount_price" : float(request.form['discount_price']),
                             "num" : 1,
                             "id" : id
                             }
@@ -1037,6 +1044,188 @@ def dish_menu_list():
                     list.append(json)
                 data['menu'] = list
                 result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#用户订座
+getroom = swagger("1-2-3-3 订座.jpg","用户订座")
+getroom.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+getroom.add_parameter(name='webuser_id',parametertype='formData',type='string',required= True,description='用户id',default='57396ec17c1f31a9cce960f4')
+getroom.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店id',default='57329e300c1d9b2f4c85f8e6')
+getroom.add_parameter(name='username',parametertype='formData',type='string',required= True,description='用户名',default='我叫XXX')
+getroom.add_parameter(name='is_room',parametertype='formData',type='string',required= True,description='1是0否选包房',default='0')
+getroom.add_parameter(name='phone',parametertype='formData',type='string',required= True,description='电话',default='13000000000')
+getroom.add_parameter(name='demand',parametertype='formData',type='string',required= True,description='需求',default='好吃便宜')
+getroom.add_parameter(name='numpeople',parametertype='formData',type='string',required= True,description='用餐人数',default='3')
+getroom.add_parameter(name='preset_time',parametertype='formData',type='string',required= True,description='用餐时间',default='2016-08-19 15:15:00')
+getroom_json = {
+  "auto": getroom.String(description='验证是否成功'),
+  "message": getroom.String(description='SUCCESS/FIELD',default="SUCCESS"),
+  "code": getroom.Integer(description='',default=0),
+  "data": {
+        "status": getroom.Integer(description='访问成功',default=1),
+        "msg": getroom.String(description='成功消息',default="订座申请成功")
+}
+
+}
+#用户订座
+@restaurant_user_api.route('/fm/user/v1/restaurant/getroom/',methods=['POST'])
+@swag_from(getroom.mylpath(schemaid='getroom',result=getroom_json))
+def getroom():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                json = {}
+                json['username'] = request.form['username']
+                json['status'] = 0
+                if request.form['is_room'] == '1':
+                    json['is_room'] = True
+                else:
+                    json['is_room'] = False
+                json['phone'] =  request.form['phone']
+                json['demand'] =  request.form['demand']
+                json['numpeople'] = int( request.form['numpeople'])
+                json['preset_time'] = datetime.datetime.strptime( request.form['preset_time'], "%Y-%m-%d %H:%M:%S")
+                item = mongo.order.find({'webuser_id':ObjectId(request.form['webuser_id']),"restaurant_id":ObjectId(request.form['restaurant_id']),'status':8})
+                flag = True
+                for i in item:
+                    flag = False
+                if flag:
+                     json['type'] = 0
+                     json['source'] = 2
+                     json['restaurant_id'] = ObjectId(request.form['restaurant_id'])
+                     json['preset_dishs'] = []
+                     json['preset_wine'] = []
+                     json['webuser_id'] = ObjectId(request.form['webuser_id'])
+                     json['dis_message'] = ""
+                     json['room_id'] = ""
+                     json['deposit'] = 0.0
+                     json['total'] = 0.0
+                     json['add_time'] = datetime.datetime.now()
+                     mongo.order.insert({"$set":json})
+                     tool.tuisong(mfrom=request.form['webuser_id'],
+                                 mto=request.form['restaurant_id'],
+                                 title='美食地图',
+                                 info=mgs_template['sj_1']['title'],
+                                 goto=mgs_template['sj_1']['goto'],
+                                 channel=mgs_template['sj_1']['channel'],
+                                 type='0',
+                                 totype='0',
+                                 appname='foodmap_shop',
+                                 msgtype='message',
+                                 target='all',
+                                 ext='{"goto":'+mgs_template["sj_1"]['goto']+'}',
+                                 ispush=True)
+                else:
+                    mongo.order.update({'webuser_id':ObjectId(request.form['webuser_id']),"restaurant_id":ObjectId(request.form['restaurant_id']),'status':8},{"$set":json})
+                    tool.tuisong(mfrom=request.form['webuser_id'],
+                                 mto=request.form['restaurant_id'],
+                                 title='美食地图',
+                                 info=mgs_template['sj_2']['title'],
+                                 goto=mgs_template['sj_2']['goto'],
+                                 channel=mgs_template['sj_2']['channel'],
+                                 type='0',
+                                 totype='0',
+                                 appname='foodmap_shop',
+                                 msgtype='message',
+                                 target='all',
+                                 ext='{"goto":'+mgs_template["sj_2"]['goto']+'}',
+                                 ispush=True)
+                data = {
+                    "status": 1,
+                    "msg":"订座申请成功"
+                }
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#结算
+settlement = swagger("1-2-3-5 收到消息.jpg","结算")
+settlement.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+settlement.add_parameter(name='order_id',parametertype='formData',type='string',required= True,description='订单id',default='573153c4e0fdb78f29b42826')
+settlement_json = {
+  "auto": settlement.String(description='验证是否成功'),
+  "message": settlement.String(description='SUCCESS/FIELD',default="SUCCESS"),
+  "code": settlement.Integer(description='',default=0),
+  "data": {
+          "yingfu": settlement.Float(description='应付金额',default=175.0),
+          "room": settlement.String(description='包房名',default="中包（1间）"),
+          "r_name": settlement.String(description='饭店名',default="阿东海鲜老菜馆"),
+          "preset_dishs": [
+            {
+              "price": settlement.Float(description='原价',default=29.8),
+              "num": settlement.Integer(description='数量',default=1),
+              "discount_price": settlement.Float(description='优惠价',default=29.8),
+              "id": settlement.String(description='菜品id',default="201605111052558357"),
+              "name": settlement.String(description='菜品名',default="压锅鲤鱼")
+            }
+          ],
+          "dianfu": settlement.Float(description='到店付',default=175.0),
+          "preset_wine": [
+            {
+              "price": settlement.Float(description='原价',default=3.0),
+              "num": settlement.Integer(description='',default=1),
+              "discount_price": settlement.Float(description='优惠价',default=3.0),
+              "id": settlement.String(description='菜品id',default="201605111054065811"),
+              "name": settlement.String(description='菜品名',default="大雪花"),
+            }
+          ],
+          "numpeople": settlement.Integer(description='用餐人数',default=3),
+          "dis_message": "",
+          "deposit": settlement.Float(description='押金',default=35.0),
+          "address": settlement.String(description='饭店地址',default="哈尔滨市南岗区马家街132-2号"),
+          "preset_time": settlement.String(description='用餐时间',default="2016年06月24日 14:00:00"),
+          "total": settlement.Float(description='总计',default=175.0),
+}
+
+}
+#结算
+@restaurant_user_api.route('/fm/user/v1/restaurant/settlement/',methods=['POST'])
+@swag_from(settlement.mylpath(schemaid='getroom',result=settlement_json))
+def getroom():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                item = mongo.order.find({'_id':ObjectId(request.form['order_id'])})
+                json = {}
+                for i in item:
+                    restaurant = mongo.restaurant.find({"_id":i['restaurant_id']})
+                    r_name = ''
+                    room = ''
+                    address = ''
+                    for r in restaurant:
+                        address = r['address']
+                        r_name = r['name']
+                        for rooms in r['rooms']:
+                            if i['room_id'] == rooms['room_id']:
+                                room = rooms['room_name']
+                    json['r_name'] = r_name
+                    json['preset_time'] = i['preset_time'].strftime('%Y年%m月%d日 %H:%M:%S')
+                    json['numpeople'] = i['numpeople']
+                    json['room'] = room
+                    json['address'] = address
+                    json['preset_dishs'] = i['preset_dishs']
+                    json['preset_wine'] = i['preset_wine']
+                    json['total'] = i['total']
+                    json['yingfu'] = i['total']
+                    json['dis_message'] = i['dis_message']
+                    json['deposit'] = i['deposit']
+                    json['dianfu'] = i['total'] - i['deposit']
+                result=tool.return_json(0,"success",True,json)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e

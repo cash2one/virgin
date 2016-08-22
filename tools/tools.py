@@ -342,9 +342,9 @@ def qrcode(data, version=None, error_correction='L', box_size=10, border=0, fit=
     u1 = settings.getimageIP + str(uu)
     os.remove(osstr)
     return uu
-#mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|
+#mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
 # appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
-def tuisong(mfrom='', mto='', title='', info='',goto='',channel='',type='',
+def tuisong(mfrom='', mto='', title='', info='',goto='',channel='',type='',totype='',
             appname='',msgtype='',target='',ext='', ispush=True):
     baseurl = 'http://127.0.0.1:10035'
     androidreq = {}
@@ -383,18 +383,35 @@ def tuisong(mfrom='', mto='', title='', info='',goto='',channel='',type='',
             for mid in idlist:
                 if mid != '' and mid != None:
                     infoto[mid] = 0
-                    #mid是接收方id 下面webuser是查询用户中心id
-                    webuser = mongo.webuser.find({"_id":ObjectId(mid)})
-                    for w in webuser:
-                        #查询用户中心表usercenter得到设备类型和设备号
-                        usercenter = mongouser.user_web.find({"_id":ObjectId(w['automembers_id'])})
-                        for u in usercenter:
-                            #0是安卓1是IOS
-                            if u['lastlogin']['type'] == '0':
-                                #拼接TargetValue参数
-                                identandroidlist.append(identandroid+u['lastlogin']['ident'])
-                            else:
-                                identioslist.append(identandroid+u['lastlogin']['ident'])
+                    #mid是接收方id 下面webuser是查询用户中心id,totype区分是谁接收，1是用户，查询用户表，0是商家，查询饭店表user字段
+                    if totype == '1':
+                        webuser = mongo.webuser.find({"_id":ObjectId(mid)})
+                        for w in webuser:
+                            #查询用户中心表usercenter得到设备类型和设备号
+                            usercenter = mongouser.user_web.find({"_id":ObjectId(w['automembers_id'])})
+                            for u in usercenter:
+                                #0是安卓1是IOS
+                                if u['lastlogin']['type'] == '0':
+                                    #拼接TargetValue参数
+                                    identandroidlist.append(identandroid+u['lastlogin']['ident'])
+                                else:
+                                    identioslist.append(identandroid+u['lastlogin']['ident'])
+                    else:
+                        restaurant = mongo.restaurant.find({"_id":ObjectId(mid)})
+                        for r in restaurant:
+                            for usercenter_id in r['user']:
+                                if usercenter_id!='' and usercenter_id!=None:
+                                    usercenter = mongouser.user_web.find({"_id":ObjectId(usercenter_id)})
+                                    for u in usercenter:
+                                        #0是安卓1是IOS
+                                        if u['lastlogin']['type'] == '0':
+                                            #拼接TargetValue参数
+                                            identandroidlist.append(identandroid+u['lastlogin']['ident'])
+                                        else:
+                                            identioslist.append(identandroid+u['lastlogin']['ident'])
+                                else:
+                                    print '此饭店暂无管理员，获取不到接收方设备号'
+
         identandroid = ",".join(identandroidlist)
         identios = ",".join(identioslist)
         print identandroid,identios

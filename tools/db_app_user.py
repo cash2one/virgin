@@ -134,6 +134,7 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3,
                     else:
                         json['distance'] = l[0]
                         json['liansuo'] = '0'
+                        json['menutype'] = '0'
                 list.append(json)
     else:
         restaurant = mongo.restaurant.find(first).sort("addtime", pymongo.DESCENDING)[start:end]
