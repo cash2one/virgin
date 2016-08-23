@@ -32,9 +32,7 @@ send_sms_json = {
     "message": send_sms.String(description='SUCCESS/FIELD',default="SUCCESS"),
     "code": send_sms.Integer(description='',default=0),
     "data": {
-        {
             "ispass":send_sms.Boolean(description='是否发送成功',default=True),
-        }
     }
 }
 
@@ -81,7 +79,7 @@ register_json = {
 
 #注册
 @login_user_api.route('/fm/user/v1/login/register/',methods=['POST'])
-@swag_from(send_sms.mylpath(schemaid='register',result=register_json))
+@swag_from(register.mylpath(schemaid='register',result=register_json))
 def register():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
@@ -168,8 +166,8 @@ verify_login_json = {
     "message": verify_login.String(description='SUCCESS/FIELD',default="SUCCESS"),
     "code": verify_login.Integer(description='',default=0),
     "data": {
-        "_id": register.String(description='用户id',default="57bbbe6ffb98a40c6431b28f"),
-        "ispass": register.Boolean(description='是否登陆成功',default=True),
+        "_id": verify_login.String(description='用户id',default="57bbbe6ffb98a40c6431b28f"),
+        "ispass": verify_login.Boolean(description='是否登陆成功',default=True),
     }
 }
 
@@ -216,14 +214,14 @@ code_login_json = {
     "message": code_login.String(description='SUCCESS/FIELD',default="SUCCESS"),
     "code": code_login.Integer(description='',default=0),
     "data": {
-        "_id": register.String(description='用户id',default="57bbbe6ffb98a40c6431b28f"),
-        "ispass": register.Boolean(description='是否登陆成功',default=True),
+        "_id": code_login.String(description='用户id',default="57bbbe6ffb98a40c6431b28f"),
+        "ispass": code_login.Boolean(description='是否登陆成功',default=True),
     }
 }
 
 #验证码登录
 @login_user_api.route('/fm/user/v1/login/code_login/',methods=['POST'])
-@swag_from(verify_login.mylpath(schemaid='code_login',result=code_login_json))
+@swag_from(code_login.mylpath(schemaid='code_login',result=code_login_json))
 def code_login():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
@@ -270,14 +268,14 @@ resetpassword_json = {
     "message": resetpassword.String(description='SUCCESS/FIELD',default="SUCCESS"),
     "code": resetpassword.Integer(description='',default=0),
     "data": {
-        "_id": register.String(description='用户id',default="57bbbe6ffb98a40c6431b28f"),
-        "ispass": register.Boolean(description='是否修改密码成功',default=True),
+        "_id": resetpassword.String(description='用户id',default="57bbbe6ffb98a40c6431b28f"),
+        "ispass": resetpassword.Boolean(description='是否修改密码成功',default=True),
     }
 }
 
 #找回密码
 @login_user_api.route('/fm/user/v1/login/resetpassword/',methods=['POST'])
-@swag_from(verify_login.mylpath(schemaid='resetpassword',result=resetpassword_json))
+@swag_from(resetpassword.mylpath(schemaid='resetpassword',result=resetpassword_json))
 def resetpassword():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
