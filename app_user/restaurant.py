@@ -982,7 +982,6 @@ def dish_menu_count():
 dish_menu_list = swagger("1-2-3-2 购物车.jpg","我的菜单列表")
 dish_menu_list.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 dish_menu_list.add_parameter(name='webuser_id',parametertype='formData',type='string',required= True,description='用户id',default='57396ec17c1f31a9cce960f4')
-dish_menu_list.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店id',default='57329e300c1d9b2f4c85f8e6')
 dish_menu_list_json = {
   "auto": dish_menu_list.String(description='验证是否成功'),
   "message": dish_menu_list.String(description='SUCCESS/FIELD',default="SUCCESS"),
@@ -1027,15 +1026,15 @@ def dish_menu_list():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
             try:
-                item = mongo.restaurant.find({"_id":ObjectId(request.form['restaurant_id'])})
-                r_name = ''
-                for i in item:
-                    r_name = i['name']
                 item2 = mongo.order.find({'webuser_id':ObjectId(request.form['webuser_id']),'status':8})
                 data = {}
                 list = []
                 for i in item2:
                     json = {}
+                    restaurant = mongo.restaurant.find({"_id":i['restaurant_id']})
+                    r_name = ''
+                    for r in restaurant:
+                        r_name = r['name']
                     json['id'] = str(i['_id'])
                     json['r_name'] = r_name
                     json['total'] = i['total']
@@ -1044,8 +1043,11 @@ def dish_menu_list():
                     json['dianfu'] = i['total'] - i['deposit']
                     json['preset_dishs'] = i['preset_dishs']
                     json['preset_wine'] = i['preset_wine']
-                    json['tishi'] = '提示：再加多少多少元就能咋地咋地了'
-                    list.append(json)
+                    json['tishi'] = '提示：再加多少多少元就能免单'
+                    if i['preset_dishs'] !=[] or i['preset_wine']!=[]:
+                        list.append(json)
+                    else:
+                        pass
                 data['menu'] = list
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
@@ -1265,6 +1267,89 @@ def getphone():
                 for i in item:
                     phone = i['phone']
                 result=tool.return_json(0,"success",True,phone)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#单条我的菜单
+dish_menu_one = swagger("1-2-3-2 购物车.jpg","单条我的菜单")
+dish_menu_one.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+dish_menu_one.add_parameter(name='webuser_id',parametertype='formData',type='string',required= True,description='用户id',default='57396ec17c1f31a9cce960f4')
+dish_menu_one.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店id',default='57329e300c1d9b2f4c85f8e6')
+dish_menu_one_json = {
+  "auto": dish_menu_one.String(description='验证是否成功'),
+  "message": dish_menu_one.String(description='SUCCESS/FIELD',default="SUCCESS"),
+  "code": dish_menu_one.Integer(description='',default=0),
+  "data": {
+  "menu": [
+
+    {
+      "id": dish_menu_one.String(description='菜单id',default="57aadb1dfb98a45d10b58bda"),
+      "total": dish_menu_one.Float(description='总计',default=20.0),
+      "r_name": dish_menu_one.String(description='饭店名',default="阿东海鲜老菜馆"),
+      "dianfu": dish_menu_one.Float(description='到店支付',default=20.0),
+      "deposit": dish_menu_one.Float(description='定金',default=0.0),
+      "youhui": dish_menu_one.Float(description='优惠金额',default=1.0),
+      "preset_dishs": [
+        {
+          "id": dish_menu_one.String(description='菜品id',default="201605111053268902"),
+          "price": dish_menu_one.Float(description='菜品原价',default=0.0),
+          "num": dish_menu_one.Integer(description='数量',default=1),
+          "discount_price": dish_menu_one.Float(description='优惠价',default=29.8),
+          "name": dish_menu_one.String(description='菜品名',default="小仁鲜"),
+        }
+      ],
+      "preset_wine": [
+        {
+          "price": dish_menu_one.Float(description='酒水原价',default=4.0),
+          "num": dish_menu_one.Integer(description='数量',default=5),
+          "discount_price": dish_menu_one.Float(description='优惠价',default=4.0),
+          "id": dish_menu_one.String(description='酒水id',default="201605111053577963"),
+          "name": dish_menu_one.String(description='酒水名',default="原汁麦"),
+        }
+      ]
+    }
+  ]
+}
+
+}
+#单条我的菜单
+@restaurant_user_api.route('/fm/user/v1/restaurant/dish_menu_one/',methods=['POST'])
+@swag_from(dish_menu_one.mylpath(schemaid='dish_menu_one',result=dish_menu_one_json))
+def dish_menu_one():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                item = mongo.restaurant.find({"_id":ObjectId(request.form['restaurant_id'])})
+                r_name = ''
+                for i in item:
+                    r_name = i['name']
+                item2 = mongo.order.find({"restaurant_id":ObjectId(request.form['restaurant_id']),'webuser_id':ObjectId(request.form['webuser_id']),'status':8})
+                data = {}
+                list = []
+                for i in item2:
+                    json = {}
+                    json['id'] = str(i['_id'])
+                    json['r_name'] = r_name
+                    json['total'] = i['total']
+                    json['deposit'] = i['deposit']
+                    json['youhui'] = ''
+                    json['dianfu'] = i['total'] - i['deposit']
+                    json['preset_dishs'] = i['preset_dishs']
+                    json['preset_wine'] = i['preset_wine']
+                    json['tishi'] = '提示：再加多少多少元免单'
+                    if i['preset_dishs'] !=[] or i['preset_wine']!=[]:
+                        list.append(json)
+                    else:
+                        pass
+                data['menu'] = list
+                result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e
