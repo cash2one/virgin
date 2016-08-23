@@ -160,6 +160,7 @@ verify_login = swagger("0-3 登录.jpg","密码登录")
 verify_login.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 verify_login.add_parameter(name='phone',parametertype='formData',type='string',required= True,description='电话',default='13000000000')
 verify_login.add_parameter(name='password',parametertype='formData',type='string',required= True,description='密码',default='111111')
+verify_login.add_parameter(name='ident',parametertype='formData',type='string',required= True,description='设备号',default='')
 
 verify_login_json = {
     "auto": verify_login.String(description='验证是否成功'),
@@ -183,16 +184,25 @@ def verify_login():
                 found = mongo.find({'phone': phone, 'appid': {'2': True}})
                 print found
                 if found:
+                    mongo.fix({
+                        "_id":found['_id'],
+                        "fix_data":{
+                            "lastlogin": {
+                                "ident": request.form['ident'],
+                                "time": datetime.datetime.now()
+                            }
+                        }
+                    })
                     found = found[0]
                     if found['registeruser']['password'] == hashlib.md5(password).hexdigest().upper():
                         found['_id'] = str(found['_id']['$oid'])
                         result=tool.return_json(0,"success",True,{'ispass':True,'_id': found['_id']})
                         return json_util.dumps(result,ensure_ascii=False,indent=2)
                     else:
-                        result=tool.return_json(0,"success",False,{'ispass':True,'info': '密码错误'})
+                        result=tool.return_json(0,"success",True,{'ispass':True,'info': '密码错误'})
                         return json_util.dumps(result,ensure_ascii=False,indent=2)
                 else:
-                    result=tool.return_json(0,"success",False,{'ispass':True,'info': '没有此账号'})
+                    result=tool.return_json(0,"success",True,{'ispass':True,'info': '没有此账号'})
                     return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e
@@ -208,6 +218,7 @@ code_login = swagger("0-2 快捷登录.jpg","验证码登录")
 code_login.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 code_login.add_parameter(name='phone',parametertype='formData',type='string',required= True,description='电话',default='13000000000')
 code_login.add_parameter(name='code',parametertype='formData',type='string',required= True,description='六位验证码',default='000000')
+code_login.add_parameter(name='ident',parametertype='formData',type='string',required= True,description='设备号',default='')
 
 code_login_json = {
     "auto": code_login.String(description='验证是否成功'),
@@ -230,6 +241,15 @@ def code_login():
                 code = request.form['code']
                 found = mongo.find({'phone': phone, 'appid': {'2': True}})
                 if found:
+                    mongo.fix({
+                        "_id":found['_id'],
+                        "fix_data":{
+                            "lastlogin": {
+                                "ident": request.form['ident'],
+                                "time": datetime.datetime.now()
+                            }
+                        }
+                    })
                     found = found[0]
                     data = {'tel': phone,
                         'ex': '#foodmap.mobile',
