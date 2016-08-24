@@ -745,6 +745,8 @@ dish_menu_json = {
         {
           "list": [
             {
+              "is_discount": dish_menu.Boolean(description='惠标签，是否有优惠',default=True),
+              "is_recommend": dish_menu.Boolean(description='推荐标签，是否推荐',default=True),
               "id": dish_menu.String(description='菜品id',default="201605111053268902"),
               "price": dish_menu.Float(description='菜品原价',default=29.8),
               "num": dish_menu.Integer(description='点菜数量',default=0),
@@ -753,6 +755,8 @@ dish_menu_json = {
               "discount_price":dish_menu.Float(description='菜品优惠价',default=29.8)
             },
             {
+              "is_discount": dish_menu.Boolean(description='惠标签，是否有优惠',default=True),
+              "is_recommend": dish_menu.Boolean(description='推荐标签，是否推荐',default=True),
               "id": dish_menu.String(description='菜品id',default="201605111052558357"),
               "price": dish_menu.Float(description='菜品原价',default=29.8),
               "num": dish_menu.Integer(description='点菜数量',default=0),
@@ -766,6 +770,8 @@ dish_menu_json = {
         {
           "list": [
             {
+              "is_discount": dish_menu.Boolean(description='惠标签，是否有优惠',default=True),
+              "is_recommend": dish_menu.Boolean(description='推荐标签，是否推荐',default=True),
               "id": dish_menu.String(description='菜品id',default="201605111052558357"),
               "price": dish_menu.Float(description='菜品原价',default=29.8),
               "num": dish_menu.Integer(description='点菜数量',default=0),
@@ -812,6 +818,11 @@ def dish_menu():
                                 dish['price'] = dishs['price']
                                 dish['discount_price'] = dishs['discount_price']
                                 dish['id'] = dishs['id']
+                                dish['is_recommend'] = dishs['is_recommend']
+                                if dishs['price'] > dishs['discount_price']:
+                                    dish['is_discount'] = True
+                                else:
+                                    dish['is_discount'] = False
                                 dish['guide_image'] = dishs['guide_image']
                                 dish['num'] = 0
                                 for dishid in order_list:
