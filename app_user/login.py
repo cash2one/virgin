@@ -187,7 +187,7 @@ def verify_login():
                 print found
                 if found:
                     mongo.fix({
-                        "_id":found['_id'],
+                        "_id":found[0]['_id'],
                         "fix_data":{
                             "lastlogin": {
                                 "ident": request.form['ident'],
@@ -245,7 +245,7 @@ def code_login():
                 found = mongo.find({'phone': phone, 'appid': {'2': True}})
                 if found:
                     mongo.fix({
-                        "_id":found['_id'],
+                        "_id":found[0]['_id'],
                         "fix_data":{
                             "lastlogin": {
                                 "ident": request.form['ident'],
