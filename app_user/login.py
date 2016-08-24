@@ -74,6 +74,7 @@ register_json = {
     "data": {
         "_id": register.String(description='用户id',default="57bbbe6ffb98a40c6431b28f"),
         "ispass": register.Boolean(description='是否注册成功',default=True),
+        "info": register.String(description='返回信息',default="成功或者失败"),
     }
 }
 
@@ -135,16 +136,16 @@ def register():
                                                                               }
                                                                           }))}})
                             user_addqr = json_util.loads(json_util.dumps(user_addqr))
-                            result=tool.return_json(0,"success",True,{'ispass':True,'_id': str(webuser_add)})
+                            result=tool.return_json(0,"success",True,{'ispass':True,'_id': str(webuser_add),'info': '注册成功'})
                             return json_util.dumps(result,ensure_ascii=False,indent=2)
                         else:
                             result=tool.return_json(0,"success",True,{'ispass':False})
                             return json_util.dumps(result,ensure_ascii=False,indent=2)
                     else:
-                        result=tool.return_json(0,"success",True,{'ispass':False,'info': '此账号已注册'})
+                        result=tool.return_json(0,"success",True,{'ispass':False,'_id':'','info': '此账号已注册'})
                         return json_util.dumps(result,ensure_ascii=False,indent=2)
                 else:
-                    result=tool.return_json(0,"success",True,{'ispass':False,'info': '验证码超时或错误，请重新输入'})
+                    result=tool.return_json(0,"success",True,{'ispass':False,'_id':'','info': '验证码超时或错误，请重新输入'})
                     return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e
@@ -169,6 +170,7 @@ verify_login_json = {
     "data": {
         "_id": verify_login.String(description='用户id',default="57bbbe6ffb98a40c6431b28f"),
         "ispass": verify_login.Boolean(description='是否登陆成功',default=True),
+        "info": verify_login.String(description='返回信息',default="成功或者失败"),
     }
 }
 
@@ -196,13 +198,13 @@ def verify_login():
                     found = found[0]
                     if found['registeruser']['password'] == hashlib.md5(password).hexdigest().upper():
                         found['_id'] = str(found['_id']['$oid'])
-                        result=tool.return_json(0,"success",True,{'ispass':True,'_id': found['_id']})
+                        result=tool.return_json(0,"success",True,{'ispass':True,'_id': found['_id'],'info': '密码登陆成功'})
                         return json_util.dumps(result,ensure_ascii=False,indent=2)
                     else:
-                        result=tool.return_json(0,"success",True,{'ispass':True,'info': '密码错误'})
+                        result=tool.return_json(0,"success",True,{'ispass':True,'_id':'','info': '密码错误'})
                         return json_util.dumps(result,ensure_ascii=False,indent=2)
                 else:
-                    result=tool.return_json(0,"success",True,{'ispass':True,'info': '没有此账号'})
+                    result=tool.return_json(0,"success",True,{'ispass':True,'_id':'','info': '没有此账号'})
                     return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e
@@ -227,6 +229,7 @@ code_login_json = {
     "data": {
         "_id": code_login.String(description='用户id',default="57bbbe6ffb98a40c6431b28f"),
         "ispass": code_login.Boolean(description='是否登陆成功',default=True),
+        "info": code_login.String(description='返回信息',default="成功或者失败"),
     }
 }
 
@@ -258,13 +261,13 @@ def code_login():
                     req = requests.post(SMSnetgate + '/sms.validate', data)
                     if req.json()['success']:
                         found['_id'] = str(found['_id']['$oid'])
-                        result=tool.return_json(0,"success",True,{'ispass':True,'_id': found['_id']})
+                        result=tool.return_json(0,"success",True,{'ispass':True,'_id': found['_id'],'info': '验证码登陆成功'})
                         return json_util.dumps(result,ensure_ascii=False,indent=2)
                     else:
-                        result=tool.return_json(0,"success",True,{'ispass':False,'info': '验证码超时或错误，请重新输入'})
+                        result=tool.return_json(0,"success",True,{'ispass':False,'_id':'','info': '验证码超时或错误，请重新输入'})
                         return json_util.dumps(result,ensure_ascii=False,indent=2)
                 else:
-                    result=tool.return_json(0,"success",True,{'ispass':False,'info': '没有此账号'})
+                    result=tool.return_json(0,"success",True,{'ispass':False,'_id':'','info': '没有此账号'})
                     return json_util.dumps(result,ensure_ascii=False,indent=2)
                 pass
             except Exception,e:
@@ -290,6 +293,7 @@ resetpassword_json = {
     "data": {
         "_id": resetpassword.String(description='用户id',default="57bbbe6ffb98a40c6431b28f"),
         "ispass": resetpassword.Boolean(description='是否修改密码成功',default=True),
+        "info": resetpassword.String(description='返回信息',default="成功或者失败"),
     }
 }
 
@@ -315,14 +319,14 @@ def resetpassword():
                         fix_psw = {'registeruser.password': hashlib.md5(password).hexdigest().upper()}
                         is_fix = mongo.fix({'_id': str(found['_id']['$oid']), 'fix_data': fix_psw})
                         is_fix['_id'] = str(found['_id']['$oid'])
-                        result=tool.return_json(0,"success",True,{'ispass':True,'_id': is_fix['_id']})
+                        result=tool.return_json(0,"success",True,{'ispass':True,'_id': is_fix['_id'],'info': '找回密码成功'})
                         return json_util.dumps(result,ensure_ascii=False,indent=2)
                         pass
                     else:
-                        result=tool.return_json(0,"success",True,{'ispass':False,'info': '没有此账号'})
+                        result=tool.return_json(0,"success",True,{'ispass':False,'_id':'','info': '没有此账号'})
                         return json_util.dumps(result,ensure_ascii=False,indent=2)
                 else:
-                    result=tool.return_json(0,"success",True,{'ispass':False,'info': '验证码超时或错误，请重新输入'})
+                    result=tool.return_json(0,"success",True,{'ispass':False,'_id':'','info': '验证码超时或错误，请重新输入'})
                     return json_util.dumps(result,ensure_ascii=False,indent=2)
                 pass
             except Exception,e:
