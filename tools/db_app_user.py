@@ -89,7 +89,7 @@ def business_dist(lon1=126.593666, lat1=45.706477):
             biz_areas_list.append((int(haversine(lon1=lon1,lat1=lat1,lon2=j['longitude'],lat2=j['latitude'])),j['biz_area_id'],j['biz_area_name']))
     return sorted(biz_areas_list)[0][0],sorted(biz_areas_list)[0][1],sorted(biz_areas_list)[0][2]
 #根据获取的经纬度查询若干条距离最近的饭店信息
-def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3,webuser_id='5770c183dcc88e6506b95225'):
+def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3,webuser_id=''):
     if lat1!='y':
         item = mongo.restaurant.find(first,{"zuobiao":1})
         rsetaurant_list = []
@@ -113,7 +113,10 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3,
                         json['kind1'] = '满多少打多少折'
                         json['kind2'] = '满多少减多少元'
                         json['kind3'] = '任性就是送'
-                        json['concern'] =getconcern(rest[key],webuser_id)
+                        if webuser_id !='-1':
+                            json['concern'] =getconcern(rest[key],webuser_id)
+                        else:
+                            json['concern'] = "0"
                     elif key == 'restaurant_id':
                         json['restaurant_id'] = str(rest[key])
                     elif key == 'name':
@@ -150,7 +153,10 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3,
                     json['kind1'] = '满多少打多少折'
                     json['kind2'] = '满多少减多少元'
                     json['kind3'] = '任性就是送'
-                    json['concern'] =getconcern(rest[key],webuser_id)
+                    if webuser_id !='-1':
+                        json['concern'] =getconcern(rest[key],webuser_id)
+                    else:
+                        json['concern'] = "0"
                 elif key == 'restaurant_id':
                     json['restaurant_id'] = str(rest[key])
                 elif key == 'name':
