@@ -646,7 +646,7 @@ def restaurant_info():
 #图片菜单
 pic_menu = swagger("1-2-3 菜单-1.jpg","图片菜单")
 pic_menu.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
-pic_menu.add_parameter(name='type',parametertype='formData',type='string',required= True,description='标签分类1全部2推荐菜3酒水',default='1')
+pic_menu.add_parameter(name='type',parametertype='formData',type='string',required= True,description='标签分类4全部图片5推荐菜6酒水',default='4')
 pic_menu.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店id',default='57329e300c1d9b2f4c85f8e6')
 pic_menu_json = {
   "auto": pic_menu.String(description='验证是否成功'),
@@ -688,6 +688,7 @@ def pic_menu():
                     tuijiancaislist = []
                     winelist = []
                     piclist = []
+                    plist = []
                     for menu in  i['menu']:
                         if menu['name'] == '推荐菜':
                             if menu['dishs'] !=[]:
@@ -714,12 +715,20 @@ def pic_menu():
                         elif menu['dish_type'] == '0':
                             if menu['dishs'] !=[]:
                                 piclist = menu['dishs']
-                    if type == '1':
-                        data['alldish'] = piclist
-                    elif type == '2':
+                    if type == '4':
+                        for pic in piclist:
+                            picjson = {
+                                'desc':'',
+                                'img':pic
+                            }
+                            plist.append(picjson)
+                        data['list'] = plist
+                    elif type == '5':
                         data['tuijiancai'] = tuijiancaislist
-                    else:
+                    elif type == '6':
                         data['wine'] = winelist
+                    else:
+                        pass
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
