@@ -653,7 +653,16 @@ pic_menu_json = {
   "message": pic_menu.String(description='SUCCESS/FIELD',default="SUCCESS"),
   "code": pic_menu.Integer(description='',default=0),
   "data": {
-  "alldish": pic_menu.String(description='饭店id',default="['015a0f05de8146a45c0681ba64bc49f6','f71d4db90411bd4c598821a72aa217bb']"),
+  "list": [
+                  {
+                    "img": pic_menu.String(description='图片MD5',default="015a0f05de8146a45c0681ba64bc49f6"),
+                    "desc": pic_menu.String(description='排序，这个真没有',default="")
+                  },
+                  {
+                    "img": pic_menu.String(description='图片MD5',default="f71d4db90411bd4c598821a72aa217bb"),
+                    "desc": pic_menu.String(description='排序，这个真没有',default="")
+                  }
+      ],
   "wine": [
     {
       "price": pic_menu.Float(description='原价',default=3.0),
