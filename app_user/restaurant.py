@@ -798,7 +798,7 @@ dish_menu_json = {
               "guide_image":dish_menu.String(description='图片，基本没有，留着以后用',default="MD5MD5MD5MD5MD5MD5MD5MD5MD5MD5MD5MD5"),
               "name": dish_menu.String(description='菜品名',default="压锅鲤鱼"),
               "discount_price":dish_menu.Float(description='菜品优惠价',default=29.8),
-              "type": dish_menu.String(description='0酒水1菜品',default="1"),
+              "type": dish_menu.String(description='1酒水0菜品',default="0"),
             }
           ],
           "name": dish_menu.String(description='菜单类别',default="酒水")
@@ -836,9 +836,9 @@ def dish_menu():
                             for dishs in menu['dishs']:
                                 dish = {}
                                 if menu['name'] == '酒水':
-                                    dish['type'] = '0'
-                                else:
                                     dish['type'] = '1'
+                                else:
+                                    dish['type'] = '0'
                                 dish['name'] = dishs['name']
                                 dish['price'] = dishs['price']
                                 dish['discount_price'] = dishs['discount_price']
