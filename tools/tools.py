@@ -295,10 +295,10 @@ def pimg(uu):
     cc = open(uu, "rb")
     datagen, headers = multipart_encode({"image": cc })
     #发送请求
-    request = urllib2.Request(settings.setimageIP , datagen, headers)
-    request = urllib2.Request(settings.setimageIP1 , datagen, headers)
+    # request = urllib2.Request(settings.setimageIP , datagen, headers)
+    # request = urllib2.Request(settings.setimageIP1 , datagen, headers)
     #测试本地用
-    # request = urllib2.Request(settings.setimageIPlocal , datagen, headers)
+    request = urllib2.Request(settings.setimageIPlocal , datagen, headers)
 
     #获取返回中的内容
     re1 = r"<h1>MD5:(?P<md5>.*?)</h1>"
@@ -335,8 +335,8 @@ def qrcode(data, version=None, error_correction='L', box_size=10, border=0, fit=
     out = BytesIO()
     qr_img = qr.make_image()
     filename = '%s%s' % (gen_rnd_filename(), ".PNG")
-    # osstr = os.path.dirname(__file__).replace("tools","")+"static/upload/"+filename
-    osstr = "/www/site/foodmap/virgin/virgin/static/upload/"+filename
+    osstr = os.path.dirname(__file__).replace("tools","")+"static/upload/"+filename
+    # osstr = "/www/site/foodmap/virgin/virgin/static/upload/"+filename
     qr_img.save(osstr)
     uu = pimg(osstr)
     u1 = settings.getimageIP + str(uu)
