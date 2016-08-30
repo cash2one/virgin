@@ -97,12 +97,15 @@ class swagger:
               out+= ""+n+""+str(a["k"])+":\n" \
                     ""+n+"  type: array\n" \
                     ""+n+"  description: ''\n" \
-                    ""+n+"  items:\n" \
-                    ""+n+"    type: "+totype(a['xjlx'])+"\n"\
-                    ""+n+"    description: ''"+"\n"\
+                    ""+n+"  items:\n"
+              if totype(a['xjlx'])=="object":
+               out+=""+n+"    type: object\n" \
+                    ""+n+"    description: ''\n" \
                     ""+n+"    properties: "+"\n"
               if totype(a['xjlx'])!="object":
-               out+=""+n+"  default: "+str(a['nr'])+"\n"
+               out+=""+n+"    type: "+totype(a['xjlx'])+"\n"\
+                    ""+n+"    description: ''"+"\n"\
+                    ""+n+"  default: "+str(a['nr'])+"\n"
               else:
                out+=""+n+"\n"
 
@@ -184,8 +187,8 @@ def print_dict(k, v,n,sjlx):
                 "nr":""
             }
             fire.append(i)
-            # print n,sjlx,k,type(v)
-            cc=type(v)
+            print n,sjlx,k,type(v)
+        cc=type(v)
         for kk in v.keys():
             print_dict(kk, v[kk],n+1,cc)
     if isinstance(v,list):
@@ -202,7 +205,7 @@ def print_dict(k, v,n,sjlx):
                 "nr":v
             }
          fire.append(i)
-         # print n,sjlx,k,type(v),xjlx
+         print n,sjlx,k,type(v),xjlx
 
 
          for cc in v:
@@ -217,7 +220,7 @@ def print_dict(k, v,n,sjlx):
                 "nr":v
          }
         fire.append(i)
-        # print n,sjlx,k,type(v), v
+        print n,sjlx,k,type(v), v
 
 
 def totype(t):
