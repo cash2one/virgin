@@ -1,0 +1,330 @@
+# coding=utf-8
+import datetime
+import time
+import json
+from flask import Blueprint, render_template, request, abort
+from connect.mongotool import MongoHelp, mongo_conn
+from app_merchant import auto
+from bson import json_util
+import tools.tools as tool
+from flasgger import swag_from
+from tools.swagger import swagger
+
+__author__ = 'dolacmeo'
+
+restaurant = MongoHelp(mongo_conn().restaurant)
+db_info = MongoHelp(mongo_conn().qingke)
+db_order = MongoHelp(mongo_conn().order_groupinvite)
+
+
+# 'wait_friends', 'wait_pay', 'already_payment', 'already_used', 'time_out'
+
+
+class GroupInvite:
+    def __init__(self, mod='list'):
+        self.mod = mod
+        if mod == 'list':
+            self.all_item = self.__item_list()
+        elif len(mod) == 6:
+            self.code = mod
+            self.invite_order = self._find_code_invite(self.code)
+            self._id = self.invite_order['group_id']
+            self.the_invite = self.__format_db_info(db_info.find_one({'_id': self._id}))
+        elif len(mod) == 24:
+            self.the_invite = self.__format_db_info(db_info.find_one({'_id': mod}))
+            if self.the_invite:
+                self._id = mod
+            else:
+                self._id = None
+        else:
+            raise Exception('mod need mongo_id or invite_code inside')
+        pass
+
+    def __str__(self):
+        if self.mod == 'list':
+            return str(self.all_item)
+        else:
+            return str(self.the_invite)
+
+    @staticmethod
+    def __format_db_info(data):
+        if not data:
+            return None
+        if data['seltime'] == '0':
+            time_range = '10:30'
+        elif data['seltime'] == '1':
+            time_range = '16:00'
+        else:
+            time_range = 'NULL'
+        new_data = dict(_id=data['_id'],
+                        restaurant=dict(rid=data['nid'], name=data['name'], dist=data['sq'],
+                                        types='|'.join([x['name'] for x in data['lx']]),
+                                        pic=data['pic'], addr=data['address'], phone=data['phone']),
+                        group_info=dict(size=int(data['nr']), total=int(data['cou']), available=0),
+                        price=dict(now=float(data['price']), old=float(data['zj'])),
+                        detail=data['summary'], time_range=time_range,
+                        the_time=dict(show=data['time'], start=data['time1'], end=data['time2']),
+                        menu=data['menulist'])
+        orders = db_order.find({'group_id': new_data['_id']})
+        available_num = new_data['group_info']['total']
+        for m in orders:
+            if m['status'] in ['wait_friends', 'wait_pay', 'already_payment', 'already_used']:  # 定义不可抢状态
+                available_num -= 1
+        new_data['group_info']['available'] = available_num
+        return new_data
+
+    @staticmethod
+    def _find_code_invite(code):
+        the_invite = db_order.find_one({'invite_code': code,
+                                        'end_time': {"$gte": datetime.datetime.fromtimestamp(time.time())}})
+        return the_invite
+
+    def __item_list(self):
+        # 展示定义: 展示时间 》 结束时间前一天
+        now_list = db_info.find_sort({
+            'time': {"$lt": datetime.datetime.fromtimestamp(time.time() - 86400)},
+            'time2': {"$gte": datetime.datetime.fromtimestamp(time.time() + 86400)}
+        }, 'time')
+        if now_list:
+            for n in range(len(now_list)):
+                now_list[n] = self.__format_db_info(now_list[n])
+            return now_list
+        else:
+            return []
+
+    @staticmethod
+    def _get_invite(_id):
+        return GroupInvite.__format_db_info(db_info.find_one({'_id': _id}))
+
+    def _is_invite_open(self, _id=None):
+        if _id:
+            the_id = _id
+        else:
+            the_id = self._id
+        orders = db_order.find({'group_id': the_id})
+        for n in orders:
+            if time.time() - time.mktime(time.strptime(n['start_time'], "%Y-%m-%d %H:%M:%S")) >= 2700:
+                db_order.fix_one({'group_id': the_id, 'invite_code': n['invite_code']}, {'status': 'timeout'})
+        all_info = self.__format_db_info(db_info.find_one({'_id': the_id}))
+        if time.mktime(time.strptime(all_info['the_time']['end'], '%Y-%m-%d %H:%M:%S')) - time.time() <= 0:
+            return 0
+        available_num = all_info['group_info']['total']
+        for m in orders:
+            if m['status'] in ['wait_friends', 'else']:  # 定义不可抢状态
+                available_num -= 1
+        return available_num
+
+    def _is_invited(self, user_id, _id=None):
+        if _id:
+            the_id = _id
+        else:
+            the_id = self._id
+        is_master = db_order.find({'group_id': the_id, 'master_id': user_id,
+                                   'status': {'$in': ['wait_friends', 'wait_pay', 'already_payment', 'already_used']}})
+        if not is_master:  # 当前限制 不可多次发起
+            return False
+        else:
+            return True
+        # 未启用限制 发起后不允许再被邀请
+        # invited = db_order.find({'group_id': the_id, 'friends': {'$in': [user_id]}})
+        # if not(is_master or invited):
+        #     return False
+        # else:
+        #     return True
+        pass
+
+    def new_invite(self, master_id):
+        if (not self._id) or not master_id:
+            raise Exception('mod need mongo_id and master_id inside')
+        import random
+        insert_data = {
+            'order_id': "MSDT%s%03d" % (int(time.time() * 1000), random.randint(1, 999)),
+            'group_id': self._id,
+            'master_id': master_id,
+            'status': 'wait_friends',
+            'max_group': self.the_invite['group_info']['size'],
+            'invite_code': "%06d" % random.randint(0, 999999),
+            'start_time': datetime.datetime.now(),
+            'end_time': datetime.datetime.strptime(self.the_invite['the_time']['end'], "%Y-%m-%d %H:%M:%S"),
+            'friends': [],
+            'restaurant_info': self.the_invite['restaurant'],
+            'dishes': self.the_invite['menu']
+        }
+        available_num = self._is_invite_open(self._id)
+        if self._is_invite_open(self._id):
+            if not self._is_invited(master_id):
+                is_insert = db_order.insert(insert_data)
+            else:
+                return {'error': 'already in the invite'}
+        else:
+            return {'error': 'available_num is %s' % available_num}
+        if is_insert:
+            return {'_id': is_insert['_id'], 'code': insert_data['invite_code']}
+        else:
+            return {'error': 'cant inster: %s' % is_insert}
+
+    def mark_timeout(self):
+        if time.time() - time.mktime(time.strptime(self.invite_order['start_time'], "%Y-%m-%d %H:%M:%S")) >= 2700:
+            db_order.fix_one({'group_id': self._id, 'invite_code': self.code}, {'status': 'timeout'})
+            self.invite_order = self._find_code_invite(self.code)
+
+    def follow(self, user_id):
+        if not user_id or (user_id == self.invite_order['master_id']):
+            raise Exception('mod need user_id inside or the user is master')
+        self.mark_timeout()
+        if self.invite_order['status'] == 'timeout':
+            return {'success': False, 'error': 'timeout! start_time: %s' % self.invite_order['start_time']}
+        if self.invite_order['max_group'] - len(self.invite_order['friends']) >= 2:
+            get_in = db_order.fix_one_o({'group_id': self._id, 'invite_code': self.code},
+                                        {"$addToSet": {"friends": user_id}})
+            if self.invite_order['max_group'] - len(self.invite_order['friends']) == 2:
+                db_order.fix_one({'group_id': self._id, 'invite_code': self.code},
+                                 {'status': 'wait_pay'})
+            return {'success': get_in}
+        else:
+            return {'success': False, 'error': 'max group'}
+
+    def make_payment(self, service='alipay'):
+        self.mark_timeout()
+        if self.invite_order['status'] == 'wait_pay':
+            # 此处加入支付流程
+            print service
+            set_mark = db_order.fix_one({'group_id': self._id, 'invite_code': self.code},
+                                        {'status': 'already_payment'})
+            return {'success': set_mark}
+        else:
+            return {'success': False, 'error': 'status: %s' % self.invite_order['status']}
+
+    def mark_used(self):
+        # 需要补充已付款未消费但已超时的订单 操作逻辑
+        if self.invite_order['status'] == 'already_payment':
+            set_mark = db_order.fix_one({'group_id': self._id, 'invite_code': self.code},
+                                        {'status': 'already_used'})
+            return {'success': set_mark}
+        else:
+            return {'success': False, 'error': 'status: %s' % self.invite_order['status']}
+
+    pass
+
+
+group_invite = Blueprint("group_invite", __name__, template_folder='templates')
+group_invite_list = swagger("2 开团请客", "获取请客列表")
+group_invite_list_json = {
+    "auto": group_invite_list.String(description='验证是否成功'),
+    "message": group_invite_list.String(description='SUCCESS/FIELD', default="SUCCESS"),
+    "code": group_invite_list.Integer(description='h', default=0),
+    "data": {
+        "list": [
+            {
+                'group_info': {
+                    'available': group_invite_list.Integer(description='可用数量', default=10),
+                    'total': group_invite_list.Integer(description='开团总数', default=10),
+                    'size': group_invite_list.Integer(description='每团人数', default=5)
+                },
+                'restaurant': {
+                    'rid': group_invite_list.String(description='饭店id', default="5733de9b0c1d9b312321b6f5"),
+                    'name': group_invite_list.String(description='饭店名称', default="10号熏酱骨头馆"),
+                    'types': group_invite_list.String(description='饭店类型', default="熏酱"),
+                    'dist': group_invite_list.String(description='饭店区域', default="凯德广场"),
+                    'addr': group_invite_list.String(description='饭店地址', default="哈尔滨市道里区康安二道街23号"),
+                    'phone': group_invite_list.String(description='饭店电话', default="18545628951"),
+                    'pic': group_invite_list.String(description='饭店头图', default="2884eec3c74aebef5e7517cc78699d36"),
+                },
+                'price': {
+                    "new": group_invite_list.Float(description='优惠价格', default=10.0),
+                    "old": group_invite_list.Float(description='原始价格', default=16.6),
+                },
+                'the_time': {
+                    "show": group_invite_list.String(description='展示时间', default="2016-07-01 09:00:00"),
+                    "start": group_invite_list.String(description='消费开始时间', default="2016-08-01 09:00:00"),
+                    "end": group_invite_list.String(description='消费结束时间', default="2016-09-01 09:00:00"),
+                },
+                'detail': group_invite_list.String(description='使用规则', default="使用规则使用规则使用规则使用规则"),
+                "time_range": group_invite_list.String(description='开团时间', default="10:30"),
+                "_id": group_invite_list.String(description='开团id', default="57c53441612c5e14344b3fec")
+            }
+        ]
+    }
+}
+group_invite_list.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+
+HOMEBASE = '/fm/user/v1/groupinvite'
+
+
+@group_invite.route(HOMEBASE)
+@swag_from(group_invite_list.mylpath(schemaid='group_invite_list', result=group_invite_list_json))
+def get_groupinvite_list():
+    # 获取请客列表
+    if request.method == 'POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                data = {}
+                list_data = json.loads(str(GroupInvite()))
+                if list_data:
+                    able, dis = [], []
+                    for n in list_data:
+                        if n['group_info']['available'] > 0:
+                            able.append(n)
+                        else:
+                            dis.append(n)
+                    data['list'] = able + dis
+                else:
+                    data['list'] = []
+                result = tool.return_json(0, "success", True, data)
+                return json_util.dumps(result, ensure_ascii=False, indent=2)
+            except Exception, e:
+                print e
+                result = tool.return_json(0, "field", True, str(e))
+                return json_util.dumps(result, ensure_ascii=False, indent=2)
+        else:
+            result = tool.return_json(0, "field", False, None)
+            return json_util.dumps(result, ensure_ascii=False, indent=2)
+    else:
+        return abort(403)
+
+
+@group_invite.route(HOMEBASE + '/<group_id>')
+def get_groupinvite_detail(group_id):
+    # 获取请客详情
+    if request.method == 'GET':
+        return {'data': json.loads(GroupInvite(group_id))}
+    else:
+        return abort(403)
+
+
+@group_invite.route(HOMEBASE + '/<group_id>/neworder')
+def groupinvite_neworder(group_id):
+    # 抢资格
+    if request.method == 'POST':
+        return GroupInvite(group_id).new_invite(request.form['user_id'])
+    else:
+        return abort(403)
+
+
+@group_invite.route(HOMEBASE + '/<group_id>/add_friend')
+def groupinvite_add_friend(group_id):
+    # 接受邀请
+    if request.method == 'POST':
+        return GroupInvite(group_id).follow(request.form['user_id'])
+    else:
+        return abort(403)
+
+
+@group_invite.route(HOMEBASE + '/order/<order_id>')
+def groupinvite_order(order_id):
+    # 获取订单详情
+    if request.method == 'GET':
+        return json.loads(GroupInvite(order_id))
+    elif request.method == 'POST':
+        return GroupInvite(order_id).make_payment(request.form['pay_service'])
+    else:
+        return abort(403)
+
+
+if __name__ == '__main__':
+    # print GroupInvite()
+    # print GroupInvite.get_invite('57c4dc7c612c5e1a7435ec35')
+    # print GroupInvite('57c4dc7c612c5e1a7435ec35').new_invite('dola')
+    # print GroupInvite('205314').follow('dolacmeo')
+    # print GroupInvite('205314').mark_used()
+    pass
