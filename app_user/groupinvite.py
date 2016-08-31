@@ -461,6 +461,26 @@ def groupinvite_order_pay():
         return abort(403)
 
 
+@group_invite.route(HOMEBASE + '/order/used', methods=['POST'])
+def groupinvite_order_used():
+    # 获取订单详情
+    if request.method == 'POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                data = GroupInvite(request.form['code']).mark_used()
+                result = tool.return_json(0, "success", True, data)
+                return json_util.dumps(result, ensure_ascii=False, indent=2)
+            except Exception, e:
+                print e
+                result = tool.return_json(0, "field", True, str(e))
+                return json_util.dumps(result, ensure_ascii=False, indent=2)
+        else:
+            result = tool.return_json(0, "field", False, None)
+            return json_util.dumps(result, ensure_ascii=False, indent=2)
+    else:
+        return abort(403)
+
+
 if __name__ == '__main__':
     # print GroupInvite()
     # print GroupInvite.get_invite('57c4dc7c612c5e1a7435ec35')

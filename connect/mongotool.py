@@ -3,6 +3,9 @@
 from bson import ObjectId, json_util
 from flask import json
 import datetime
+
+from conn import mongo_conn
+
 _author_ = 'dolacmeo'
 
 
@@ -81,17 +84,17 @@ class MongoAPI:
 
     pass
 
-user_name = 'FoodMap32loK22Nk3oO_adm9n'
-pass_word = 'UK#45JEIksiJEwi(209Y*nOwm'
-address = '125.211.222.237:27638'
-db_name = 'db_foodmap'
-
-
-def mongo_conn(user=user_name, psw=pass_word, add=address, db=db_name):
-    from flask_pymongo import MongoClient
-    db_url = 'mongodb://{0}:{1}@{2}/{3}?authmechanism=SCRAM-SHA-1'\
-             .format(user, psw, add, db)
-    return MongoClient(db_url)[db_name]
+# user_name = 'FoodMap32loK22Nk3oO_adm9n'
+# pass_word = 'UK#45JEIksiJEwi(209Y*nOwm'
+# address = '125.211.222.237:27638'
+# db_name = 'db_foodmap'
+#
+#
+# def mongo_conn(user=user_name, psw=pass_word, add=address, db=db_name):
+#     from flask_pymongo import MongoClient
+#     db_url = 'mongodb://{0}:{1}@{2}/{3}?authmechanism=SCRAM-SHA-1'\
+#              .format(user, psw, add, db)
+#     return MongoClient(db_url)[db_name]
 
 
 class MongoHelp:
