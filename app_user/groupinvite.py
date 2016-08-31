@@ -207,6 +207,33 @@ class GroupInvite:
     pass
 
 
+# jwt装饰器 只支持‘post’
+def jwt_data(func):
+    def _jwt_data(*args, **kwargs):
+        if request.method == 'POST':
+            if auto.decodejwt(request.form['jwtstr']):
+                try:
+                    data = func(*args, **kwargs)
+                    if isinstance(data, list):
+                        r = dict(list=data)
+                        result = tool.return_json(0, "success", True, r)
+                        return json_util.dumps(result, ensure_ascii=False, indent=2)
+                    elif isinstance(data, dict):
+                        result = tool.return_json(0, "success", True, data)
+                        return json_util.dumps(result, ensure_ascii=False, indent=2)
+                except Exception, e:
+                    print e
+                    result = tool.return_json(0, "field", True, str(e))
+                    return json_util.dumps(result, ensure_ascii=False, indent=2)
+            else:
+                result = tool.return_json(0, "field", False, None)
+                return json_util.dumps(result, ensure_ascii=False, indent=2)
+        else:
+            return abort(403)
+
+    return _jwt_data
+
+
 group_invite = Blueprint("group_invite", __name__, template_folder='templates')
 group_invite_list = swagger("2 开团请客", "获取请客列表")
 group_invite_list_json = {
@@ -239,6 +266,7 @@ group_invite_list_json = {
                     "start": group_invite_list.String(description='消费开始时间', default="2016-08-01 09:00:00"),
                     "end": group_invite_list.String(description='消费结束时间', default="2016-09-01 09:00:00"),
                 },
+                'menu': [],
                 'detail': group_invite_list.String(description='使用规则', default="使用规则使用规则使用规则使用规则"),
                 "time_range": group_invite_list.String(description='开团时间', default="10:30"),
                 "_id": group_invite_list.String(description='开团id', default="57c53441612c5e14344b3fec")
@@ -246,30 +274,52 @@ group_invite_list_json = {
         ]
     }
 }
-group_invite_list.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+group_invite_list.add_parameter(name='jwtstr', parametertype='formData', type='string', required=True,
+                                description='jwt串',
+                                default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 
 HOMEBASE = '/fm/user/v1/groupinvite'
 
 
-@group_invite.route(HOMEBASE)
+@group_invite.route(HOMEBASE, methods=['POST'])
 @swag_from(group_invite_list.mylpath(schemaid='group_invite_list', result=group_invite_list_json))
+@jwt_data
 def get_groupinvite_list():
     # 获取请客列表
+    list_data = GroupInvite().all_item
+    if list_data:
+        able, dis = [], []
+        for n in list_data:
+            if n['group_info']['available'] > 0:
+                able.append(n)
+            else:
+                dis.append(n)
+        return able + dis
+    else:
+        return []
+
+
+group_invite_detail = swagger("2-1 开团请客详情", "获取请客详情")
+group_invite_detail_json = {
+    "auto": group_invite_detail.String(description='验证是否成功'),
+    "message": group_invite_detail.String(description='SUCCESS/FIELD', default="SUCCESS"),
+    "code": group_invite_detail.Integer(description='h', default=0),
+}
+group_invite_detail.add_parameter(name='jwtstr', parametertype='formData', type='string', required=True,
+                                  description='jwt串',
+                                  default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+group_invite_detail.add_parameter(name='group_id', parametertype='formData', type='string', required=True,
+                                  description='开团信息的数据库id', default='57c53441612c5e14344b3fec')
+
+
+@group_invite.route(HOMEBASE + "/detail", methods=['POST'])
+@swag_from(group_invite_detail.mylpath(schemaid='group_invite_detail', result=group_invite_detail_json))
+def get_groupinvite_detail():
+    # 获取请客详情
     if request.method == 'POST':
         if auto.decodejwt(request.form['jwtstr']):
             try:
-                data = {}
-                list_data = json.loads(str(GroupInvite()))
-                if list_data:
-                    able, dis = [], []
-                    for n in list_data:
-                        if n['group_info']['available'] > 0:
-                            able.append(n)
-                        else:
-                            dis.append(n)
-                    data['list'] = able + dis
-                else:
-                    data['list'] = []
+                data = GroupInvite(request.form['group_id']).the_invite
                 result = tool.return_json(0, "success", True, data)
                 return json_util.dumps(result, ensure_ascii=False, indent=2)
             except Exception, e:
@@ -283,40 +333,130 @@ def get_groupinvite_list():
         return abort(403)
 
 
-@group_invite.route(HOMEBASE + '/<group_id>')
-def get_groupinvite_detail(group_id):
-    # 获取请客详情
-    if request.method == 'GET':
-        return {'data': json.loads(GroupInvite(group_id))}
-    else:
-        return abort(403)
+groupinvite_neworder = swagger("2-2-1 抢优惠", "抢优惠")
+groupinvite_neworder_json = {
+    "auto": groupinvite_neworder.String(description='验证是否成功'),
+    "message": groupinvite_neworder.String(description='SUCCESS/FIELD', default="SUCCESS"),
+    "code": groupinvite_neworder.Integer(description='h', default=0),
+}
+groupinvite_neworder.add_parameter(name='jwtstr', parametertype='formData', type='string', required=True,
+                                   description='jwt串',
+                                   default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+groupinvite_neworder.add_parameter(name='group_id', parametertype='formData', type='string', required=True,
+                                   description='开团信息的数据库id', default='57c53441612c5e14344b3fec')
+groupinvite_neworder.add_parameter(name='user_id', parametertype='formData', type='string', required=True,
+                                   description='用户id', default='5747bd310b05552c4c571810')
 
 
-@group_invite.route(HOMEBASE + '/<group_id>/neworder')
-def groupinvite_neworder(group_id):
+@group_invite.route(HOMEBASE + '/neworder', methods=['POST'])
+@swag_from(groupinvite_neworder.mylpath(schemaid='groupinvite_neworder', result=groupinvite_neworder_json))
+def groupinvite_neworder():
     # 抢资格
     if request.method == 'POST':
-        return GroupInvite(group_id).new_invite(request.form['user_id'])
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                data = GroupInvite(request.form['group_id']).new_invite(request.form['user_id'])
+                result = tool.return_json(0, "success", True, data)
+                return json_util.dumps(result, ensure_ascii=False, indent=2)
+            except Exception, e:
+                print e
+                result = tool.return_json(0, "field", True, str(e))
+                return json_util.dumps(result, ensure_ascii=False, indent=2)
+        else:
+            result = tool.return_json(0, "field", False, None)
+            return json_util.dumps(result, ensure_ascii=False, indent=2)
     else:
         return abort(403)
 
 
-@group_invite.route(HOMEBASE + '/<group_id>/add_friend')
-def groupinvite_add_friend(group_id):
+groupinvite_add_friend = swagger("2-3 邀请好友", "抢优惠")
+groupinvite_add_friend_json = {
+    "auto": groupinvite_add_friend.String(description='验证是否成功'),
+    "message": groupinvite_add_friend.String(description='SUCCESS/FIELD', default="SUCCESS"),
+    "code": groupinvite_add_friend.Integer(description='h', default=0),
+}
+
+groupinvite_add_friend.add_parameter(name='jwtstr', parametertype='formData', type='string', required=True,
+                                     description='jwt串',
+                                     default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+groupinvite_add_friend.add_parameter(name='code', parametertype='formData', type='string', required=True,
+                                     description='开团邀请码', default='675120')
+groupinvite_add_friend.add_parameter(name='user_id', parametertype='formData', type='string', required=True,
+                                     description='用户id', default='5747bd310b05552c4c571810')
+
+
+@group_invite.route(HOMEBASE + '/add_friend', methods=['POST'])
+@swag_from(groupinvite_add_friend.mylpath(schemaid='groupinvite_add_friend', result=groupinvite_add_friend_json))
+def groupinvite_add_friend():
     # 接受邀请
     if request.method == 'POST':
-        return GroupInvite(group_id).follow(request.form['user_id'])
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                data = GroupInvite(request.form['code']).follow(request.form['user_id'])
+                result = tool.return_json(0, "success", True, data)
+                return json_util.dumps(result, ensure_ascii=False, indent=2)
+            except Exception, e:
+                print e
+                result = tool.return_json(0, "field", True, str(e))
+                return json_util.dumps(result, ensure_ascii=False, indent=2)
+        else:
+            result = tool.return_json(0, "field", False, None)
+            return json_util.dumps(result, ensure_ascii=False, indent=2)
     else:
         return abort(403)
 
 
-@group_invite.route(HOMEBASE + '/order/<order_id>')
-def groupinvite_order(order_id):
+groupinvite_order = swagger("2-3-2 老用户查看状态", "开团订单详情")
+groupinvite_order_json = {
+    "auto": groupinvite_order.String(description='验证是否成功'),
+    "message": groupinvite_order.String(description='SUCCESS/FIELD', default="SUCCESS"),
+    "code": groupinvite_order.Integer(description='h', default=0),
+}
+
+groupinvite_order.add_parameter(name='jwtstr', parametertype='formData', type='string', required=True,
+                                     description='jwt串',
+                                     default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+groupinvite_order.add_parameter(name='code', parametertype='formData', type='string', required=True,
+                                     description='开团邀请码', default='675120')
+
+
+@group_invite.route(HOMEBASE + '/order/detail', methods=['POST'])
+@swag_from(groupinvite_order.mylpath(schemaid='groupinvite_order', result=groupinvite_order_json))
+def groupinvite_order():
     # 获取订单详情
-    if request.method == 'GET':
-        return json.loads(GroupInvite(order_id))
-    elif request.method == 'POST':
-        return GroupInvite(order_id).make_payment(request.form['pay_service'])
+    if request.method == 'POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                data = GroupInvite(request.form['code']).invite_order
+                result = tool.return_json(0, "success", True, data)
+                return json_util.dumps(result, ensure_ascii=False, indent=2)
+            except Exception, e:
+                print e
+                result = tool.return_json(0, "field", True, str(e))
+                return json_util.dumps(result, ensure_ascii=False, indent=2)
+        else:
+            result = tool.return_json(0, "field", False, None)
+            return json_util.dumps(result, ensure_ascii=False, indent=2)
+    else:
+        return abort(403)
+
+
+@group_invite.route(HOMEBASE + '/order/pay', methods=['POST'])
+def groupinvite_order_pay():
+    # 获取订单详情
+    if request.method == 'POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                data = GroupInvite(request.form['code']).make_payment(request.form['pay_service'])
+                result = tool.return_json(0, "success", True, data)
+                return json_util.dumps(result, ensure_ascii=False, indent=2)
+            except Exception, e:
+                print e
+                result = tool.return_json(0, "field", True, str(e))
+                return json_util.dumps(result, ensure_ascii=False, indent=2)
+        else:
+            result = tool.return_json(0, "field", False, None)
+            return json_util.dumps(result, ensure_ascii=False, indent=2)
     else:
         return abort(403)
 
