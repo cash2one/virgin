@@ -80,6 +80,7 @@ class GroupInvite:
         return the_invite
 
     def __item_list(self):
+
         # 展示定义: 展示时间 》 结束时间前一天
         now_list = db_info.find_sort({
             'time': {"$lt": datetime.datetime.fromtimestamp(time.time() - 86400)},
@@ -87,6 +88,7 @@ class GroupInvite:
         }, 'time')
         if now_list:
             for n in range(len(now_list)):
+                self._check_all_order_time(now_list[n]['_id'])
                 now_list[n] = self.__format_db_info(now_list[n])
             return now_list
         else:
@@ -155,18 +157,34 @@ class GroupInvite:
             if not self._is_invited(master_id):
                 is_insert = db_order.insert(insert_data)
             else:
-                return {'error': 'already in the invite'}
+                return {'_id': '', 'code': '', 'error': 'already in the invite'}
         else:
-            return {'error': 'available_num is %s' % available_num}
+            return {'_id': '', 'code': '', 'error': 'available_num is %s' % available_num}
         if is_insert:
-            return {'_id': is_insert['_id'], 'code': insert_data['invite_code']}
+            return {'_id': is_insert['_id'], 'code': insert_data['invite_code'], 'error': ''}
         else:
-            return {'error': 'cant inster: %s' % is_insert}
+            return {'_id': '', 'code': '', 'error': 'cant inster: %s' % is_insert}
 
-    def mark_timeout(self):
-        if time.time() - time.mktime(time.strptime(self.invite_order['start_time'], "%Y-%m-%d %H:%M:%S")) >= 2700:
-            db_order.fix_one({'group_id': self._id, 'invite_code': self.code}, {'status': 'timeout'})
-            self.invite_order = self._find_code_invite(self.code)
+    def mark_timeout(self, order_data=None):
+        if not order_data:
+            order_data = self.invite_order
+            _id = self._id
+            code = self.code
+        else:
+            _id = order_data['group_id']
+            code = order_data['invite_code']
+        if time.time() - time.mktime(time.strptime(order_data['start_time'], "%Y-%m-%d %H:%M:%S")) >= 2700:
+            db_order.fix_one({'group_id': _id, 'invite_code': code}, {'status': 'timeout'})
+            if not order_data:
+                self.invite_order = self._find_code_invite(code)
+            else:
+                return self._find_code_invite(code)
+
+    def _check_all_order_time(self, invent_id):
+        all_data = db_order.find({'group_id': invent_id, 'status':
+                                 {'$in': ['wait_friends', 'wait_pay', 'already_payment']}})
+        for n in all_data:
+            self.mark_timeout(n)
 
     def follow(self, user_id):
         if not user_id or (user_id == self.invite_order['master_id']):
@@ -180,7 +198,7 @@ class GroupInvite:
             if self.invite_order['max_group'] - len(self.invite_order['friends']) == 2:
                 db_order.fix_one({'group_id': self._id, 'invite_code': self.code},
                                  {'status': 'wait_pay'})
-            return {'success': get_in}
+            return {'success': get_in, 'error': ''}
         else:
             return {'success': False, 'error': 'max group'}
 
@@ -191,7 +209,7 @@ class GroupInvite:
             print service
             set_mark = db_order.fix_one({'group_id': self._id, 'invite_code': self.code},
                                         {'status': 'already_payment'})
-            return {'success': set_mark}
+            return {'success': set_mark, 'error': ''}
         else:
             return {'success': False, 'error': 'status: %s' % self.invite_order['status']}
 
@@ -200,7 +218,7 @@ class GroupInvite:
         if self.invite_order['status'] == 'already_payment':
             set_mark = db_order.fix_one({'group_id': self._id, 'invite_code': self.code},
                                         {'status': 'already_used'})
-            return {'success': set_mark}
+            return {'success': set_mark, 'error': ''}
         else:
             return {'success': False, 'error': 'status: %s' % self.invite_order['status']}
 
@@ -262,39 +280,6 @@ group_invite_list_json = {
     "auto": group_invite_list.String(description='验证是否成功'),
     "message": group_invite_list.String(description='SUCCESS/FIELD', default="SUCCESS"),
     "code": group_invite_list.Integer(description='h', default=0),
-    "data": {
-        "list": [
-            {
-                'group_info': {
-                    'available': group_invite_list.Integer(description='可用数量', default=10),
-                    'total': group_invite_list.Integer(description='开团总数', default=10),
-                    'size': group_invite_list.Integer(description='每团人数', default=5)
-                },
-                'restaurant': {
-                    'rid': group_invite_list.String(description='饭店id', default="5733de9b0c1d9b312321b6f5"),
-                    'name': group_invite_list.String(description='饭店名称', default="10号熏酱骨头馆"),
-                    'types': group_invite_list.String(description='饭店类型', default="熏酱"),
-                    'dist': group_invite_list.String(description='饭店区域', default="凯德广场"),
-                    'addr': group_invite_list.String(description='饭店地址', default="哈尔滨市道里区康安二道街23号"),
-                    'phone': group_invite_list.String(description='饭店电话', default="18545628951"),
-                    'pic': group_invite_list.String(description='饭店头图', default="2884eec3c74aebef5e7517cc78699d36"),
-                },
-                'price': {
-                    "new": group_invite_list.Float(description='优惠价格', default=10.0),
-                    "old": group_invite_list.Float(description='原始价格', default=16.6),
-                },
-                'the_time': {
-                    "show": group_invite_list.String(description='展示时间', default="2016-07-01 09:00:00"),
-                    "start": group_invite_list.String(description='消费开始时间', default="2016-08-01 09:00:00"),
-                    "end": group_invite_list.String(description='消费结束时间', default="2016-09-01 09:00:00"),
-                },
-                'menu': [],
-                'detail': group_invite_list.String(description='使用规则', default="使用规则使用规则使用规则使用规则"),
-                "time_range": group_invite_list.String(description='开团时间', default="10:30"),
-                "_id": group_invite_list.String(description='开团id', default="57c53441612c5e14344b3fec")
-            }
-        ]
-    }
 }
 group_invite_list.add_parameter(name='jwtstr', parametertype='formData', type='string', required=True,
                                 description='jwt串',
@@ -308,17 +293,7 @@ HOMEBASE = '/fm/user/v1/groupinvite'
 @jwt_data
 def get_groupinvite_list():
     # 获取请客列表
-    list_data = GroupInvite().app_invite_list
-    if list_data:
-        able, dis = [], []
-        for n in list_data:
-            if n['group_info']['available'] > 0:
-                able.append(n)
-            else:
-                dis.append(n)
-        return able + dis
-    else:
-        return []
+    return GroupInvite().app_invite_list
 
 
 group_invite_detail = swagger("2-1 开团请客详情", "获取请客详情")
@@ -436,10 +411,10 @@ groupinvite_order_json = {
 }
 
 groupinvite_order.add_parameter(name='jwtstr', parametertype='formData', type='string', required=True,
-                                     description='jwt串',
-                                     default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+                                description='jwt串',
+                                default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 groupinvite_order.add_parameter(name='code', parametertype='formData', type='string', required=True,
-                                     description='开团邀请码', default='675120')
+                                description='开团邀请码', default='675120')
 
 
 @group_invite.route(HOMEBASE + '/order/detail', methods=['POST'])
