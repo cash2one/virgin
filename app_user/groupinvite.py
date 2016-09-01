@@ -204,6 +204,28 @@ class GroupInvite:
         else:
             return {'success': False, 'error': 'status: %s' % self.invite_order['status']}
 
+    @property
+    def app_invite_list(self):
+        new_data = dict(time_range=[])
+        data = self.__item_list()
+        for n in data:
+            m = dict(img=n['restaurant']['pic'],
+                     name=n['restaurant']['name'],
+                     dist=n['restaurant']['dist'],
+                     new_price=n['price']['now'],
+                     old_price=n['price']['old'],
+                     size=n['group_info']['size'],
+                     available=n['group_info']['available'])
+            if n['time_range'] not in new_data['time_range']:
+                new_data['time_range'].append(n['time_range'])
+                new_data[n['time_range']] = [m]
+            elif n['time_range'] in new_data['time_range']:
+                new_data[n['time_range']].append(m)
+            else:
+                pass
+        del new_data['time_range']
+        return new_data
+
     pass
 
 
@@ -286,7 +308,7 @@ HOMEBASE = '/fm/user/v1/groupinvite'
 @jwt_data
 def get_groupinvite_list():
     # 获取请客列表
-    list_data = GroupInvite().all_item
+    list_data = GroupInvite().app_invite_list
     if list_data:
         able, dis = [], []
         for n in list_data:
@@ -487,4 +509,5 @@ if __name__ == '__main__':
     # print GroupInvite('57c4dc7c612c5e1a7435ec35').new_invite('dola')
     # print GroupInvite('205314').follow('dolacmeo')
     # print GroupInvite('205314').mark_used()
+    # print GroupInvite().app_invite_list
     pass
