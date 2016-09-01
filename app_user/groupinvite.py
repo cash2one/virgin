@@ -227,7 +227,8 @@ class GroupInvite:
         new_data = dict(time_range=[])
         data = self.__item_list()
         for n in data:
-            m = dict(img=n['restaurant']['pic'],
+            m = dict(_id=n['_id'],
+                     img=n['restaurant']['pic'],
                      name=n['restaurant']['name'],
                      dist=n['restaurant']['dist'],
                      new_price=n['price']['now'],
