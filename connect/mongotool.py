@@ -2,6 +2,9 @@
 
 from bson import ObjectId, json_util
 from flask import json
+import datetime
+
+from conn import mongo_conn
 
 _author_ = 'dolacmeo'
 
@@ -80,23 +83,18 @@ class MongoAPI:
         pass
 
     pass
-# coding=utf-8
-from bson import json_util
-import datetime
-__author__ = 'dolacmeo'
-__doc__ = 'Mongo-Database conn'
 
-user_name = 'FoodMap32loK22Nk3oO_adm9n'
-pass_word = 'UK#45JEIksiJEwi(209Y*nOwm'
-address = '125.211.222.237:27638'
-db_name = 'db_foodmap'
-
-
-def mongo_conn(user=user_name, psw=pass_word, add=address, db=db_name):
-    from flask_pymongo import MongoClient
-    db_url = 'mongodb://{0}:{1}@{2}/{3}?authmechanism=SCRAM-SHA-1'\
-             .format(user, psw, add, db)
-    return MongoClient(db_url)[db_name]
+# user_name = 'FoodMap32loK22Nk3oO_adm9n'
+# pass_word = 'UK#45JEIksiJEwi(209Y*nOwm'
+# address = '125.211.222.237:27638'
+# db_name = 'db_foodmap'
+#
+#
+# def mongo_conn(user=user_name, psw=pass_word, add=address, db=db_name):
+#     from flask_pymongo import MongoClient
+#     db_url = 'mongodb://{0}:{1}@{2}/{3}?authmechanism=SCRAM-SHA-1'\
+#              .format(user, psw, add, db)
+#     return MongoClient(db_url)[db_name]
 
 
 class MongoHelp:
@@ -151,8 +149,15 @@ class MongoHelp:
         self.the_data = self.conn.find(ident_json)
         return self.db_data
 
+    def find_sort(self, ident_json, *args):
+        # 查找多个
+        self.the_data = self.conn.find(ident_json).sort(*args)
+        return self.db_data
+
     def find_one(self, ident_json):
         # 查找一个
+        if '_id' in ident_json.keys():
+            ident_json['_id'] = ObjectId(ident_json['_id'])
         self.the_data = self.conn.find_one(ident_json)
         return self.db_data
 
@@ -164,7 +169,17 @@ class MongoHelp:
 
     def fix_one(self, ident_json, json_data):
         # 修改一个数据
+        if '_id' in ident_json.keys():
+            ident_json['_id'] = ObjectId(ident_json['_id'])
         self.the_data = self.conn.update_one(ident_json, {'$set': json_data}).raw_result
+        # return json_util.loads(json_util.dumps(self.the_data))['updatedExisting']
+        return self.db_data['updatedExisting']
+
+    def fix_one_o(self, ident_json, json_data):
+        # 修改一个数据
+        if '_id' in ident_json.keys():
+            ident_json['_id'] = ObjectId(ident_json['_id'])
+        self.the_data = self.conn.update_one(ident_json, json_data).raw_result
         # return json_util.loads(json_util.dumps(self.the_data))['updatedExisting']
         return self.db_data['updatedExisting']
 
@@ -179,5 +194,5 @@ class MongoHelp:
 
 if __name__ == '__main__':
     pass
-    m = MongoHelp(mongo_conn().restaurant)
-    print m.find({"_id":ObjectId("57329b1f0c1d9b2f4c85f8e3")})
+    # m = MongoHelp(mongo_conn().restaurant)
+    # print m.find({"_id":ObjectId("57329b1f0c1d9b2f4c85f8e3")})

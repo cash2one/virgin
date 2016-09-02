@@ -21,6 +21,7 @@ from app_merchant.auto import auto_api
 from app_user.user import user_api
 from app_user.comment import user_comment
 from app_merchant.comment import restaurant_comment
+from app_user.groupinvite import group_invite
 from flasgger import Swagger
 
 app = Flask(__name__)
@@ -44,7 +45,9 @@ app.register_blueprint(me_api)
 app.register_blueprint(index_api)
 app.register_blueprint(restaurant_user_api)
 app.register_blueprint(message_api)
+app.register_blueprint(group_invite)
 app.register_blueprint(login_user_api)
+
 
 @app.route('/protected', methods=['POST'])
 @app.errorhandler(404)
