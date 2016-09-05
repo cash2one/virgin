@@ -66,8 +66,8 @@ restaurant.add_parameter(name='room_type',parametertype='formData',type='string'
 restaurant.add_parameter(name='tese',parametertype='formData',type='string',required= True,description='特色，格式id_id_id',default='51')
 restaurant.add_parameter(name='pay_type',parametertype='formData',type='string',required= True,description='支付，格式id_id_id',default='48')
 restaurant.add_parameter(name='pageindex',parametertype='formData',type='string',required= True,description='页数',default='1')
-restaurant.add_parameter(name='x',parametertype='formData',type='string',required= True,description='坐标x，没有传x',default='126.62687122442075')
-restaurant.add_parameter(name='y',parametertype='formData',type='string',required= True,description='坐标y，没有传y',default='45.764067772341264')
+restaurant.add_parameter(name='x',parametertype='formData',type='string',required= True,description='经度坐标x，没有传x',default='126.62687122442075')
+restaurant.add_parameter(name='y',parametertype='formData',type='string',required= True,description='纬度坐标y，没有传y',default='45.764067772341264')
 restaurant.add_parameter(name='business_dist_id',parametertype='formData',type='string',required= True,description='商圈id',default='45.764067772341264')
 restaurant.add_parameter(name='webuser_id',parametertype='formData',type='string',required= True,description='用户id,未登录传-1',default='57396ec17c1f31a9cce960f4')
 #饭店列表 条件很多
