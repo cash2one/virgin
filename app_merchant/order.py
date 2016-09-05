@@ -746,6 +746,7 @@ def insertorder():
 
             try:
                 pdict = {
+                    "order_id":"MSDT%s%03d" % (int(time.time() * 1000), random.randint(1, 999)),
                     "username" : request.form["username"],
                     "is_room":True,
                     "status" : 3,

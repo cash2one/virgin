@@ -207,5 +207,42 @@ def business_dist_byid(id):
                     list.append(data2)
                 data[key] = list
     return data
+#更新点菜菜单里的价格
+def checkdish(webuser_id='57396ec17c1f31a9cce960f4'):
+    order = mongo.order.find({'webuser_id':ObjectId(webuser_id),'status':8})
+    for o in order:
+        order_dict = o
+        restaurant_id = o['restaurant_id']
+        restaurant = mongo.restaurant.find({'_id':ObjectId(restaurant_id)})
+        restaurant_dict = {}
+        for r in restaurant:
+            restaurant_dict = r
+        dish_list = []
+        wine_list = []
+        for menu in restaurant_dict['menu']:
+            if menu['dishs'] != [] and menu['dish_type'] == '1':
+                for dish in menu['dishs']:
+                    if menu['name'] != '酒水':
+                        pass
+                        for preset_dishs in order_dict['preset_dishs']:
+                            if dish['id'] == preset_dishs['id']:
+                                dish_dict = {}
+                                dish_dict['name'] = dish['name']
+                                dish_dict['price'] = float(dish['price'])
+                                dish_dict['discount_price'] = float(dish['discount_price'])
+                                dish_dict['num'] = int(preset_dishs['num'])
+                                dish_dict['id'] = preset_dishs['id']
+                                dish_list.append(dish_dict)
+                    else:
+                        for preset_wine in order_dict['preset_wine']:
+                            if dish['id'] == preset_wine['id']:
+                                dish_dict = {}
+                                dish_dict['name'] = dish['name']
+                                dish_dict['price'] = float(dish['price'])
+                                dish_dict['discount_price'] = float(dish['discount_price'])
+                                dish_dict['num'] = int(preset_wine['num'])
+                                dish_dict['id'] = preset_wine['id']
+                                wine_list.append(dish_dict)
+        mongo.order.update_one({"restaurant_id":ObjectId(restaurant_id),"webuser_id":ObjectId(webuser_id),"status":8},{"$set": {"preset_dishs":dish_list,"preset_wine": wine_list}})
 if __name__ == '__main__':
     pass

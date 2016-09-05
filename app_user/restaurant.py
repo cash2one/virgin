@@ -1,6 +1,6 @@
 #--coding:utf-8--#
 import random
-
+import time
 import pymongo
 from flasgger import swag_from
 
@@ -9,7 +9,7 @@ from tools import tools
 
 import sys
 
-from tools.db_app_user import guess, business_dist, district_list, business_dist_byid, getcoupons, getconcern
+from tools.db_app_user import guess, business_dist, district_list, business_dist_byid, getcoupons, getconcern, checkdish
 from tools.message_template import mgs_template
 from tools.swagger import swagger
 
@@ -920,6 +920,7 @@ def dish_menu_count():
                     itemflag = False
                 if itemflag:
                     json = {
+                        "order_id":"MSDT%s%03d" % (int(time.time() * 1000), random.randint(1, 999)),
                         "username" : "",
                         "status" : 8,
                         "type" : 1,
@@ -978,7 +979,7 @@ def dish_menu_count():
                             "id" : id
                             }
                         )
-                    print json_util.dumps(dish_list,ensure_ascii=False,indent=2)
+                    # print json_util.dumps(dish_list,ensure_ascii=False,indent=2)
                     if type == '0':
                         mongo.order.update_one(pdict,{"$set": {"preset_dishs": dish_list}})
                     else:
@@ -1001,7 +1002,7 @@ def dish_menu_count():
                     print dish_num,total
                     data = {
                         'dish_num':dish_num,
-                        'total':total
+                        'total':float("%.2f" % total)
                     }
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
@@ -1062,6 +1063,7 @@ def dish_menu_list():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
             try:
+                checkdish(request.form['webuser_id'])
                 item2 = mongo.order.find({'webuser_id':ObjectId(request.form['webuser_id']),'status':8})
                 data = {}
                 list = []
@@ -1140,6 +1142,7 @@ def getroom():
                 for i in item:
                     flag = False
                 if flag:
+                     json['order_id'] = "MSDT%s%03d" % (int(time.time() * 1000), random.randint(1, 999)),
                      json['type'] = 0
                      json['source'] = 2
                      json['restaurant_id'] = ObjectId(request.form['restaurant_id'])
