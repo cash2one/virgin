@@ -242,8 +242,9 @@ class GroupInvite:
                 new_data[n['time_range']].append(m)
             else:
                 pass
-        del new_data['time_range']
-        return new_data
+        # del new_data['time_range']
+        return [{'time': '10:30', 'data': new_data['10:30']},
+                {'time': '16:00', 'data': new_data['16:00'] if '16:00' in new_data['time_range'] else []}]
 
     pass
 
@@ -480,7 +481,7 @@ def groupinvite_order_used():
 
 
 if __name__ == '__main__':
-    # print GroupInvite()
+    # print GroupInvite('57c53441612c5e14344b3fec')
     # print GroupInvite.get_invite('57c4dc7c612c5e1a7435ec35')
     # print GroupInvite('57c4dc7c612c5e1a7435ec35').new_invite('dola')
     # print GroupInvite('205314').follow('dolacmeo')
