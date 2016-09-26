@@ -898,7 +898,7 @@ def dishroomorder():
                         elif key == 'demand':
                             json['demand'] = i[key]
                         elif key == 'dis_message':
-                            json['dis_message'] = i[key]
+                            json['dis_message'] = i[key]['content']
                         elif key == 'preset_time':
                             json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
                         elif key == 'restaurant_id':

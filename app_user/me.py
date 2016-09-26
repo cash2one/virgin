@@ -1,9 +1,10 @@
 #--coding:utf-8--#
+import os
 import random
 import time
 import pymongo
 from flasgger import swag_from
-
+from connect import conn,settings
 from app_merchant import auto
 from tools import tools
 
@@ -13,6 +14,7 @@ from tools.db_app_user import guess, business_dist, district_list, business_dist
     getxingzhengqu
 from tools.message_template import mgs_template
 from tools.swagger import swagger
+from tools.timecheck import TimeCheck
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -74,6 +76,46 @@ def me():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+update_img = swagger("5-1 账号信息.jpg","账号信息修改")
+update_img_json = {
+    "auto": update_img.String(description='验证是否成功'),
+    "message": update_img.String(description='SUCCESS/FIELD',default="SUCCESS"),
+    "code": update_img.Integer(description='',default=0),
+    "data": update_img.String(description='图片MD5',default="MD5MD5MD5MD5MD5MD5MD5MD5MD5MD5MD5"),
+}
+update_img.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+update_img.add_parameter(name='topImage',parametertype='formData',type='file',required= True,description='上传的图片',default='')
+
+@me_user_api.route('/fm/user/v1/me/update_img/',methods=['POST'])
+@swag_from(update_img.mylpath(schemaid='update_img',result=update_img_json))
+def update_img():
+     if request.method=='POST':
+        # if auto.decodejwt(request.form['jwtstr']):
+        #     try:
+                file = request.files['topImage']
+                fname, fext = os.path.splitext(file.filename)
+                if file:
+                    filename = '%s%s' % (tool.gen_rnd_filename(), fext)
+                    # osstr = os.path.dirname(__file__).replace("\\PycharmProjects\\virgin\\app_merchant","/PycharmProjects/virgin")  +'/static/upload/'+filename
+                    osstr = "/www/site/foodmap/virgin/virgin/static/upload/"+filename
+                    print osstr
+                    file.save(osstr)
+                    uu = tool.pimg(osstr)
+                    u1 = settings.getimageIP + str(uu)
+                    os.remove(osstr)
+                    print u1
+                # jwtmsg = auto.decodejwt(request.form["jwtstr"])
+                result=tool.return_json(0,"success",True,str(uu))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            # except Exception,e:
+            #     print e
+            #     result=tool.return_json(0,"field",False,None)
+            #     return json_util.dumps(result,ensure_ascii=False,indent=2)
+        # else:
+        #     result=tool.return_json(0,"field",False,None)
+        #     return json_util.dumps(result,ensure_ascii=False,indent=2)
+
+
 infos_update = swagger("5-1 账号信息.jpg","账号信息修改")
 infos_update_json = {
     "auto": infos_update.String(description='验证是否成功'),
@@ -144,7 +186,7 @@ def my_message():
         if auto.decodejwt(request.form['jwtstr']):
             try:
                 pageindex = request.form["pageindex"]
-                pagenum = 20
+                pagenum = 10
                 star = (int(pageindex)-1)*pagenum
                 end = (pagenum*int(pageindex))
                 item = mongo.message.find({"$or":[{"infoto."+str(request.form["webuser_id"]) : 1},{"infoto."+str(request.form["webuser_id"]) : 0}],"type":int(request.form['type'])}).sort("add_time", pymongo.DESCENDING)[star:end]
@@ -208,6 +250,10 @@ def messageinfo():
                             json['information'] = i['infos']['information']
                         elif key == 'add_time':
                             json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M:%S')
+                        # elif key == 'restaurant_id':
+                        #     rest = mongo.restaurant.find({"_id":ObjectId(str(i['key']))})
+                        #     for r in rest:
+                        #         json['r_name'] = r['name']
                         else:
                             pass
                 mongo.message.update({"_id":ObjectId(request.form["message_id"])},{"$set":{"infoto."+request.form['webuser_id']:1}})
@@ -349,7 +395,7 @@ mycoupons_json = {
 mycoupons.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 mycoupons.add_parameter(name='webuser_id',parametertype='formData',type='string',required= True,description='用户id',default='57396ec17c1f31a9cce960f4')
 mycoupons.add_parameter(name='status',parametertype='formData',type='string',required= True,description='1可使用2已使用3已过期',default='1')
-
+mycoupons.add_parameter(name='pageindex',parametertype='formData',type='string',required= True,description='页数',default='1')
 
 #我的优惠列表
 @me_user_api.route('/fm/user/v1/coupons/mycoupons/',methods=['POST'])
@@ -360,7 +406,11 @@ def mycoupons():
 
             try:
                 pass
-                item = mongo.mycoupons.find({"webuser_id":ObjectId(request.form["webuser_id"])})
+                pageindex = request.form["pageindex"]
+                pagenum = 10
+                star = (int(pageindex)-1)*pagenum
+                end = (pagenum*int(pageindex))
+                item = mongo.mycoupons.find({"webuser_id":ObjectId(request.form["webuser_id"])}).sort("indate_end", pymongo.DESCENDING)[star:end]
                 data = {}
                 list = []
                 status = request.form['status']
@@ -380,6 +430,102 @@ def mycoupons():
                         list.append(json)
                     else:
                         list.append(json)
+                data['list'] = list
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+myorder = swagger("5-6 我的订单.jpg","我的订单列表")
+myorder.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+myorder.add_parameter(name='pageindex',parametertype='formData',type='string',required= True,description='页数',default='1')
+myorder.add_parameter(name='status',parametertype='formData',type='string',required= True,description='-1全部 1待安置座位 2待付款 3待就餐 4已就餐 5已退单 6失效订单',default='-1')
+myorder.add_parameter(name='webuser_id',parametertype='formData',type='string',required= True,description='用户id',default='57396ec17c1f31a9cce960f4')
+myorder_json = {
+    "auto": myorder.String(description='验证是否成功'),
+    "message": myorder.String(description='SUCCESS/FIELD',default="SUCCESS"),
+    "code": myorder.Integer(description='',default=0),
+    "data": {
+        "list":[
+            {
+              "status": myorder.String(description='订单状态',default="1待安置座位 2待付款 3待就餐 4已就餐 5已退单 6失效订单"),
+              "preset_time": myorder.String(description='就餐时间',default="2016年08月19日 15:15:00"),
+              "restaurant_id": myorder.String(description='饭店id',default="57329e300c1d9b2f4c85f8e6"),
+              "type": myorder.String(description='0-订座订单；1-点菜订单',default="0"),
+              "r_name": myorder.String(description='饭店名',default="57396ec17c1f31a9cce960f4")
+            },
+        ]
+    }
+}
+
+#我的订单
+@me_user_api.route('/fm/user/v1/order/myorder/',methods=['POST'])
+@swag_from(myorder.mylpath(schemaid='myorder',result=myorder_json))
+def myorder():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+
+            try:
+                TimeCheck(status= [0,2], source=[2], timeout=45)
+                TimeCheck(status= [1], source=[2], timeout=45)
+                pass
+                pageindex = request.form["pageindex"]
+                pagenum = 10
+                star = (int(pageindex)-1)*pagenum
+                end = (pagenum*int(pageindex))
+                status = int(request.form['status'])
+                #（0-新单，1-待付款，2-待处理，3-待就餐，4-已就餐，5-拒单，6-用户退单，7商家退单,8点菜单）
+                #1待安置座位（0 2） 2待付款（1） 3待就餐（3） 4已就餐（4） 5已退单（6 7） 6失效订单（567）
+                first = {"webuser_id": ObjectId(request.form['webuser_id'])}
+                change_list = [None, {"$in":[0,2]}, 1, 3, 4, 6, {"$in":[5,7]}, None]
+                first['status'] = change_list[status]
+                # if status == -1:
+                #     pass
+                # elif status == 1:
+                #     first['status'] = {"$in":[0,2]}
+                # elif status == 2:
+                #     first['status'] = 1
+                # elif status == 3:
+                #     first['status'] = 3
+                # elif status == 4:
+                #     first['status'] = 4
+                # elif status == 5:
+                #     first['status'] = 6
+                # elif status == 6:
+                #     first['status'] = {"$in":[5,7]}
+                # else:
+                #     pass
+                item = mongo.order.find(first).sort("add_time", pymongo.DESCENDING)[star:end]
+                data = {}
+                list = []
+                for i in item:
+                    json = {
+                        "type": str(i['type']),
+                        "restaurant_id": str(i['restaurant_id']),
+                        "preset_time": i['preset_time'].strftime('%Y年%m月%d日 %H:%M:%S'),
+                    }
+                    if i['status'] in [0,3]:
+                        json['status'] = '1'
+                    elif i['status'] ==1:
+                        json['status'] = '2'
+                    elif i['status'] ==3:
+                        json['status'] = '3'
+                    elif i['status'] ==4:
+                        json['status'] = '4'
+                    elif i['status'] in [5,7]:
+                        json['status'] = '6'
+                    elif i['status'] == 6:
+                        json['status'] = '5'
+                    restaurant = mongo.restaurant.find({"_id":ObjectId(i['restaurant_id'])})
+                    for r in restaurant:
+                        json['r_name'] = r['name']
+                    list.append(json)
                 data['list'] = list
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
