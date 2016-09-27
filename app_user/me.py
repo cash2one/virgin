@@ -458,7 +458,7 @@ myorder_json = {
               "preset_time": myorder.String(description='就餐时间',default="2016年08月19日 15:15:00"),
               "restaurant_id": myorder.String(description='饭店id',default="57329e300c1d9b2f4c85f8e6"),
               "type": myorder.String(description='0-订座订单；1-点菜订单',default="0"),
-              "r_name": myorder.String(description='饭店名',default="57396ec17c1f31a9cce960f4")
+              "r_name": myorder.String(description='饭店名',default="菜馆")
             },
         ]
     }
@@ -483,24 +483,24 @@ def myorder():
                 #（0-新单，1-待付款，2-待处理，3-待就餐，4-已就餐，5-拒单，6-用户退单，7商家退单,8点菜单）
                 #1待安置座位（0 2） 2待付款（1） 3待就餐（3） 4已就餐（4） 5已退单（6 7） 6失效订单（567）
                 first = {"webuser_id": ObjectId(request.form['webuser_id'])}
-                change_list = [None, {"$in":[0,2]}, 1, 3, 4, 6, {"$in":[5,7]}, None]
-                first['status'] = change_list[status]
-                # if status == -1:
-                #     pass
-                # elif status == 1:
-                #     first['status'] = {"$in":[0,2]}
-                # elif status == 2:
-                #     first['status'] = 1
-                # elif status == 3:
-                #     first['status'] = 3
-                # elif status == 4:
-                #     first['status'] = 4
-                # elif status == 5:
-                #     first['status'] = 6
-                # elif status == 6:
-                #     first['status'] = {"$in":[5,7]}
-                # else:
-                #     pass
+                # change_list = [None, {"$in":[0,2]}, 1, 3, 4, {"$in":[6,7]}, {"$in":[5,6,7]}, None]
+                # first['status'] = change_list[status]
+                if status == -1:
+                    pass
+                elif status == 1:
+                    first['status'] = {"$in":[0,2]}
+                elif status == 2:
+                    first['status'] = 1
+                elif status == 3:
+                    first['status'] = 3
+                elif status == 4:
+                    first['status'] = 4
+                elif status == 5:
+                    first['status'] = {"$in":[6,7]}
+                elif status == 6:
+                    first['status'] = {"$in":[5,6,7]}
+                else:
+                    pass
                 item = mongo.order.find(first).sort("add_time", pymongo.DESCENDING)[star:end]
                 data = {}
                 list = []
@@ -510,7 +510,7 @@ def myorder():
                         "restaurant_id": str(i['restaurant_id']),
                         "preset_time": i['preset_time'].strftime('%Y年%m月%d日 %H:%M:%S'),
                     }
-                    if i['status'] in [0,3]:
+                    if i['status'] in [0,2]:
                         json['status'] = '1'
                     elif i['status'] ==1:
                         json['status'] = '2'
@@ -518,9 +518,9 @@ def myorder():
                         json['status'] = '3'
                     elif i['status'] ==4:
                         json['status'] = '4'
-                    elif i['status'] in [5,7]:
+                    elif i['status'] in [5,6,7]:
                         json['status'] = '6'
-                    elif i['status'] == 6:
+                    elif i['status'] in [6,7]:
                         json['status'] = '5'
                     restaurant = mongo.restaurant.find({"_id":ObjectId(i['restaurant_id'])})
                     for r in restaurant:
