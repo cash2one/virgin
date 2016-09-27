@@ -15,10 +15,15 @@ def getcoupons(kind, restaurant_id):
     item = mongo.coupons.find({'button':'0','restaurant_id':ObjectId(restaurant_id),'kind':kind,'showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()}}).sort("showtime_start", pymongo.DESCENDING)[0:1]
     json = {
         'id':'',
-        'content':''
+        'content':'',
+        'num':''
     }
     for i in item:
         json['id'] = str(i['_id'])
+        if int(i['num']) != -1:
+            json['num'] = str(i['num'])
+        else:
+            json['num'] = ''
         if i['type'] == '1':
             if i['rule'] == '0':
                 json['content'] = '下单即减'+str(i['cross-claim'])+'元'
@@ -43,6 +48,7 @@ def getcoupons(kind, restaurant_id):
                 pass
         else:
             json['content'] = i['content']
+
     return json
 #获取首页店粉优惠大图
 def getimg(restaurant_id):
@@ -134,9 +140,14 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3,
                         json['address'] = rest[key]
                     elif key == 'wine_discount':
                         json['wine_discount'] = rest[key]['message']
+                    elif key == 'fendian':
+                        if rest['key'] != {}:
+                            json['liansuo'] = '1'
+                        else:
+                            json['liansuo'] = '0'
                     else:
                         json['distance'] = l[0]
-                        json['liansuo'] = '0'
+
                         json['menutype'] = '0'
                 list.append(json)
     else:
@@ -176,8 +187,13 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3,
                     json['wine_discount'] = rest[key]['message']
                 elif key == 'zuobiao':
                     json['distance'] = ''
+                elif key == 'fendian':
+                    if rest['key'] != {}:
+                        json['liansuo'] = '1'
+                    else:
+                        json['liansuo'] = '0'
                 else:
-                    json['liansuo'] = '0'
+                    pass
             list.append(json)
     return list
 #查询所有行政区标签
@@ -244,5 +260,224 @@ def checkdish(webuser_id='57396ec17c1f31a9cce960f4'):
                                 dish_dict['id'] = preset_wine['id']
                                 wine_list.append(dish_dict)
         mongo.order.update_one({"restaurant_id":ObjectId(restaurant_id),"webuser_id":ObjectId(webuser_id),"status":8},{"$set": {"preset_dishs":dish_list,"preset_wine": wine_list}})
+def coupons_by(first={}):
+    item = mongo.coupons.find(first)
+    json = {}
+    for i in item:
+        for key in i.keys():
+            if key == '_id':
+                json['id'] = str(i[key])
+            elif key == 'restaurant_id':
+                json['restaurant_id'] = str(i[key])
+            elif key == 'kind':
+                if i[key] == '1' or i[key] == '2':
+                    json['button'] = i[key]
+            elif key == 'rule':
+                if i[key] == '0':
+                    json['rule'] = i[key]
+                    json['rulename'] = '无门槛'
+                elif i[key] == '1':
+                    json['rule'] = i[key]
+                    json['rulename'] = '全品满'+str(i['money'])+'元可使用'
+                elif i[key] == '2':
+                    json['rule'] = i[key]
+                    json['rulename'] = '菜品满'+str(i['money'])+'元可使用'
+                elif i[key] == '3':
+                    json['rule'] = i[key]
+                    json['rulename'] = '酒类满'+str(i['money'])+'元可使用'
+                else:
+                    json['rule'] = ''
+            elif key == 'content':
+                if i['type'] == '1':
+                    if i['rule'] == '0':
+                        json['content'] = '下单即减'+str(i['cross-claim'])+'元'
+                    elif i['rule'] == '1':
+                        json['content'] = '全品满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
+                    elif i['rule'] == '2':
+                        json['content'] = '菜品满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
+                    elif i['rule'] == '3':
+                        json['content'] = '酒类满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
+                    else:
+                        pass
+                elif i['type'] == '2':
+                    if i['rule'] == '0':
+                        json['content'] = '下单即打'+str(i['cross-claim'])+'折'
+                    elif i['rule'] == '1':
+                        json['content'] = '全品满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
+                    elif i['rule'] == '2':
+                        json['content'] = '菜品满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
+                    elif i['rule'] == '3':
+                        json['content'] = '酒类满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
+                    else:
+                        pass
+                else:
+                    json['content'] = i['content']
+            elif key == 'showtime_start':
+                json['showtime_start'] = i[key].strftime('%Y年%m月%d日')
+            elif key == 'showtime_end':
+                json['showtime_end'] = i[key].strftime('%Y年%m月%d日')
+            elif key == 'indate_start':
+                json['indate_start'] = i[key].strftime('%Y年%m月%d日')
+            elif key == 'indate_end':
+                json['indate_end'] = i[key].strftime('%Y年%m月%d日')
+            elif key == 'addtime':
+                json['addtime'] = i[key].strftime('%Y年%m月%d日')
+            else:
+                json[key] = i[key]
+            if datetime.datetime.now()<i['indate_start']:
+                    json['status'] = '未开始'
+            elif i['indate_start']<datetime.datetime.now()<i['indate_end']:
+                json['status'] = '进行中'
+            else:
+                json['status'] = '已结束'
+    return json
+def use_coupons(total = 50.0,dish_total = 40.0,wine_total = 10.0,restaurant_id='57329e300c1d9b2f4c85f8e6',webuser_id='57396fd67c1f31a9cce960f8'):
+    finel = []
+    # total = 50
+    # dish_total = 40
+    # wine_total = 10
+    kind1 = []
+    guanzhu = mongo.coupons.find({"restaurant_id":ObjectId(restaurant_id),"$or":[{"button":"0"}, {"button":0}],"kind":"1"})
+    for g in guanzhu:
+        if g['type'] == '1':
+            kind1 = [g['cross-claim'],'1','0',str(g['_id'])]
+        else:
+            kind1 = [total - total * g['cross-claim'],'2',g['rule'],g['money'],str(g['_id'])]
+    mycoupons_list = []
+    mycoupons = mongo.mycoupons.find({"webuser_id": ObjectId(webuser_id),
+                                 "restaurant_id": ObjectId(restaurant_id)})
+    for m in mycoupons:
+        mycoupons_list.append(ObjectId(m['coupons_id']))
+    print 'mycoupons_list',mycoupons_list
+    list = []
+    coupons = mongo.coupons.find({"_id":{"$in":mycoupons_list},"$or":[{"button":"0"}, {"button":0}],"type":{"$in":["1","2"]}})
+    for c in coupons:
+        print c
+        if c['indate_start']<datetime.datetime.now()<c['indate_end']:
+            if c['type'] == '1':
+                list.append([c['cross-claim'],'1',c['rule'],c['money'],str(c['_id'])])
+            else:
+                list.append([total - total * c['cross-claim'],'2',c['rule'],c['money'],str(c['_id'])])
+        else:
+            pass
+    print 'kind1', kind1
+    print 'sorted(list,reverse=1)',sorted(list,reverse=1)
+    list = sorted(list,reverse=1)
+    if kind1 !=[]:
+        if kind1[2] == '0':
+            finel.append(kind1)
+        elif kind1[2] == '1' and kind1[3]<=total:
+            finel.append(kind1)
+        elif kind1[2] == '2' and kind1[3]<=dish_total:
+            finel.append(kind1)
+        elif kind1[2] == '3' and kind1[3]<=wine_total:
+            finel.append(kind1)
+        else:
+            pass
+        if kind1[1] == '2':
+            for l in list:
+                if l[1] == '1':
+                    if l[2] == '0':
+                        # print l[0]
+                        finel.append(l)
+                        break
+                    elif l[2] == '1' and l[3]<=total:
+                        # print l[0]
+                        finel.append(l)
+                        break
+                    elif l[2] == '2' and l[3]<=dish_total:
+                        # print l[0]
+                        finel.append(l)
+                        break
+                    elif l[2] == '3'and l[3]<=wine_total:
+                        # print l[0]
+                        finel.append(l)
+                        break
+                    else:
+                        pass
+        else:
+            for l in list:
+                if l[2] == '0':
+                    # print l[0]
+                    finel.append(l)
+                    break
+                elif l[2] == '1' and l[3]<=total:
+                    # print l[0]
+                    finel.append(l)
+                    break
+                elif l[2] == '2' and l[3]<=dish_total:
+                    # print l[0]
+                    finel.append(l)
+                    break
+                elif l[2] == '3'and l[3]<=wine_total:
+                    # print l[0]
+                    finel.append(l)
+                    break
+                else:
+                    pass
+    else:
+        for l in list:
+            if l[2] == '0':
+                # print l[0]
+                finel.append(l)
+                break
+            elif l[2] == '1' and l[3]<=total:
+                # print l[0]
+                finel.append(l)
+                break
+            elif l[2] == '2' and l[3]<=dish_total:
+                # print l[0]
+                finel.append(l)
+                break
+            elif l[2] == '3'and l[3]<=wine_total:
+                # print l[0]
+                finel.append(l)
+                break
+            else:
+                pass
+    # print finel
+    tishi = ''
+    print list
+    for l in list:
+        if l[2] == '1' and l[3]>total:
+            if l[1] == '1':
+                tishi = '提示：再加'+ str(l[3]-total)+'元就能减'+str(l[0])+'元'
+            else:
+                tishi = '提示：再加'+ str(l[3]-total)+'元就能打'+str(l[0])+'折'
+            break
+        elif l[2] == '2' and l[3]>dish_total:
+            if l[1] == '1':
+                tishi = '提示：再加'+ str(l[3]-total)+'元就能减'+str(l[0])+'元'
+            else:
+                tishi = '提示：再加'+ str(l[3]-total)+'元就能打'+str(l[0])+'折'
+            break
+        elif l[2] == '3'and l[3]>wine_total:
+            if l[1] == '1':
+                tishi = '提示：再加'+ str(l[3]-total)+'元就能减'+str(l[0])+'元'
+            else:
+                tishi = '提示：再加'+ str(l[3]-total)+'元就能打'+str(l[0])+'折'
+            break
+        else:
+            pass
+    return tishi,finel
 if __name__ == '__main__':
     pass
+    # json = guess({"_id":{"$in":[ObjectId("57329e300c1d9b2f4c85f8e6")]}}, lat1='y', lon1='x', end=10,webuser_id='573feadf7c1fa8a326a9c03c')
+    # for j in json:
+    #     del j['distance']
+    #     del j['liansuo']
+    #     del j['business_name']
+    #     del j['district_name']
+    # print json_util.dumps(json,ensure_ascii=False,indent=2)
+    # json = getcoupons('3','57329e300c1d9b2f4c85f8e6')
+    # print json_util.dumps(json,ensure_ascii=False,indent=2)
+
+    # list = []
+    # for d in district_list():
+    #     json = {}
+    #     json['district_name'] = d['district_name']
+    #     json['district_list'] = business_dist_byid(d['id'])
+    #     list.append(json)
+    # list = coupons_by({"restaurant_id":ObjectId("57329e300c1d9b2f4c85f8e6"),"kind":"2","button":"0"})
+    # print json_util.dumps(list,ensure_ascii=False,indent=2)
+    print json_util.dumps(use_coupons(total = 50.0,dish_total = 40.0,wine_total = 10.0,restaurant_id='57329e300c1d9b2f4c85f8e6',webuser_id='57396ec17c1f31a9cce960f4'),ensure_ascii=False,indent=2)
