@@ -496,13 +496,12 @@ def concern():
                     m_flag = True
                     for m in mycoupons:
                         m_flag = False
-                    coupons = coupons_by({"restaurant_id":ObjectId(restaurant_id),"kind":"2","$or":[{"button":"0"}, {"button":0}]})
+                    coupons = coupons_by({"restaurant_id":ObjectId(restaurant_id),"kind":"2","button":"0"})
                     if coupons and m_flag:
                         restaurant = mongo.restaurant.find({"_id":ObjectId(restaurant_id)})
                         for i in restaurant:
                             json = {
                                 "restaurant_id" : ObjectId(restaurant_id),
-                                "guide_image":i['guide_image'],
                                 "webuser_id" : ObjectId(webuser_id),
                                 "coupons_id" : coupons['id'],
                                 "status" : "1",
@@ -935,6 +934,8 @@ def dish_menu_count():
                 item2 = mongo.order.find(pdict)
 
                 name = request.form['name']
+                price = float(request.form['price'])
+                discount_price = float(request.form['discount_price'])
                 type = request.form['type']
                 num = int(request.form['num'])
                 id = request.form['id']
@@ -1014,32 +1015,23 @@ def dish_menu_count():
                     else:
                         mongo.order.update_one(pdict,{"$set": {'preset_wine': dish_list}})
                 item = mongo.order.find(pdict)
-                dish_list = []
-                wine_list = []
+                order_list = []
                 for i in item:
                     if i['preset_dishs'] !=[]:
                         for dish in i['preset_dishs']:
-                            dish_list.append((dish['id'],dish['num'],dish['discount_price']))
+                            order_list.append((dish['id'],dish['num'],dish['discount_price']))
                     if i['preset_wine'] !=[]:
                         for dish in i['preset_wine']:
-                            wine_list.append((dish['id'],dish['num'],dish['discount_price']))
-
-                    wine_num = 0
+                            order_list.append((dish['id'],dish['num'],dish['discount_price']))
                     dish_num = 0
-                    dish_total = 0
-                    wine_total = 0
-                    for d in dish_list:
+                    total = 0
+                    for d in order_list:
                         dish_num+=d[1]
-                        dish_total+=(d[2]*d[1])
-                    for w in wine_list:
-                        wine_num+=w[1]
-                        wine_total+=(w[2]*w[1])
-                    total = wine_total+dish_total
-                    order_num = wine_num+dish_num
+                        total+=(d[2]*d[1])
                     mongo.order.update_one(pdict,{"$set": {'total': float("%.2f" % total)}})
                     print dish_num,total
                     data = {
-                        'dish_num':order_num,
+                        'dish_num':dish_num,
                         'total':float("%.2f" % total)
                     }
                 result=tool.return_json(0,"success",True,data)
@@ -1431,71 +1423,6 @@ def dish_menu_one():
                     else:
                         pass
                 data['menu'] = list
-                result=tool.return_json(0,"success",True,data)
-                return json_util.dumps(result,ensure_ascii=False,indent=2)
-            except Exception,e:
-                print e
-                result=tool.return_json(0,"field",True,str(e))
-                return json_util.dumps(result,ensure_ascii=False,indent=2)
-        else:
-            result=tool.return_json(0,"field",False,None)
-            return json_util.dumps(result,ensure_ascii=False,indent=2)
-    else:
-        return abort(403)
-#连锁店
-liansuo = swagger("1-1-1 连锁店列表.jpg","连锁店列表")
-liansuo.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
-liansuo.add_parameter(name='district_id',parametertype='formData',type='string',required= True,description='行政区id,初始传-1',default='56d7af296bff8928c07855dc')
-liansuo.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店id',default='573ad312612c5e0a6078f416')
-liansuo_json = {
-  "auto": liansuo.String(description='验证是否成功'),
-  "message": liansuo.String(description='SUCCESS/FIELD',default="SUCCESS"),
-  "code": liansuo.Integer(description='',default=0),
-  "data": {
-    "list":[
-        {
-            "id":liansuo.String(description='饭店id',default="57329e300c1d9b2f4c85f8e6"),
-            "name":liansuo.String(description='饭店名',default="1981只是一家串店"),
-            "address":liansuo.String(description='地址',default="哈尔滨市南岗区花园街201号"),
-            "phone":liansuo.String(description='电话',default="0451-12345678"),
-        }
-    ]
-}
-
-}
-#连锁店列表
-@restaurant_user_api.route('/fm/user/v1/restaurant/liansuo/',methods=['POST'])
-@swag_from(liansuo.mylpath(schemaid='liansuo',result=liansuo_json))
-def liansuo():
-    if request.method=='POST':
-        if auto.decodejwt(request.form['jwtstr']):
-            try:
-                data = {}
-                list = []
-                fendian = ''
-
-                restaurant = mongo.restaurant.find({"_id":ObjectId(request.form['restaurant_id'])})
-                for rest in restaurant:
-                    fendian = rest['fendian']['id']
-                if int(request.form['district_id']) !=-1:
-                    dist_list = []
-                    district = mongo.district.find_one({"_id":ObjectId(request.form['district_id'])})
-                    for dist in district:
-                        for biz in dist['biz_areas']:
-                            dist_list.append(str(biz['biz_area_id']))
-                    first = {"fendian.id":fendian,"business_dist.id":{"$in":dist_list}}
-                else:
-                    first = {"fendian.id":fendian}
-                item = mongo.restaurant.find(first)
-                for i in item:
-                    json = {
-                        "id":str(i['_id']),
-                        "name":i['name'],
-                        "address":i['address'],
-                        "phone":i['phone']
-                    }
-                    list.append(json)
-                data['list'] = list
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
