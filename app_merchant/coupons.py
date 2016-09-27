@@ -673,7 +673,7 @@ def updatebutton():
     if request.method=='POST':
         try:
             if auto.decodejwt(request.form['jwtstr']):
-                item = mongo.coupons.update({"_id":ObjectId(request.form["coupons_id"])},{"$set":{"button":str(request.form["button"])}})
+                item = mongo.coupons.update({"_id":ObjectId(request.form["coupons_id"])},{"$set":{"button":request.form["button"]}})
                 json = {
                     "status": 1,
                     "msg":""

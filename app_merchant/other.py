@@ -113,7 +113,6 @@ def up():
                     filename = '%s%s' % (tool.gen_rnd_filename(), fext)
                     # osstr = os.path.dirname(__file__).replace("\\PycharmProjects\\virgin\\app_merchant","/PycharmProjects/virgin")  +'/static/upload/'+filename
                     osstr = "/www/site/foodmap/virgin/virgin/static/upload/"+filename
-                    # osstr = "/www/site/hallelujiah/virgin/static/upload/"+filename
                     print osstr
                     file.save(osstr)
                     uu = tool.pimg(osstr)

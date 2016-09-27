@@ -190,10 +190,7 @@ def allorder():
                     'source':2
                 }
                 if int(request.form["status"]) != -1 and int(request.form["status"])!=8:
-                    if int(request.form["status"]) == 2:
-                        pdict['status'] = {"$in":[1,2]}
-                    else:
-                        pdict['status'] = int(request.form["status"])
+                    pdict['status'] = int(request.form["status"])
                 if int(request.form["type"]) != -1:
                     pdict['type'] = int(request.form["type"])
                 second = {
@@ -262,8 +259,6 @@ def newallorder():
                     if int(request.form["status"]) == 6:
                         pdict['add_time'] = {'$gte': datetime.datetime.now()-datetime.timedelta(days = 30), '$lt': datetime.datetime.now()}
                         pdict['status'] = int(request.form["status"])
-                    elif int(request.form["status"]) == 2:
-                        pdict['status'] = {"$in":[1,2]}
                     else:
                         pdict['status'] = int(request.form["status"])
                 if int(request.form["type"]) != -1:
@@ -762,12 +757,7 @@ def insertorder():
                     "preset_wine": [],
                     "webuser_id" : "",
                     "phone" : request.form['phone'],
-                    "dis_message" : [{
-                        "dis_type":"",
-                        "content":"",
-                        "coupons_id":"",
-                        "dis_amount":""
-                    }],
+                    "dis_message" : "",
                     "room_id" : request.form['room_id'],
                     "deposit" : 0.0,
                     "demand" : request.form['demand'],
@@ -898,7 +888,7 @@ def dishroomorder():
                         elif key == 'demand':
                             json['demand'] = i[key]
                         elif key == 'dis_message':
-                            json['dis_message'] = i[key]['content']
+                            json['dis_message'] = i[key]
                         elif key == 'preset_time':
                             json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
                         elif key == 'restaurant_id':
