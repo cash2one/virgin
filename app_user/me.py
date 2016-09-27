@@ -600,17 +600,18 @@ def order_info():
                     data['numpeople'] = str(i['numpeople'])
                     data['total'] = str(i['total'])
                     data['deposit'] = str(i['deposit'])
-                    youhui = []
+
+                    y_list = []
                     for dis in i['dis_message']:
                         if dis['dis_type'] == '1':
-                            youhui.append('关注即享:'+str(dis['dis_amount']))
+                            y_list.append({'msg':'关注即享:'+str(dis['dis_amount'])})
                         elif dis['dis_type'] == '2':
-                            youhui.append('新粉优惠:'+str(dis['dis_amount']))
+                            y_list.append({'msg':'新粉优惠:'+str(dis['dis_amount'])})
                         elif dis['dis_type'] == '3':
-                            youhui.append('店粉抢优惠:'+str(dis['dis_amount']))
+                            y_list.append({'msg':'店粉抢优惠:'+str(dis['dis_amount'])})
                         else:
                             pass
-                    data['youhui'] = {youhui}
+                    data['youhui'] = y_list
                     restaurant = mongo.restaurant.find({"_id":ObjectId(i['restaurant_id'])})
                     for r in restaurant:
                         data['rest_name'] = r['name']
