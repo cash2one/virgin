@@ -1174,17 +1174,17 @@ def dish_menu_list():
                     json['r_name'] = r_name
                     json['total'] = i['total']
                     json['deposit'] = i['deposit']
-                    youhui = []
+                    y_list = []
                     for dis in i['dis_message']:
                         if dis['dis_type'] == '1':
-                            youhui.append('关注即享:'+str(dis['dis_amount']))
+                            y_list.append({'msg':'关注即享:'+str(dis['dis_amount'])})
                         elif dis['dis_type'] == '2':
-                            youhui.append('新粉优惠:'+str(dis['dis_amount']))
+                            y_list.append({'msg':'新粉优惠:'+str(dis['dis_amount'])})
                         elif dis['dis_type'] == '3':
-                            youhui.append('店粉抢优惠:'+str(dis['dis_amount']))
+                            y_list.append({'msg':'店粉抢优惠:'+str(dis['dis_amount'])})
                         else:
                             pass
-                    json['youhui'] = youhui
+                    data['youhui'] = y_list
                     json['dianfu'] = i['total'] - i['deposit']
                     json['preset_dishs'] = i['preset_dishs']
                     json['preset_wine'] = i['preset_wine']
@@ -1508,17 +1508,17 @@ def dish_menu_one():
                     json['r_name'] = r_name
                     json['total'] = i['total']
                     json['deposit'] = i['deposit']
-                    youhui = []
+                    y_list = []
                     for dis in i['dis_message']:
                         if dis['dis_type'] == '1':
-                            youhui.append('关注即享:'+str(dis['dis_amount']))
+                            y_list.append({'msg':'关注即享:'+str(dis['dis_amount'])})
                         elif dis['dis_type'] == '2':
-                            youhui.append('新粉优惠:'+str(dis['dis_amount']))
+                            y_list.append({'msg':'新粉优惠:'+str(dis['dis_amount'])})
                         elif dis['dis_type'] == '3':
-                            youhui.append('店粉抢优惠:'+str(dis['dis_amount']))
+                            y_list.append({'msg':'店粉抢优惠:'+str(dis['dis_amount'])})
                         else:
                             pass
-                    json['youhui'] = youhui
+                    data['youhui'] = y_list
                     json['dianfu'] = i['total'] - i['deposit']
                     json['preset_dishs'] = i['preset_dishs']
                     json['preset_wine'] = i['preset_wine']
