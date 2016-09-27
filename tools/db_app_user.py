@@ -15,15 +15,10 @@ def getcoupons(kind, restaurant_id):
     item = mongo.coupons.find({'button':'0','restaurant_id':ObjectId(restaurant_id),'kind':kind,'showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()}}).sort("showtime_start", pymongo.DESCENDING)[0:1]
     json = {
         'id':'',
-        'content':'',
-        'num':''
+        'content':''
     }
     for i in item:
         json['id'] = str(i['_id'])
-        if int(i['num']) != -1:
-            json['num'] = str(i['num'])
-        else:
-            json['num'] = ''
         if i['type'] == '1':
             if i['rule'] == '0':
                 json['content'] = '下单即减'+str(i['cross-claim'])+'元'
@@ -48,7 +43,6 @@ def getcoupons(kind, restaurant_id):
                 pass
         else:
             json['content'] = i['content']
-
     return json
 #获取首页店粉优惠大图
 def getimg(restaurant_id):
@@ -250,94 +244,5 @@ def checkdish(webuser_id='57396ec17c1f31a9cce960f4'):
                                 dish_dict['id'] = preset_wine['id']
                                 wine_list.append(dish_dict)
         mongo.order.update_one({"restaurant_id":ObjectId(restaurant_id),"webuser_id":ObjectId(webuser_id),"status":8},{"$set": {"preset_dishs":dish_list,"preset_wine": wine_list}})
-def coupons_by(first={}):
-    item = mongo.coupons.find(first)
-    json = {}
-    for i in item:
-        for key in i.keys():
-            if key == '_id':
-                json['id'] = str(i[key])
-            elif key == 'restaurant_id':
-                json['restaurant_id'] = str(i[key])
-            elif key == 'kind':
-                if i[key] == '1' or i[key] == '2':
-                    json['button'] = i[key]
-            elif key == 'rule':
-                if i[key] == '0':
-                    json['rule'] = i[key]
-                    json['rulename'] = '无门槛'
-                elif i[key] == '1':
-                    json['rule'] = i[key]
-                    json['rulename'] = '全品满'+str(i['money'])+'元可使用'
-                elif i[key] == '2':
-                    json['rule'] = i[key]
-                    json['rulename'] = '菜品满'+str(i['money'])+'元可使用'
-                elif i[key] == '3':
-                    json['rule'] = i[key]
-                    json['rulename'] = '酒类满'+str(i['money'])+'元可使用'
-                else:
-                    json['rule'] = ''
-            elif key == 'content':
-                if i['type'] == '1':
-                    if i['rule'] == '0':
-                        json['content'] = '下单即减'+str(i['cross-claim'])+'元'
-                    elif i['rule'] == '1':
-                        json['content'] = '全品满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
-                    elif i['rule'] == '2':
-                        json['content'] = '菜品满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
-                    elif i['rule'] == '3':
-                        json['content'] = '酒类满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
-                    else:
-                        pass
-                elif i['type'] == '2':
-                    if i['rule'] == '0':
-                        json['content'] = '下单即打'+str(i['cross-claim'])+'折'
-                    elif i['rule'] == '1':
-                        json['content'] = '全品满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
-                    elif i['rule'] == '2':
-                        json['content'] = '菜品满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
-                    elif i['rule'] == '3':
-                        json['content'] = '酒类满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
-                    else:
-                        pass
-                else:
-                    json['content'] = i['content']
-            elif key == 'showtime_start':
-                json['showtime_start'] = i[key].strftime('%Y年%m月%d日')
-            elif key == 'showtime_end':
-                json['showtime_end'] = i[key].strftime('%Y年%m月%d日')
-            elif key == 'indate_start':
-                json['indate_start'] = i[key].strftime('%Y年%m月%d日')
-            elif key == 'indate_end':
-                json['indate_end'] = i[key].strftime('%Y年%m月%d日')
-            elif key == 'addtime':
-                json['addtime'] = i[key].strftime('%Y年%m月%d日')
-            else:
-                json[key] = i[key]
-            if datetime.datetime.now()<i['indate_start']:
-                    json['status'] = '未开始'
-            elif i['indate_start']<datetime.datetime.now()<i['indate_end']:
-                json['status'] = '进行中'
-            else:
-                json['status'] = '已结束'
-    return json
 if __name__ == '__main__':
     pass
-    # json = guess({"_id":{"$in":[ObjectId("57329e300c1d9b2f4c85f8e6")]}}, lat1='y', lon1='x', end=10,webuser_id='573feadf7c1fa8a326a9c03c')
-    # for j in json:
-    #     del j['distance']
-    #     del j['liansuo']
-    #     del j['business_name']
-    #     del j['district_name']
-    # print json_util.dumps(json,ensure_ascii=False,indent=2)
-    # json = getcoupons('3','57329e300c1d9b2f4c85f8e6')
-    # print json_util.dumps(json,ensure_ascii=False,indent=2)
-
-    # list = []
-    # for d in district_list():
-    #     json = {}
-    #     json['district_name'] = d['district_name']
-    #     json['district_list'] = business_dist_byid(d['id'])
-    #     list.append(json)
-    list = coupons_by({"restaurant_id":ObjectId("57329e300c1d9b2f4c85f8e6"),"kind":"2","button":"0"})
-    print json_util.dumps(list,ensure_ascii=False,indent=2)
