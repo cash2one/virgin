@@ -472,8 +472,8 @@ def myorder():
         if auto.decodejwt(request.form['jwtstr']):
 
             try:
-                TimeCheck(status= [0,2], source=[2], timeout=45)
-                TimeCheck(status= [1], source=[2], timeout=45)
+                # TimeCheck(status= [0,2], source=[2], timeout=45).update_order(7)
+                # TimeCheck(status= [1], source=[2], timeout=45).update_order(6)
                 pass
                 pageindex = request.form["pageindex"]
                 pagenum = 10
@@ -527,6 +527,164 @@ def myorder():
                         json['r_name'] = r['name']
                     list.append(json)
                 data['list'] = list
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+order_info = swagger("5-6 我的订单.jpg","订单详细")
+order_info.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+order_info.add_parameter(name='order_id',parametertype='formData',type='string',required= True,description='订单id',default='57ea07fb231a766222b360f5')
+order_info_json = {
+    "auto": order_info.String(description='验证是否成功'),
+    "message": order_info.String(description='SUCCESS/FIELD',default="SUCCESS"),
+    "code": order_info.Integer(description='',default=0),
+    "data": {
+          "status": order_info.String(description='订单状态',default="待安置座位"),
+          "youhui": order_info.String(description='优惠信息列表，最多两个',default="['新粉优惠:95.8']"),
+          "rest_name": order_info.String(description='饭店名',default="阿东海鲜老菜馆"),
+          "address": order_info.String(description='饭店地址',default="哈尔滨市南岗区马家街132-2号"),
+          "room_name": order_info.String(description='包房名',default="中包（1间）"),
+          "numpeople": order_info.String(description='用餐人数',default="3"),
+          "deposit": order_info.String(description='优惠金额',default="0.0"),
+          "time": order_info.String(description='订单时效',default="等待时间：280分钟"),
+          "preset_time": order_info.String(description='用餐时间',default="2016年08月19日 15:15:00"),
+          "total": order_info.String(description='总计金额',default="479.0"),
+          "id": order_info.String(description='订单id',default="57ea07fb231a766222b360f5"),
+        }
+}
+
+#订单详细
+@me_user_api.route('/fm/user/v1/order/order_info/',methods=['POST'])
+@swag_from(order_info.mylpath(schemaid='order_info',result=order_info_json))
+def order_info():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+
+            try:
+                TimeCheck(status= [0,2], source=[2], timeout=45)
+                TimeCheck(status= [1], source=[2], timeout=45)
+
+                item = mongo.order.find({"_id":ObjectId(request.form['order_id'])})
+                data = {}
+                for i in item:
+                    print int((datetime.datetime.now()-i['add_time']).total_seconds()/60)
+                    #（0-新单，1-待付款，2-待处理，3-待就餐，4-已就餐，5-拒单，6-用户退单，7商家退单,8点菜单）
+                    #1待安置座位（0 2） 2待付款（1） 3待就餐（3） 4已就餐（4） 5已退单（6 7） 6失效订单（567）
+                    if i['status'] in [0,2]:
+                        data['time'] ='等待时间：'+str(int((datetime.datetime.now()-i['add_time']).total_seconds()/60))+'分钟'
+                        data['status'] = '待安置座位'
+                    elif i['status'] ==1:
+                        data['time'] ='剩余付款时间：'+str(int((datetime.datetime.now()-i['add_time']).total_seconds()/60))+'分钟'
+                        data['status'] = '待付款'
+                    elif i['status'] ==3:
+                        data['time'] ='用餐时间：'+i['preset_time'].strftime('%Y年%m月%d日 %H:%M:%S')
+                        data['status'] = '待就餐'
+                    elif i['status'] ==4:
+                        data['time'] ='用餐时间：'+i['preset_time'].strftime('%Y年%m月%d日 %H:%M:%S')
+                        data['status'] = '已就餐'
+                    elif i['status'] in [5,6,7]:
+                        data['time'] ='失效时间：'+i['add_time'].strftime('%Y年%m月%d日 %H:%M:%S')
+                        data['status'] = '失效订单'
+                    elif i['status'] in [6,7]:
+                        data['time'] ='退单时间：'+i['add_time'].strftime('%Y年%m月%d日 %H:%M:%S')
+                        data['status'] = '已退单'
+                    data['id'] = str(i['_id'])
+                    data['preset_time'] = i['preset_time'].strftime('%Y年%m月%d日 %H:%M:%S')
+                    data['numpeople'] = str(i['numpeople'])
+                    data['total'] = str(i['total'])
+                    data['deposit'] = str(i['deposit'])
+                    youhui = []
+                    for dis in i['dis_message']:
+                        if dis['dis_type'] == '1':
+                            youhui.append('关注即享:'+str(dis['dis_amount']))
+                        elif dis['dis_type'] == '2':
+                            youhui.append('新粉优惠:'+str(dis['dis_amount']))
+                        elif dis['dis_type'] == '3':
+                            youhui.append('店粉抢优惠:'+str(dis['dis_amount']))
+                        else:
+                            pass
+                    data['youhui'] = {youhui}
+                    restaurant = mongo.restaurant.find({"_id":ObjectId(i['restaurant_id'])})
+                    for r in restaurant:
+                        data['rest_name'] = r['name']
+                        data['address'] = r['address']
+                        data['room_name'] = ''
+                        for room in r['rooms']:
+                            if i['room_id'] == room['room_id']:
+                                data['room_name'] = room['room_name']
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+kaituan = swagger("5-7 我的开团请客.jpg","开团请客列表")
+kaituan.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+kaituan.add_parameter(name='master_id',parametertype='formData',type='string',required= True,description='用户id',default='5747bd310b05552c4c571810')
+kaituan_json = {
+    "auto": kaituan.String(description='验证是否成功'),
+    "message": kaituan.String(description='SUCCESS/FIELD',default="SUCCESS"),
+    "code": kaituan.Integer(description='',default=0),
+    "data": {
+        "list": [
+            {
+              "status": kaituan.String(description='开团状态',default="已超时"),
+              "rest_name": kaituan.String(description='饭店名',default="10号熏酱骨头馆"),
+              "time": kaituan.String(description='开团时效',default="活动已结束")
+            }
+        ]
+        }
+}
+
+#我的开团请客
+@me_user_api.route('/fm/user/v1/order/kaituan/',methods=['POST'])
+@swag_from(kaituan.mylpath(schemaid='kaituan',result=kaituan_json))
+def kaituan():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+
+            try:
+                item = mongo.order_groupinvite.find({"master_id":request.form['master_id']})
+                data = {}
+                list = []
+                # 'wait_friends', 'wait_pay', 'already_payment', 'already_used', 'time_out'
+                for i in item:
+                    json = {}
+                    json["rest_name"] = i['restaurant_info']['name']
+                    json['status'] = i['status']
+                    if i['status'] == 'wait_friends':
+                        json['time'] = '距离活动结束还有'+str(int((i['end_time']-datetime.datetime.now()).total_seconds()/60))+'分钟'
+                        json['status'] = '邀请好友进行时'
+                    elif i['status'] == 'wait_pay':
+                        json['time'] = '距离活动结束还有'+str(int((i['end_time']-datetime.datetime.now()).total_seconds()/60))+'分钟'
+                        json['status'] = '待付款'
+                    elif i['status'] == 'already_payment':
+                        json['time'] = '距离活动结束还有'+str(int((i['end_time']-datetime.datetime.now()).total_seconds()/60))+'分钟'
+                        json['status'] = '待就餐'
+                    elif i['status'] == 'already_used':
+                        json['time'] = '已就餐'
+                        json['status'] = '已就餐'
+                    elif i['status'] == 'timeout':
+                        json['time'] = '活动已结束'
+                        json['status'] = '已超时'
+                    else:
+                        json['time'] = ''
+                        json['status'] = ''
+                    list.append(json)
+                data['list'] = list
+
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:

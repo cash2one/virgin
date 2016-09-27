@@ -1039,8 +1039,10 @@ def dish_menu_count():
                     print wine_num,dish_num,dish_total,wine_total
                     mycoupons = use_coupons(total = total,dish_total = dish_total,wine_total = wine_total,restaurant_id=request.form['restaurant_id'],webuser_id=request.form['webuser_id'])
                     dis_message = []
+                    deposit = 0.0
                     if mycoupons:
                         for m in mycoupons[1]:
+                            deposit+=m[0]
                             coupons = mongo.coupons.find({"_id":ObjectId(m[4])})
                             for c in coupons:
                                 content = ''
@@ -1076,7 +1078,7 @@ def dish_menu_count():
                                         "dis_amount":float("%.2f" % m[0])
                                     }
                                 )
-                    mongo.order.update_one(pdict,{"$set": {'dis_message':dis_message,'total': float("%.2f" % total)}})
+                    mongo.order.update_one(pdict,{"$set": {'deposit':deposit,'dis_message':dis_message,'total': float("%.2f" % total)}})
                     data = {
                         'dish_num':order_num,
                         'total':float("%.2f" % total)
