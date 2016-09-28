@@ -188,7 +188,7 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3,
                 elif key == 'zuobiao':
                     json['distance'] = ''
                 elif key == 'fendian':
-                    if rest['key'] != {}:
+                    if rest[key] != {}:
                         json['liansuo'] = '1'
                     else:
                         json['liansuo'] = '0'
