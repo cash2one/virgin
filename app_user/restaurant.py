@@ -1184,7 +1184,7 @@ def dish_menu_list():
                             y_list.append({'msg':'店粉抢优惠:'+str(dis['dis_amount'])})
                         else:
                             pass
-                    data['youhui'] = y_list
+                    json['youhui'] = y_list
                     json['dianfu'] = i['total'] - i['deposit']
                     json['preset_dishs'] = i['preset_dishs']
                     json['preset_wine'] = i['preset_wine']
@@ -1518,7 +1518,7 @@ def dish_menu_one():
                             y_list.append({'msg':'店粉抢优惠:'+str(dis['dis_amount'])})
                         else:
                             pass
-                    data['youhui'] = y_list
+                    json['youhui'] = y_list
                     json['dianfu'] = i['total'] - i['deposit']
                     json['preset_dishs'] = i['preset_dishs']
                     json['preset_wine'] = i['preset_wine']
