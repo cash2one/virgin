@@ -185,6 +185,7 @@ def my_message():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
             try:
+                my_message.add_parameter(name='pageindex',parametertype='formData',type='string',required= True,description='页数',default='1')
                 pageindex = request.form["pageindex"]
                 pagenum = 10
                 star = (int(pageindex)-1)*pagenum
@@ -634,6 +635,7 @@ def order_info():
 kaituan = swagger("5-7 我的开团请客.jpg","开团请客列表")
 kaituan.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 kaituan.add_parameter(name='master_id',parametertype='formData',type='string',required= True,description='用户id',default='5747bd310b05552c4c571810')
+kaituan.add_parameter(name='pageindex',parametertype='formData',type='string',required= True,description='页数',default='1')
 kaituan_json = {
     "auto": kaituan.String(description='验证是否成功'),
     "message": kaituan.String(description='SUCCESS/FIELD',default="SUCCESS"),
@@ -657,7 +659,12 @@ def kaituan():
         if auto.decodejwt(request.form['jwtstr']):
 
             try:
-                item = mongo.order_groupinvite.find({"master_id":request.form['master_id']})
+
+                pageindex = request.form["pageindex"]
+                pagenum = 10
+                star = (int(pageindex)-1)*pagenum
+                end = (pagenum*int(pageindex))
+                item = mongo.order_groupinvite.find({"master_id":request.form['master_id']}).sort("add_time", pymongo.DESCENDING)[star:end]
                 data = {}
                 list = []
                 # 'wait_friends', 'wait_pay', 'already_payment', 'already_used', 'time_out'
