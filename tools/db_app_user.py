@@ -142,7 +142,7 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3,
                     elif key == 'wine_discount':
                         json['wine_discount'] = rest[key]['message']
                     elif key == 'fendian':
-                        if rest['key'] != {}:
+                        if rest[key] != {}:
                             json['liansuo'] = '1'
                         else:
                             json['liansuo'] = '0'
@@ -467,7 +467,7 @@ def use_coupons(total = 50.0,dish_total = 40.0,wine_total = 10.0,restaurant_id='
     return tishi,finel
 if __name__ == '__main__':
     pass
-    print json_util.dumps(coupons_by(),ensure_ascii=False,indent=2)
+    print json_util.dumps(guess(),ensure_ascii=False,indent=2)
     # json = guess({"_id":{"$in":[ObjectId("57329e300c1d9b2f4c85f8e6")]}}, lat1='y', lon1='x', end=10,webuser_id='573feadf7c1fa8a326a9c03c')
     # for j in json:
     #     del j['distance']
