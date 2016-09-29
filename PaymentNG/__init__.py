@@ -14,7 +14,8 @@ class Payment:
     def __init__(self, BASEURL=None):
         self.BASEURL = BASEURL
         if not self.BASEURL:
-            self.BASEURL = 'http://125.211.222.237:11036'
+            # self.BASEURL = 'http://125.211.222.237:11036'
+            self.BASEURL = 'http://127.0.0.1:10036'
         pass
 
     def DATA(self):

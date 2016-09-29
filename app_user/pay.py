@@ -83,8 +83,8 @@ payorder_json = {
     "data": {
           "status": payorder.String(description='状态',default="new"),
           "PaymentID": payorder.String(description='id',default="1475129175666"),
-          "pay_url": "https://",
-          "pay_data": "{}"
+          "pay_url": payorder.String(description='地址',default="https://"),
+          "pay_data": payorder.String(description='数据',default="{}")
     }
 }
 payorder.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
@@ -97,17 +97,17 @@ def payorder():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
 
-            # try:
+            try:
                 payOrder_id = request.form['payOrder_id']
                 pay = PayOrder(payOrder_id)
                 service = request.form['service']
                 data = pay.req_pay(service)
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
-            # except Exception,e:
-            #     print e
-            #     result=tool.return_json(0,"field",True,str(e))
-            #     return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
