@@ -486,5 +486,5 @@ if __name__ == '__main__':
     # print GroupInvite('57c4dc7c612c5e1a7435ec35').new_invite('dola')
     # print GroupInvite('205314').follow('dolacmeo')
     # print GroupInvite('205314').mark_used()
-    # print GroupInvite().app_invite_list
+    print json_util.dumps(GroupInvite().all_item,ensure_ascii=False,indent=2)
     pass

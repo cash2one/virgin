@@ -10,7 +10,7 @@ from tools import tools
 import sys
 
 from tools.db_app_user import guess, business_dist, district_list, business_dist_byid, getcoupons, getconcern, checkdish, \
-    getxingzhengqu
+    getxingzhengqu, coupons_by
 from tools.message_template import mgs_template
 from tools.swagger import swagger
 
@@ -88,7 +88,10 @@ def coupons():
                             json['kind2'] = '满多少减多少元'
                             json['kind3'] = '任性就是送'
                             json['num'] = '1'
-                            json['concern'] =getconcern(rest[key],request.form['webuser_id'])
+                            if request.form['webuser_id'] != '-1':
+                                json['concern'] =getconcern(rest[key],request.form['webuser_id'])
+                            else:
+                                pass
                         elif key == 'restaurant_id':
                             json['restaurant_id'] = str(rest[key])
                         elif key == 'name':
@@ -116,6 +119,137 @@ def coupons():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+coupons_info = swagger("3-1 店粉儿优惠详情.jpg","店粉儿优惠详情")
+coupons_info_json = {
+    "auto": coupons_info.String(description='验证是否成功'),
+    "message": coupons_info.String(description='SUCCESS/FIELD',default="SUCCESS"),
+    "code": coupons_info.Integer(description='',default=0),
+    "data": {
+            "kind3": {
+              "content": coupons_info.String(description='抢优惠信息',default="全品满100.0元减30.0元"),
+              "num": coupons_info.String(description='数量,为0时抢优惠变灰',default=""),
+              "id": coupons_info.String(description='抢优惠id',default="5783098c7c1fa4826dce8fbf"),
+              "time": coupons_info.String(description='有效期',default="2016年08月13日-2016年10月24日"),
+            },
+            "kind2": coupons_info.String(description='新粉优惠',default="全品满100.0元减30.0元"),
+            "kind1": coupons_info.String(description='关注即享',default="全品满100.0元打0.8折"),
+            "dishes_type": coupons_info.String(description='菜系',default="川菜/湘菜  炒菜"),
+            "phone": coupons_info.String(description='电话',default="15045681388"),
+            "guide_image": coupons_info.String(description='头图',default="b0040dfcbf2a70d91c7e364ea6c1bf7b"),
+            "address": coupons_info.String(description='地址',default="哈尔滨市南岗区马家街132-2号"),
+            "id": coupons_info.String(description='饭店id',default="57329e300c1d9b2f4c85f8e6"),
+            "name": coupons_info.String(description='饭店名',default="阿东海鲜老菜馆"),
+
+    }
+}
+coupons_info.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+coupons_info.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店id',default='57329e300c1d9b2f4c85f8e6')
+@coupons_user_api.route('/fm/user/v1/coupons/coupons_info/',methods=['POST'])
+@swag_from(coupons_info.mylpath(schemaid='coupons_info',result=coupons_info_json))
+def coupons_info():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                item = mongo.restaurant.find({"_id":ObjectId(request.form['restaurant_id'])})
+                data = {}
+                for i in item:
+                    data['id'] = str(i['_id'])
+                    data['guide_image'] = i['guide_image']
+                    data['name'] = i['name']
+                    dishes_type = []
+                    for type in i['dishes_type']:
+                        dishes_type.append(type['name'])
+                    data['dishes_type'] = '  '.join(dishes_type)
+                    data['kind1'] =getcoupons('1',str(i['_id']))['content']
+                    data['kind2'] =getcoupons('2',str(i['_id']))['content']
+                    data['kind3'] = getcoupons('2',str(i['_id']),flag='0')
+                    data['address'] = i['address']
+                    data['phone'] = i['phone']
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+getcoupon = swagger("3-1 店粉儿优惠详情.jpg","抢优惠")
+getcoupon_json = {
+    "auto": getcoupon.String(description='验证是否成功'),
+    "message": getcoupon.String(description='SUCCESS/FIELD',default="SUCCESS"),
+    "code": getcoupon.Integer(description='',default=0),
+    "data": {
+            "status": getcoupon.Integer(description='',default=1),
+            "msg":getcoupon.String(description='返回信息',default="抢优惠成功")
+    }
+}
+getcoupon.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+getcoupon.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店id',default='57329e300c1d9b2f4c85f8e6')
+getcoupon.add_parameter(name='webuser_id',parametertype='formData',type='string',required= True,description='用户id',default='57df8181231abaa4d03f420f')
+getcoupon.add_parameter(name='coupons_id',parametertype='formData',type='string',required= True,description='抢优惠id',default='5784bea80c1d9b385dadae9c')
+@coupons_user_api.route('/fm/user/v1/coupons/getcoupon/',methods=['POST'])
+@swag_from(getcoupon.mylpath(schemaid='getcoupon',result=getcoupon_json))
+def getcoupon():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                restaurant_id = request.form['restaurant_id']
+                webuser_id = request.form['webuser_id']
+                coupons_id = request.form['coupons_id']
+                mycoupons = mongo.mycoupons.find({"coupons_id":ObjectId(coupons_id)})
+                m_flag = True
+                for m in mycoupons:
+                    m_flag = False
+                coupons = coupons_by({"_id":ObjectId(coupons_id)})
+                print coupons,m_flag
+                if coupons and m_flag and not coupons['num'] == 0 :
+                    restaurant = mongo.restaurant.find({"_id":ObjectId(restaurant_id)})
+                    for i in restaurant:
+                        json = {
+                            "restaurant_id" : ObjectId(restaurant_id),
+                            "guide_image":i['guide_image'],
+                            "webuser_id" : ObjectId(webuser_id),
+                            "coupons_id" : ObjectId(coupons['id']),
+                            "status" : "1",
+                            "kind" : "2",
+                            "r_name" : i['name'],
+                            "address" : i['address'],
+                            "phone" : i['phone'],
+                            "content" : coupons['content'],
+                            "expiry_date" : coupons['indate_start']+"-"+coupons['indate_end'],
+                            "role" : coupons['rulename'],
+                            "indate_start" : datetime.datetime.strptime("1980-01-01", "%Y-%m-%d"),
+                            "indate_end" : datetime.datetime.strptime("2100-01-01", "%Y-%m-%d"),
+                        }
+                        if coupons['num']!= -1:
+                            mongo.coupons.update_one({"_id":ObjectId(coupons_id)},{"$set":{"num":coupons['num'] - 1}})
+                        mongo.mycoupons.insert(json)
+                        json = {
+                            "status": 1,
+                            "msg":"抢优惠成功"
+                        }
+                else:
+                    json = {
+                        "status": 0,
+                        "msg":"已抢"
+                    }
+
+
+                result=tool.return_json(0,"success",True,json)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+
 #特色名小吃查询类别标签
 special_type = swagger("4-1 特色名小吃.jpg","特色名小吃查询类别标签")
 special_type.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')

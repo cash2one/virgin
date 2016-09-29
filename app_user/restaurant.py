@@ -5,12 +5,13 @@ import pymongo
 from flasgger import swag_from
 
 from app_merchant import auto
+from app_user.groupinvite import GroupInvite
 from tools import tools
 
 import sys
 
 from tools.db_app_user import guess, business_dist, district_list, business_dist_byid, getcoupons, getconcern, checkdish, \
-    coupons_by, use_coupons
+    coupons_by, use_coupons, getimg
 from tools.message_template import mgs_template
 from tools.swagger import swagger
 
@@ -28,8 +29,104 @@ mongo=conn.mongo_conn()
 restaurant_user_api = Blueprint('restaurant_user_api', __name__, template_folder='templates')
 
 
+index = swagger("0 首页改.jpg","首页接口（不含搜索和猜你喜欢，这两块单写）")
+index_json = {
+    "auto": index.String(description='验证是否成功'),
+    "message": index.String(description='SUCCESS/FIELD',default="SUCCESS"),
+    "code": index.Integer(description='',default=0),
+    # "data": {
+    #
+    # }
+}
+index.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+@restaurant_user_api.route('/fm/user/v1/restaurant/index/',methods=['POST'])
+@swag_from(index.mylpath(schemaid='index',result=index_json))
+def index():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
 
+            try:
+                data = {}
+                #开团请客 开始
+                kaituan = GroupInvite().all_item
+                list = []
+                for k in kaituan:
+                    json = {}
+                    json['detail'] = k['detail']
+                    json['restaurant_name'] = k['restaurant']['name']
+                    json['size'] = k['group_info']['size']
+                    json['old_price'] = k['price']['old']
+                    json['now_price'] = k['price']['now']
+                    json['pic'] = k['restaurant']['pic']
+                    json['time_range'] = k['time_range']
+                    list.append(json)
+                data['kaituan'] = list[0:4]
+                #开团请客 结束
+                #店粉优惠 随机两个饭店 开始
+                count = len(mongo.coupons.distinct('restaurant_id',{'showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()},"button":"0"}))
+                randomnum = random.randint(0, count-2)
+                restaurant_id = mongo.coupons.distinct('restaurant_id',{'showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()},"button":"0"})[randomnum:randomnum+2]
+                idlist = []
+                for i in restaurant_id:
+                    idlist.append(i)
+                coupons = {}
+                couponslist = []
+                num = 0
+                for i in idlist:
+                    coupons['title1'] = getcoupons('1',idlist[num])['content']
+                    coupons['id1'] = getcoupons('1',idlist[num])['id']
+                    coupons['title2'] = getcoupons('2',idlist[num])['content']
+                    coupons['id2'] = getcoupons('2',idlist[num])['id']
+                    coupons['title3'] = getcoupons('3',idlist[num])['content']
+                    coupons['id3'] = getcoupons('3',idlist[num])['id']
+                    coupons['img'] = getimg(idlist[num])
+                    num+=1
+                    couponslist.append(coupons)
+                data['coupons'] = couponslist
+                #店粉优惠 随机两个饭店 结束
+                #店粉优惠专用图片 开始
+                image = mongo.img.find()
+                imgjson = {}
+                for img in image:
+                    imgjson['img'] = img['img']
+                    imgjson['title'] = img['title']
+                data['img'] = imgjson
+                #店粉优惠专用图片 结束
+                #今日范儿店 开始
+                shop_recommend = mongo.shop_recommend.find({'type':1,'addtime': {'$gte': datetime.datetime.now()-datetime.timedelta(days = 1),'$lt': datetime.datetime.now()}}).sort("addtime", pymongo.DESCENDING)[0:1]
+                recommend = {}
+                for i in shop_recommend:
 
+                    for key in i.keys():
+                        if key == '_id':
+                            recommend['id'] = str(i[key])
+                        elif key == 'restaurant_id':
+                            recommend['restaurant_id'] = str(i[key])
+                        elif key == 'restaurant_name':
+                            recommend['restaurant_name'] = i[key]
+                        elif key == 'content':
+                            recommend['content'] = i[key]
+                        elif key == 'dishs':
+                            recommend['dishs'] = i[key][0:3]
+                        else:
+                            pass
+                data['recommend'] = recommend
+                #今日范儿店 结束
+                #猜你喜欢 开始
+                guesslist = []
+                data['guess'] = guesslist
+                #猜你喜欢 结束
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
 
 restaurant = swagger("1 美食地图.jpg","饭店条件查询")
 restaurant_json = {
@@ -626,7 +723,7 @@ def restaurant_info():
                     data['dishes_discount'] =dishes_discount
                     wine_discount = ''
                     if i['wine_discount']['discount'] != 1.0:
-                        wine_discount = '菜品'+str(i['wine_discount']['discount']*10)+'折,'
+                        wine_discount = '酒水'+str(i['wine_discount']['discount']*10)+'折,'
                     wine_discount += i['wine_discount']['message']
                     data['wine_discount'] =wine_discount
                     data['coupons'] =getcoupons('3',str(i['_id']))
@@ -1591,6 +1688,51 @@ def liansuo():
                         "address":i['address'],
                         "phone":i['phone']
                     }
+                    list.append(json)
+                data['list'] = list
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#首页搜索
+search = swagger("0 首页改.jpg","首页搜索")
+search.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+search.add_parameter(name='str',parametertype='formData',type='string',required= True,description='饭店名',default='饭店')
+search_json = {
+  "auto": search.String(description='验证是否成功'),
+  "message": search.String(description='SUCCESS/FIELD',default="SUCCESS"),
+  "code": search.Integer(description='',default=0),
+  "data": {
+        "list":[
+            {
+                "id":search.String(description='id',default="id"),
+                "name":search.String(description='name',default="name")
+            }
+        ]
+}
+
+}
+#首页搜索
+@restaurant_user_api.route('/fm/user/v1/restaurant/search/',methods=['POST'])
+@swag_from(search.mylpath(schemaid='search',result=search_json))
+def search():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                data = {}
+                list = []
+                restaurant = mongo.restaurant.find({"name":{"$regex":request.form['str']}})
+                for rest in restaurant:
+                    json = {}
+                    json['name'] = rest['name']
+                    json['id'] = str(rest['_id'])
                     list.append(json)
                 data['list'] = list
                 result=tool.return_json(0,"success",True,data)

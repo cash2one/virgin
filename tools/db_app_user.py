@@ -11,8 +11,8 @@ import datetime
 
 mongo=conn.mongo_conn()
 #根据类别和饭店id获取一条店粉优惠
-def getcoupons(kind, restaurant_id):
-    item = mongo.coupons.find({'button':'0','restaurant_id':ObjectId(restaurant_id),'kind':kind,'showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()}}).sort("showtime_start", pymongo.DESCENDING)[0:1]
+def getcoupons(kind, restaurant_id, flag='1'):
+    item = mongo.coupons.find({"$or":[{"button":"0"}, {"button":0}],'restaurant_id':ObjectId(restaurant_id),'kind':kind,'showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()}}).sort("showtime_start", pymongo.DESCENDING)[0:1]
     json = {
         'id':'',
         'content':'',
@@ -48,7 +48,8 @@ def getcoupons(kind, restaurant_id):
                 pass
         else:
             json['content'] = i['content']
-
+        if flag == '0':
+            json['time'] = i['indate_start'].strftime('%Y年%m月%d日') +"-"+ i['indate_end'].strftime('%Y年%m月%d日')
     return json
 #获取首页店粉优惠大图
 def getimg(restaurant_id):
@@ -330,6 +331,10 @@ def coupons_by(first={}):
                 json['status'] = '进行中'
             else:
                 json['status'] = '已结束'
+            if i['num'] != -1:
+                json['num'] = i['num']
+            else:
+                json['num'] = -1
     return json
 def use_coupons(total = 50.0,dish_total = 40.0,wine_total = 10.0,restaurant_id='57329e300c1d9b2f4c85f8e6',webuser_id='57396fd67c1f31a9cce960f8'):
     finel = []
@@ -462,6 +467,7 @@ def use_coupons(total = 50.0,dish_total = 40.0,wine_total = 10.0,restaurant_id='
     return tishi,finel
 if __name__ == '__main__':
     pass
+    print json_util.dumps(coupons_by(),ensure_ascii=False,indent=2)
     # json = guess({"_id":{"$in":[ObjectId("57329e300c1d9b2f4c85f8e6")]}}, lat1='y', lon1='x', end=10,webuser_id='573feadf7c1fa8a326a9c03c')
     # for j in json:
     #     del j['distance']
@@ -480,4 +486,4 @@ if __name__ == '__main__':
     #     list.append(json)
     # list = coupons_by({"restaurant_id":ObjectId("57329e300c1d9b2f4c85f8e6"),"kind":"2","button":"0"})
     # print json_util.dumps(list,ensure_ascii=False,indent=2)
-    print json_util.dumps(use_coupons(total = 50.0,dish_total = 40.0,wine_total = 10.0,restaurant_id='57329e300c1d9b2f4c85f8e6',webuser_id='57396ec17c1f31a9cce960f4'),ensure_ascii=False,indent=2)
+    # print json_util.dumps(use_coupons(total = 50.0,dish_total = 40.0,wine_total = 10.0,restaurant_id='57329e300c1d9b2f4c85f8e6',webuser_id='57396ec17c1f31a9cce960f4'),ensure_ascii=False,indent=2)
