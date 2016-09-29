@@ -665,25 +665,31 @@ def kaituan():
                     json = {}
                     json["rest_name"] = i['restaurant_info']['name']
                     json['status'] = i['status']
-                    json['people_num'] =i['max_group'] - len(i['friends'])
+
                     if i['status'] == 'wait_friends':
                         json['time'] = '距离活动结束还有'+str(int((i['end_time']-datetime.datetime.now()).total_seconds()/60))+'分钟'
                         json['status'] = '邀请好友进行时'
+                        json['people_num'] =i['max_group'] - len(i['friends'])
                     elif i['status'] == 'wait_pay':
                         json['time'] = '距离活动结束还有'+str(int((i['end_time']-datetime.datetime.now()).total_seconds()/60))+'分钟'
                         json['status'] = '待付款'
+                        json['people_num'] =i['max_group'] - len(i['friends'])
                     elif i['status'] == 'already_payment':
                         json['time'] = '距离活动结束还有'+str(int((i['end_time']-datetime.datetime.now()).total_seconds()/60))+'分钟'
                         json['status'] = '待就餐'
+                        json['people_num'] =i['max_group'] - len(i['friends'])
                     elif i['status'] == 'already_used':
                         json['time'] = '已就餐'
                         json['status'] = '已就餐'
+                        json['people_num'] =i['max_group'] - len(i['friends'])
                     elif i['status'] == 'timeout':
                         json['time'] = '活动已结束'
                         json['status'] = '已超时'
+                        json['people_num'] =None
                     else:
                         json['time'] = ''
                         json['status'] = ''
+                        json['people_num'] =None
                     list.append(json)
                 data['list'] = list
 
