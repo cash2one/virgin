@@ -10,6 +10,7 @@ from app_user.coupons import coupons_user_api
 from app_user.index import index_api
 from app_user.login import login_user_api
 from app_user.me import me_user_api
+from app_user.pay import pay_user_api
 from app_user.restaurant import restaurant_user_api
 from tools.error_warning import error_api
 from test.test import test_api
@@ -51,7 +52,7 @@ app.register_blueprint(group_invite)
 app.register_blueprint(login_user_api)
 app.register_blueprint(me_user_api)
 app.register_blueprint(coupons_user_api)
-
+app.register_blueprint(pay_user_api)
 
 @app.route('/protected', methods=['POST'])
 @app.errorhandler(404)

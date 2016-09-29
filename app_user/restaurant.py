@@ -1175,7 +1175,7 @@ def dish_menu_count():
                                         "dis_amount":float("%.2f" % m[0])
                                     }
                                 )
-                    mongo.order.update_one(pdict,{"$set": {'deposit':deposit,'dis_message':dis_message,'total': float("%.2f" % total)}})
+                    mongo.order.update_one(pdict,{"$set": {'deposit':float("%.2f" % deposit),'dis_message':dis_message,'total': float("%.2f" % total)}})
                     data = {
                         'dish_num':order_num,
                         'total':float("%.2f" % total)

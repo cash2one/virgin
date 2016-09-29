@@ -12,9 +12,9 @@ from tools.swagger import swagger
 
 __author__ = 'dolacmeo'
 
-restaurant = MongoHelp(mongo_conn().restaurant)
-db_info = MongoHelp(mongo_conn().qingke)
-db_order = MongoHelp(mongo_conn().order_groupinvite)
+restaurant = MongoHelp('restaurant')
+db_info = MongoHelp('qingke')
+db_order = MongoHelp('order_groupinvite')
 
 
 # 'wait_friends', 'wait_pay', 'already_payment', 'already_used', 'time_out'
