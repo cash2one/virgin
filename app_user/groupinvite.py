@@ -193,7 +193,7 @@ class GroupInvite:
         if self.invite_order['status'] == 'timeout':
             return {'success': False, 'error': 'timeout! start_time: %s' % self.invite_order['start_time']}
         if self.invite_order['max_group'] - len(self.invite_order['friends']) >= 2:
-            get_in = db_order.fix_one_o({'group_id': self._id, 'invite_code': self.code},
+            get_in = db_order.fix_one({'group_id': self._id, 'invite_code': self.code},
                                         {"$addToSet": {"friends": user_id}})
             if self.invite_order['max_group'] - len(self.invite_order['friends']) == 2:
                 db_order.fix_one({'group_id': self._id, 'invite_code': self.code},

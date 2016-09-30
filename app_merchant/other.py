@@ -157,8 +157,8 @@ def addfeedback():
 #安卓版本更新用户版
 addfeedbackvuser= swagger("其它","用户版意见反馈")
 addfeedbackvuser.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
-addfeedbackvuser.add_parameter(name='content',parametertype='formData',type='string',required= True,description='用户id',default='57396ec17c1f31a9cce960f4')
-addfeedbackvuser.add_parameter(name='userid',parametertype='formData',type='string',required= True,description='反馈内容',default='美食地图我喜欢')
+addfeedbackvuser.add_parameter(name='userid',parametertype='formData',type='string',required= True,description='用户id',default='57396ec17c1f31a9cce960f4')
+addfeedbackvuser.add_parameter(name='content',parametertype='formData',type='string',required= True,description='反馈内容',default='美食地图我喜欢')
 addfeedbackvuser_json ={
   "auto": addfeedbackvuser.Boolean(description='',default="true"),
   "message": addfeedbackvuser.String(description='SUCCESS/FIELD',default="SUCCESS"),

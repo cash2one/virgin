@@ -1439,7 +1439,14 @@ settlement_json = {
             }
           ],
           "numpeople": settlement.Integer(description='用餐人数',default=3),
-          "youhui": "",
+          "youhui": [
+                    {
+                "content" : settlement.String(description='优惠描述',default="全品满100.0元即打0.8折"),
+                "coupons_id" : settlement.String(description='优惠id',default="5783097b7c1fa4826dce8fbd"),
+                "dis_type" : settlement.String(description='优惠类别1现金2折扣',default="1"),
+                "dis_amount" : settlement.Float(description='优惠金额',default=205.64),
+            },
+          ],
           "deposit": settlement.Float(description='押金',default=35.0),
           "address": settlement.String(description='饭店地址',default="哈尔滨市南岗区马家街132-2号"),
           "preset_time": settlement.String(description='用餐时间',default="2016年06月24日 14:00:00"),
