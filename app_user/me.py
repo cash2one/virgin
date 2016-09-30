@@ -643,6 +643,8 @@ kaituan_json = {
     "data": {
         "list": [
             {
+              "num":kaituan.String(description='剩余人数',default="123645"),
+              "invite_code":kaituan.String(description='邀请码',default="123645"),
               "status": kaituan.String(description='开团状态',default="已超时"),
               "rest_name": kaituan.String(description='饭店名',default="10号熏酱骨头馆"),
               "time": kaituan.String(description='开团时效',default="活动已结束")
@@ -672,7 +674,7 @@ def kaituan():
                     json = {}
                     json["rest_name"] = i['restaurant_info']['name']
                     json['status'] = i['status']
-
+                    json['invite_code'] = i['invite_code']
                     if i['status'] == 'wait_friends':
                         json['time'] = '距离活动结束还有'+str(int((i['end_time']-datetime.datetime.now()).total_seconds()/60))+'分钟'
                         json['status'] = '邀请好友进行时'
