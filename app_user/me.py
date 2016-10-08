@@ -458,7 +458,8 @@ myorder_json = {
               "preset_time": myorder.String(description='就餐时间',default="2016年08月19日 15:15:00"),
               "restaurant_id": myorder.String(description='饭店id',default="57329e300c1d9b2f4c85f8e6"),
               "type": myorder.String(description='0-订座订单；1-点菜订单',default="0"),
-              "r_name": myorder.String(description='饭店名',default="菜馆")
+              "r_name": myorder.String(description='饭店名',default="菜馆"),
+              "id": myorder.String(description='订单id',default="573153c4e0fdb78f29b42826"),
             },
         ]
     }
@@ -509,6 +510,7 @@ def myorder():
                         "type": str(i['type']),
                         "restaurant_id": str(i['restaurant_id']),
                         "preset_time": i['preset_time'].strftime('%Y年%m月%d日 %H:%M:%S'),
+                        "id":str(i['_id'])
                     }
                     if i['status'] in [0,2]:
                         json['status'] = '1'
