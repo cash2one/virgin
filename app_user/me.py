@@ -556,7 +556,10 @@ order_info_json = {
           "address": order_info.String(description='饭店地址',default="哈尔滨市南岗区马家街132-2号"),
           "room_name": order_info.String(description='包房名',default="中包（1间）"),
           "numpeople": order_info.String(description='用餐人数',default="3"),
-          "deposit": order_info.String(description='优惠金额',default="0.0"),
+          # "deposit": order_info.String(description='优惠金额',default="0.0"),
+          "yajin": order_info.String(description='押金',default="100"),
+          "yingfu": order_info.String(description='应付',default="500"),
+          "dianfu": order_info.String(description='到店付',default="400"),
           "time": order_info.String(description='订单时效',default="等待时间：280分钟"),
           "preset_time": order_info.String(description='用餐时间',default="2016年08月19日 15:15:00"),
           "total": order_info.String(description='总计金额',default="479.0"),
@@ -572,12 +575,14 @@ def order_info():
         if auto.decodejwt(request.form['jwtstr']):
 
             try:
-                TimeCheck(status= [0,2], source=[2], timeout=45)
-                TimeCheck(status= [1], source=[2], timeout=45)
+                # TimeCheck(status= [0,2], source=[2], timeout=45)
+                # TimeCheck(status= [1], source=[2], timeout=45)
 
                 item = mongo.order.find({"_id":ObjectId(request.form['order_id'])})
                 data = {}
                 for i in item:
+                    data['preset_dishs'] = i['preset_dishs']
+                    data['preset_wine'] = i['preset_wine']
                     print int((datetime.datetime.now()-i['add_time']).total_seconds()/60)
                     #（0-新单，1-待付款，2-待处理，3-待就餐，4-已就餐，5-拒单，6-用户退单，7商家退单,8点菜单）
                     #1待安置座位（0 2） 2待付款（1） 3待就餐（3） 4已就餐（4） 5已退单（6 7） 6失效订单（567）
@@ -603,10 +608,12 @@ def order_info():
                     data['preset_time'] = i['preset_time'].strftime('%Y年%m月%d日 %H:%M:%S')
                     data['numpeople'] = str(i['numpeople'])
                     data['total'] = str(i['total'])
-                    data['deposit'] = str(i['deposit'])
+                    # data['deposit'] = str(i['deposit'])
 
                     y_list = []
+                    dis_amounts = 0.0
                     for dis in i['dis_message']:
+                        dis_amounts+=dis['dis_amount']
                         if dis['dis_type'] == '1':
                             y_list.append({'msg':'关注即享:'+str(dis['dis_amount'])})
                         elif dis['dis_type'] == '2':
@@ -616,6 +623,9 @@ def order_info():
                         else:
                             pass
                     data['youhui'] = y_list
+                    data['yingfu'] =str(i['total'] - dis_amounts)
+                    data['yajin'] = '100'
+                    data['dianfu'] = '200'
                     restaurant = mongo.restaurant.find({"_id":ObjectId(i['restaurant_id'])})
                     for r in restaurant:
                         data['rest_name'] = r['name']
