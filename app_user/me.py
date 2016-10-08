@@ -185,7 +185,6 @@ def my_message():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
             try:
-                my_message.add_parameter(name='pageindex',parametertype='formData',type='string',required= True,description='页数',default='1')
                 pageindex = request.form["pageindex"]
                 pagenum = 10
                 star = (int(pageindex)-1)*pagenum
@@ -214,7 +213,7 @@ def my_message():
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e
-                result=tool.return_json(0,"field",False,None)
+                result=tool.return_json(0,"success",True,str(e))
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)
