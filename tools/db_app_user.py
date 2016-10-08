@@ -18,6 +18,8 @@ def getcoupons(kind, restaurant_id, flag='1'):
         'content':'',
         'num':''
     }
+    if flag == '0':
+        json['time'] = ''
     for i in item:
         json['id'] = str(i['_id'])
         if int(i['num']) != -1:
@@ -50,6 +52,7 @@ def getcoupons(kind, restaurant_id, flag='1'):
             json['content'] = i['content']
         if flag == '0':
             json['time'] = i['indate_start'].strftime('%Y年%m月%d日') +"-"+ i['indate_end'].strftime('%Y年%m月%d日')
+
     return json
 #获取首页店粉优惠大图
 def getimg(restaurant_id):

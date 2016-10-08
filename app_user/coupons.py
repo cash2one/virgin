@@ -162,7 +162,7 @@ def coupons_info():
                     data['dishes_type'] = '  '.join(dishes_type)
                     data['kind1'] =getcoupons('1',str(i['_id']))['content']
                     data['kind2'] =getcoupons('2',str(i['_id']))['content']
-                    data['kind3'] = getcoupons('2',str(i['_id']),flag='0')
+                    data['kind3'] = getcoupons('3',str(i['_id']),flag='0')
                     data['address'] = i['address']
                     data['phone'] = i['phone']
                 result=tool.return_json(0,"success",True,data)

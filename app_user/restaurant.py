@@ -34,9 +34,50 @@ index_json = {
     "auto": index.String(description='验证是否成功'),
     "message": index.String(description='SUCCESS/FIELD',default="SUCCESS"),
     "code": index.Integer(description='',default=0),
-    # "data": {
-    #
-    # }
+    "data": {
+        "kaituan": [
+          {
+            "pic": index.String(description='图片md5',default="2884eec3c74aebef5e7517cc78699d36"),
+            "old_price": index.Float(description='原价',default=200.0),
+            "detail": index.String(description='详情描述',default="详情描述"),
+            "time_range": index.String(description='时间',default="10:30"),
+            "restaurant_name": index.String(description='饭店名',default="10号熏酱骨头馆"),
+            "now_price": index.Float(description='现价',default=122.0),
+            "size":index.Integer(description='人数',default=4)
+          }
+        ],
+        # "guess": [],
+        "img": {
+          "img": index.String(description='店粉优惠图',default="ce3e93a981520f9085dd83e0e8fa880b"),
+          "title": index.String(description='标题',default="标题")
+        },
+        "coupons": [
+          {
+            "rest_name": index.String(description='饭店名',default="饭店名"),
+            "img": index.String(description='图片md5',default="b0040dfcbf2a70d91c7e364ea6c1bf7b"),
+            "id2": index.String(description='优惠id',default="5783098c7c1fa4826dce8fbf"),
+            "id3": index.String(description='优惠id',default="578309097c1fa4826dce8fbb"),
+            "id1": index.String(description='优惠id',default="5783097b7c1fa4826dce8fbd"),
+            "title1": index.String(description='优惠标题',default="全品满100.0元打0.8折"),
+            "title2": index.String(description='优惠标题',default="全品满100.0元减30.0元"),
+            "title3": index.String(description='优惠标题',default="下单即减40.0元"),
+          }
+        ],
+        "recommend": {
+          "content": index.String(description='内容',default="内容"),
+          "dishs": [
+            {
+              "dishs_summary": index.String(description='菜品概括',default="菜品概括"),
+              "id": index.String(description='菜品id',default="201608111433153294"),
+              "dishs_img": index.String(description='菜品id',default="菜品图"),
+              "name": index.String(description='菜品名',default="肉炒白菜木耳"),
+            }
+          ],
+          "restaurant_id": index.String(description='饭店id',default="57329f790c1d9b2f3e5dfbab"),
+          "restaurant_name": index.String(description='饭店名',default="八福熏酱"),
+          "id": index.String(description='范儿店id',default="57a974ef612c5e193c559604")
+        }
+    }
 }
 index.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 @restaurant_user_api.route('/fm/user/v1/restaurant/index/',methods=['POST'])
@@ -73,6 +114,9 @@ def index():
                 couponslist = []
                 num = 0
                 for i in idlist:
+                    rest = mongo.restaurant.find({"_id":ObjectId(idlist[num])})
+                    for r in rest:
+                        coupons['rest_name'] = r['name']
                     coupons['title1'] = getcoupons('1',idlist[num])['content']
                     coupons['id1'] = getcoupons('1',idlist[num])['id']
                     coupons['title2'] = getcoupons('2',idlist[num])['content']
@@ -108,6 +152,8 @@ def index():
                             recommend['content'] = i[key]
                         elif key == 'dishs':
                             recommend['dishs'] = i[key][0:3]
+                        elif key == 'headimage':
+                            recommend['headimage'] = i[key]
                         else:
                             pass
                 data['recommend'] = recommend
