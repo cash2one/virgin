@@ -487,7 +487,7 @@ def myorder():
                 # change_list = [None, {"$in":[0,2]}, 1, 3, 4, {"$in":[6,7]}, {"$in":[5,6,7]}, None]
                 # first['status'] = change_list[status]
                 if status == -1:
-                    pass
+                    first['status'] = {"$in":[0,1,2,3,4,5,6,7]}
                 elif status == 1:
                     first['status'] = {"$in":[0,2]}
                 elif status == 2:
@@ -523,6 +523,8 @@ def myorder():
                         json['status'] = '6'
                     elif i['status'] in [6,7]:
                         json['status'] = '5'
+                    else:
+                        json['status'] = ''
                     restaurant = mongo.restaurant.find({"_id":ObjectId(i['restaurant_id'])})
                     for r in restaurant:
                         json['r_name'] = r['name']
