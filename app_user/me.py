@@ -615,11 +615,11 @@ def order_info():
                     for dis in i['dis_message']:
                         dis_amounts+=dis['dis_amount']
                         if dis['dis_type'] == '1':
-                            y_list.append({'msg':'关注即享:'+str(dis['dis_amount'])})
+                            y_list.append({'msg':'<font size=\"2\">'+'关注即享:'+'<font size=\"2\" color=\"red\">'+str(dis['dis_amount'])+'元</font></font>'})
                         elif dis['dis_type'] == '2':
-                            y_list.append({'msg':'新粉优惠:'+str(dis['dis_amount'])})
+                            y_list.append({'msg':'<font size=\"2\">'+'新粉优惠:'+'<font size=\"2\" color=\"red\">'+str(dis['dis_amount'])+'元</font></font>'})
                         elif dis['dis_type'] == '3':
-                            y_list.append({'msg':'店粉抢优惠:'+str(dis['dis_amount'])})
+                            y_list.append({'msg':'<font size=\"2\">'+'店粉抢优惠:'+'<font size=\"2\" color=\"red\">'+str(dis['dis_amount'])+'元</font></font>'})
                         else:
                             pass
                     data['youhui'] = y_list
