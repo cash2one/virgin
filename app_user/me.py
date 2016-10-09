@@ -587,22 +587,22 @@ def order_info():
                     #（0-新单，1-待付款，2-待处理，3-待就餐，4-已就餐，5-拒单，6-用户退单，7商家退单,8点菜单）
                     #1待安置座位（0 2） 2待付款（1） 3待就餐（3） 4已就餐（4） 5已退单（6 7） 6失效订单（567）
                     if i['status'] in [0,2]:
-                        data['time'] ='<font size=\"5\">'+'等待时间：'+'<font size=\"5\" color=\"red\">'+str(int((datetime.datetime.now()-i['add_time']).total_seconds()/60))+'分钟'+'</font></font>'
+                        data['time'] ='<font size=\"2\">'+'等待时间：'+'<font size=\"2\" color=\"red\">'+str(int((datetime.datetime.now()-i['add_time']).total_seconds()/60))+'分钟'+'</font></font>'
                         data['status'] = '待安置座位'
                     elif i['status'] ==1:
-                        data['time'] ='<font size=\"5\">'+'剩余付款时间：'+'<font size=\"5\" color=\"red\">'+str(int((datetime.datetime.now()-i['add_time']).total_seconds()/60))+'分钟'+'</font></font>'
+                        data['time'] ='<font size=\"2\">'+'剩余付款时间：'+'<font size=\"2\" color=\"red\">'+str(int((datetime.datetime.now()-i['add_time']).total_seconds()/60))+'分钟'+'</font></font>'
                         data['status'] = '待付款'
                     elif i['status'] ==3:
-                        data['time'] ='<font size=\"5\">'+'用餐时间：'+'<font size=\"5\" color=\"red\">'+i['preset_time'].strftime('%Y年%m月%d日 %H:%M:%S')+'</font></font>'
+                        data['time'] ='<font size=\"2\">'+'用餐时间：'+'<font size=\"2\" color=\"red\">'+i['preset_time'].strftime('%Y年%m月%d日 %H:%M:%S')+'</font></font>'
                         data['status'] = '待就餐'
                     elif i['status'] ==4:
-                        data['time'] ='<font size=\"5\">'+'用餐时间：'+'<font size=\"5\" color=\"red\">'+i['preset_time'].strftime('%Y年%m月%d日 %H:%M:%S')+'</font></font>'
+                        data['time'] ='<font size=\"2\">'+'用餐时间：'+'<font size=\"2\" color=\"red\">'+i['preset_time'].strftime('%Y年%m月%d日 %H:%M:%S')+'</font></font>'
                         data['status'] = '已就餐'
                     elif i['status'] in [5,6,7]:
-                        data['time'] ='<font size=\"5\">'+'失效时间：'+'<font size=\"5\" color=\"red\">'+i['add_time'].strftime('%Y年%m月%d日 %H:%M:%S')+'</font></font>'
+                        data['time'] ='<font size=\"2\">'+'失效时间：'+'<font size=\"2\" color=\"red\">'+i['add_time'].strftime('%Y年%m月%d日 %H:%M:%S')+'</font></font>'
                         data['status'] = '失效订单'
                     elif i['status'] in [6,7]:
-                        data['time'] ='<font size=\"5\">'+'退单时间：'+'<font size=\"5\" color=\"red\">'+i['add_time'].strftime('%Y年%m月%d日 %H:%M:%S')+'</font></font>'
+                        data['time'] ='<font size=\"2\">'+'退单时间：'+'<font size=\"2\" color=\"red\">'+i['add_time'].strftime('%Y年%m月%d日 %H:%M:%S')+'</font></font>'
                         data['status'] = '已退单'
                     data['id'] = str(i['_id'])
                     data['preset_time'] = i['preset_time'].strftime('%Y年%m月%d日 %H:%M:%S')
