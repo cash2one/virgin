@@ -303,6 +303,44 @@ group_invite_detail_json = {
     "auto": group_invite_detail.String(description='验证是否成功'),
     "message": group_invite_detail.String(description='SUCCESS/FIELD', default="SUCCESS"),
     "code": group_invite_detail.Integer(description='h', default=0),
+    "data":{
+        "status": group_invite_detail.String(description='wait_friends待邀请, wait_pay待支付, already_payment已支付, already_used已使用, time_out超时', default="timeout"),
+        "master_id": group_invite_detail.String(description='发起人id', default="dola"),
+        "dishes": [
+          {
+            "flname":  group_invite_detail.String(description='分类名', default="111"),
+            "allcount":  group_invite_detail.Integer(description='全部数量', default=2),
+            "flnum": group_invite_detail.String(description='分类数', default="0"),
+            "ff": group_invite_detail.String(description='不知道', default="1"),
+            "cp": [
+              {
+                "count": group_invite_detail.String(description='菜品数量', default="1"),
+                "price": group_invite_detail.String(description='价格', default="19.0"),
+                "allprice": group_invite_detail.String(description='总价', default="19.0"),
+                "id": group_invite_detail.String(description='菜品id', default="201605120931222746"),
+                "name": group_invite_detail.String(description='菜名', default="骨架")
+              }
+            ],
+            "fl": group_invite_detail.String(description='分类', default="fl1")
+          }
+        ],
+        "max_group": 5,
+        "order_id": group_invite_detail.String(description='订单id', default="MSDT1472541303927956"),
+        "start_time": group_invite_detail.String(description='开始时间', default="2016-08-30 15:15:03"),
+        "invite_code": group_invite_detail.String(description='邀请码', default="603101"),
+        "_id": group_invite_detail.String(description='开团id', default="57c532770b0555090830ff50"),
+        "restaurant_info": {
+          "rid": group_invite_detail.String(description='饭店id', default="5733dc610c1d9b310dd05549"),
+          "pic": group_invite_detail.String(description='饭店图', default="1a7f2ae4c0db98e3481f9670c0e6d7dc"),
+          "dist": group_invite_detail.String(description='商圈', default="抚顺街"),
+          "addr": group_invite_detail.String(description='地址', default="哈尔滨市道里区安平街18号"),
+          "name": group_invite_detail.String(description='饭店名', default="快捷熏酱饺子"),
+        },
+        "end_time": group_invite_detail.String(description='结束时间', default="2017-09-30 10:35:00"),
+        "group_id": group_invite_detail.String(description='分组id', default="57c4dc7c612c5e1a7435ec35"),
+        "friends": group_invite_detail.String(description='朋友列表', default="['5747bd310b05552c4c571865']"),
+  }
+
 }
 group_invite_detail.add_parameter(name='jwtstr', parametertype='formData', type='string', required=True,
                                   description='jwt串',
