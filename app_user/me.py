@@ -423,7 +423,7 @@ def mycoupons():
                         "content" : i['content'],
                         "expiry_date" : i['expiry_date'],
                         "role" : i['role'],
-                        "rest_id":i['restaurant_id']
+                        "rest_id":str(i['restaurant_id'])
                     }
                     if i['status'] == status and i['indate_end']>datetime.datetime.now():
                         print 'in'
