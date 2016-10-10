@@ -1326,17 +1326,33 @@ def dish_menu_list():
                     json['total'] = i['total']
                     json['deposit'] = i['deposit']
                     y_list = []
+                    dis_amounts = 0.0
                     for dis in i['dis_message']:
+                        dis_amounts+=dis['dis_amount']
                         if dis['dis_type'] == '1':
-                            y_list.append({'msg':'关注即享:'+str(dis['dis_amount'])})
+                            y_list.append({
+                                'msg':'<font size=\"3\">'+'关注即享:'+'<font size=\"3\" color=\"red\">'+str(dis['dis_amount'])+'元</font></font>',
+                                'first':'关注即享:',
+                                'second':str(dis['dis_amount'])
+                            })
                         elif dis['dis_type'] == '2':
-                            y_list.append({'msg':'新粉优惠:'+str(dis['dis_amount'])})
+                            y_list.append({
+                                'msg':'<font size=\"3\">'+'新粉优惠:'+'<font size=\"3\" color=\"red\">'+str(dis['dis_amount'])+'元</font></font>',
+                                'first':'新粉优惠:',
+                                'second':str(dis['dis_amount'])
+                            })
                         elif dis['dis_type'] == '3':
-                            y_list.append({'msg':'店粉抢优惠:'+str(dis['dis_amount'])})
+                            y_list.append({
+                                'msg':'<font size=\"3\">'+'店粉抢优惠:'+'<font size=\"3\" color=\"red\">'+str(dis['dis_amount'])+'元</font></font>',
+                                'first':'店粉抢优惠:',
+                                'second':str(dis['dis_amount'])
+                            })
                         else:
                             pass
                     json['youhui'] = y_list
-                    json['dianfu'] = i['total'] - i['deposit']
+                    data['yingfu'] =str(i['total'] - dis_amounts)
+                    data['yajin'] = '100'
+                    data['dianfu'] = '200'
                     json['preset_dishs'] = i['preset_dishs']
                     json['preset_wine'] = i['preset_wine']
                     json['tishi'] = mycoupons[0]
@@ -1669,11 +1685,23 @@ def dish_menu_one():
                     y_list = []
                     for dis in i['dis_message']:
                         if dis['dis_type'] == '1':
-                            y_list.append({'msg':'关注即享:'+str(dis['dis_amount'])})
+                            y_list.append({
+                                'msg':'<font size=\"3\">'+'关注即享:'+'<font size=\"3\" color=\"red\">'+str(dis['dis_amount'])+'元</font></font>',
+                                'first':'关注即享:',
+                                'second':str(dis['dis_amount'])
+                            })
                         elif dis['dis_type'] == '2':
-                            y_list.append({'msg':'新粉优惠:'+str(dis['dis_amount'])})
+                            y_list.append({
+                                'msg':'<font size=\"3\">'+'新粉优惠:'+'<font size=\"3\" color=\"red\">'+str(dis['dis_amount'])+'元</font></font>',
+                                'first':'新粉优惠:',
+                                'second':str(dis['dis_amount'])
+                            })
                         elif dis['dis_type'] == '3':
-                            y_list.append({'msg':'店粉抢优惠:'+str(dis['dis_amount'])})
+                            y_list.append({
+                                'msg':'<font size=\"3\">'+'店粉抢优惠:'+'<font size=\"3\" color=\"red\">'+str(dis['dis_amount'])+'元</font></font>',
+                                'first':'店粉抢优惠:',
+                                'second':str(dis['dis_amount'])
+                            })
                         else:
                             pass
                     json['youhui'] = y_list
