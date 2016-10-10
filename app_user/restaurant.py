@@ -743,7 +743,7 @@ restaurant_info_json = {
 def restaurant_info():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
-            try:
+            # try:
                 webuser_id = request.form['webuser_id']
                 item = mongo.restaurant.find({"_id":ObjectId(request.form['restaurant_id'])})
                 data = {}
@@ -778,11 +778,18 @@ def restaurant_info():
                     data['address'] = i['address']
                     data['phone'] = i['phone']
                     data['open'] = i['open']
+                    data['yanyi'] = '无'
+                    data['24xiaoshi'] = '无'
+                    data['tingchechang'] = '无'
+                    data['WiFi'] = '无'
                     for tese in i['tese']:
                         data['yanyi'] = '有' if '51' == tese['id'] else '无'
                         data['24xiaoshi'] = '有' if '52' == tese['id'] else '无'
                         data['tingchechang'] = '有' if '53' == tese['id'] else '无'
                         data['WiFi'] = '有' if '54' == tese['id'] else '无'
+                    data['shuaka'] = '0'
+                    data['weixin'] = '0'
+                    data['zhifubao'] = '0'
                     for pay_type in i['pay_type']:
                         data['shuaka'] = '1' if '47' == pay_type['id'] else '0'
                         data['weixin'] = '1' if '48' == pay_type['id'] else '0'
@@ -798,15 +805,16 @@ def restaurant_info():
                             rooms['room_type'] = ''
                     rooms['room_name'] = ' '.join(room_name)
                     data['rooms'] = rooms
+                    data['tuijiancai'] =''
                     for menu in  i['menu']:
                         if menu['name'] == '推荐菜':
                             data['tuijiancai'] = menu['dishs']
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
-            except Exception,e:
-                print e
-                result=tool.return_json(0,"field",True,str(e))
-                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            # except Exception,e:
+            #     print e
+            #     result=tool.return_json(0,"field",True,str(e))
+            #     return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
