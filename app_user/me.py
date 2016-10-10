@@ -692,23 +692,23 @@ def kaituan():
                     json['invite_code'] = i['invite_code']
                     if i['status'] == 'wait_friends':
                         # '<font size=\"2\">'+'等待时间：'+'<font size=\"2\" color=\"red\">'+str(int((datetime.datetime.now()-i['add_time']).total_seconds()/60))+'分钟'+'</font></font>'
-                        json['time'] = '<font size=\"2\" color=\"yellow\">'+'距离活动结束还有'+'</font><font size=\"4\" color=\"red\">'+str(int((i['end_time']-datetime.datetime.now()).total_seconds()/60))+'</font><font size=\"2\" color=\"yellow\">'+'分钟'+'</font>'
+                        json['time'] = '<font size=\"4\" color=\"#feb71d\">'+'距离活动结束还有'+'</font><font size=\"7\" color=\"red\">'+str(int((i['end_time']-datetime.datetime.now()).total_seconds()/60))+'</font><font size=\"4\" color=\"yellow\">'+'分钟'+'</font>'
                         json['status'] = '邀请好友进行时'
-                        json['people_num'] ='<font size=\"2\">还有'+'</font><font size=\"4\" color=\"red\">'+str(i['max_group'] - len(i['friends']))+'</font><font size=\"2\">'+'名好友待邀请</font>'
+                        json['people_num'] ='<font size=\"4\">还有'+'</font><font size=\"7\" color=\"red\">'+str(i['max_group'] - len(i['friends']))+'</font><font size=\"4\">'+'名好友待邀请</font>'
                     elif i['status'] == 'wait_pay':
-                        json['time'] = '<font size=\"2\" color=\"yellow\">'+'距离活动结束还有'+'</font><font size=\"4\" color=\"red\">'+str(int((i['end_time']-datetime.datetime.now()).total_seconds()/60))+'</font><font size=\"2\" color=\"yellow\">'+'分钟'+'</font>'
+                        json['time'] = '<font size=\"4\" color=\"#feb71d\">'+'距离活动结束还有'+'</font><font size=\"7\" color=\"red\">'+str(int((i['end_time']-datetime.datetime.now()).total_seconds()/60))+'</font><font size=\"4\" color=\"yellow\">'+'分钟'+'</font>'
                         json['status'] = '待付款'
                         json['people_num'] =i['max_group'] - len(i['friends'])
                     elif i['status'] == 'already_payment':
-                        json['time'] = '<font size=\"2\" color=\"yellow\">'+'距离活动结束还有'+'</font><font size=\"4\" color=\"red\">'+str(int((i['end_time']-datetime.datetime.now()).total_seconds()/60))+'</font><font size=\"2\" color=\"yellow\">'+'分钟'+'</font>'
+                        json['time'] = '<font size=\"4\" color=\"#feb71d\">'+'距离活动结束还有'+'</font><font size=\"7\" color=\"red\">'+str(int((i['end_time']-datetime.datetime.now()).total_seconds()/60))+'</font><font size=\"4\" color=\"yellow\">'+'分钟'+'</font>'
                         json['status'] = '待就餐'
                         json['people_num'] =i['max_group'] - len(i['friends'])
                     elif i['status'] == 'already_used':
-                        json['time'] = '<font size=\"2\" color=\"yellow\">'+'已就餐'+'</font>'
+                        json['time'] = '<font size=\"4\" color=\"#feb71d\">'+'已就餐'+'</font>'
                         json['status'] = '已就餐'
                         json['people_num'] =i['max_group'] - len(i['friends'])
                     elif i['status'] == 'timeout':
-                        json['time'] = '<font size=\"2\" color=\"yellow\">'+'活动已结束'+'</font>'
+                        json['time'] = '<font size=\"4\" color=\"#feb71d\">'+'活动已结束'+'</font>'
                         json['status'] = '已超时'
                         json['people_num'] =None
                     else:
