@@ -387,6 +387,7 @@ mycoupons_json = {
                   "phone":  mycoupons.String(description='电话',default="电话"),
                   "expiry_date":  mycoupons.String(description='有效期',default="有效期"),
                   "role":  mycoupons.String(description='使用规则',default="使用规则"),
+                  "rest_id":  mycoupons.String(description='饭店id',default="57df8181231abaa4d03f420f"),
                   "address":  mycoupons.String(description='饭店地址',default="饭店地址")
               }
         ]
@@ -422,6 +423,7 @@ def mycoupons():
                         "content" : i['content'],
                         "expiry_date" : i['expiry_date'],
                         "role" : i['role'],
+                        "rest_id":i['restaurant_id']
                     }
                     if i['status'] == status and i['indate_end']>datetime.datetime.now():
                         print 'in'
