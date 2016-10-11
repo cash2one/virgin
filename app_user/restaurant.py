@@ -11,7 +11,7 @@ from tools import tools
 import sys
 
 from tools.db_app_user import guess, business_dist, district_list, business_dist_byid, getcoupons, getconcern, checkdish, \
-    coupons_by, use_coupons, getimg
+    coupons_by, use_coupons, getimg, hobby
 from tools.message_template import mgs_template
 from tools.swagger import swagger
 
@@ -1830,6 +1830,49 @@ def search():
                 print e
                 result=tool.return_json(0,"field",True,str(e))
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#猜你喜欢
+hobbys = swagger("0 首页改.jpg","猜你喜欢")
+hobbys.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+# hobbys.add_parameter(name='str',parametertype='formData',type='string',required= True,description='饭店名',default='饭店')
+hobbys_json = {
+  "auto": hobbys.String(description='验证是否成功'),
+  "message": hobbys.String(description='SUCCESS/FIELD',default="SUCCESS"),
+  "code": hobbys.Integer(description='',default=0),
+  "data": {
+        "list":[
+            {
+                "id":hobbys.String(description='id',default="id"),
+                "name":hobbys.String(description='name',default="name")
+            }
+        ]
+}
+
+}
+#猜你喜欢
+@restaurant_user_api.route('/fm/user/v1/restaurant/hobbys/',methods=['POST'])
+@swag_from(hobbys.mylpath(schemaid='hobbys',result=hobbys_json))
+def hobbys():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            # try:
+                data = {}
+                item = mongo.hobby.find()[0:3]
+                list = []
+                for i in item:
+                    list.append(ObjectId(i['nid']))
+
+                data['list'] = hobby(first={"_id":{"$in":list}},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3)
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            # except Exception,e:
+            #     print e
+            #     result=tool.return_json(0,"field",True,str(e))
+            #     return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
