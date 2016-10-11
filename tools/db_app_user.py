@@ -468,6 +468,73 @@ def use_coupons(total = 50.0,dish_total = 40.0,wine_total = 10.0,restaurant_id='
         else:
             pass
     return tishi,finel
+def hobby(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3):
+    if lat1!='y':
+        print first
+        item = mongo.restaurant.find(first,{"zuobiao":1})
+        rsetaurant_list = []
+        for i in item:
+            try:
+                rsetaurant_list.append((int(haversine(float(lon1), float(lat1), i['zuobiao'][0]['c1'], i['zuobiao'][0]['c2'])), str(i['_id'])))
+            except:
+                print i
+        list=[]
+        print rsetaurant_list
+        for l in sorted(rsetaurant_list)[start:end]:
+            restaurant = mongo.restaurant.find({'_id':ObjectId(l[1])})
+
+            for rest in restaurant:
+                json = {}
+                for key in rest.keys():
+                    if key == '_id':
+                        json['id'] = str(rest[key])
+                    elif key == 'restaurant_id':
+                        json['restaurant_id'] = str(rest[key])
+                    elif key == 'dishes_discount':
+                        json['dishes_discount'] = rest[key]['message']
+                    elif key == 'business_dist':
+                        json['district_name'] = getxingzhengqu(rest[key][0]['id'])
+                    elif key == 'wine_discount':
+                        json['wine_discount'] = rest[key]['message']
+                    elif key == 'business_dist':
+                        json['business_name'] = rest[key][0]['name']
+                    elif key == 'address':
+                        json['address'] = rest[key]
+                    elif key == 'guide_image':
+                        json['guide_image'] = rest[key]
+                    elif key == 'name':
+                        json['name'] = rest[key]
+                    else:
+                        json['distance'] = l[0]
+                list.append(json)
+    else:
+        restaurant = mongo.restaurant.find(first).sort("addtime", pymongo.DESCENDING)[start:end]
+        list = []
+        for rest in restaurant:
+            json = {}
+            for key in rest.keys():
+                if key == '_id':
+                    json['id'] = str(rest[key])
+                elif key == 'restaurant_id':
+                    json['restaurant_id'] = str(rest[key])
+                elif key == 'dishes_discount':
+                    json['dishes_discount'] = rest[key]['message']
+                elif key == 'business_dist':
+                    json['district_name'] = getxingzhengqu(rest[key][0]['id'])
+                elif key == 'wine_discount':
+                    json['wine_discount'] = rest[key]['message']
+                elif key == 'zuobiao':
+                    json['distance'] = ''
+                elif key == 'business_dist':
+                    json['business_name'] = rest[key][0]['name']
+                elif key == 'address':
+                    json['address'] = rest[key]
+                elif key == 'guide_image':
+                    json['guide_image'] = rest[key]
+                elif key == 'name':
+                    json['name'] = rest[key]
+            list.append(json)
+    return list
 if __name__ == '__main__':
     pass
     print json_util.dumps(guess(),ensure_ascii=False,indent=2)
