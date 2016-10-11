@@ -33,7 +33,8 @@ class PayOrder:
             "show_url": "http://msdt.cn/",
             "ext": ext,
             "req_order_id": order_id,
-            "order_data": ext_data
+            "order_data": ext_data,
+            "addtime": datetime.datetime.now()
         }
         self.payorder_id = self.__conn.insert(the_order)
         the_order['_id'] = self.payorder_id

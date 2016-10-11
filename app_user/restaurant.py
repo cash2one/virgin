@@ -1844,11 +1844,18 @@ hobbys_json = {
   "message": hobbys.String(description='SUCCESS/FIELD',default="SUCCESS"),
   "code": hobbys.Integer(description='',default=0),
   "data": {
-        "list":[
-            {
-                "id":hobbys.String(description='id',default="id"),
-                "name":hobbys.String(description='name',default="name")
-            }
+        "list": [
+      {
+        "distance":  hobbys.Integer(description='',default=993),
+        "wine_discount": hobbys.String(description='酒水优惠',default="酒水优惠"),
+        "name": hobbys.String(description='饭店名',default="李家馅饼小盘菜"),
+        "id": hobbys.String(description='饭店id',default="5733e40a0c1d9b31499888b0"),
+        "guide_image": hobbys.String(description='图片',default="ba85cde5af73d26540cec921d69e1eba"),
+        "address": hobbys.String(description='地址',default="哈尔滨市南岗区马家街4号"),
+        "district_name": hobbys.String(description='行政区名',default="南岗区"),
+        "dishes_discount": hobbys.String(description='菜品优惠',default="菜品优惠")
+      }
+
         ]
 }
 
