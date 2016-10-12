@@ -3,6 +3,8 @@ import datetime
 import time
 import json
 from flask import Blueprint, render_template, request, abort
+
+from connect import conn
 from connect.mongotool import MongoHelp, mongo_conn
 from app_merchant import auto
 from bson import json_util
@@ -15,7 +17,7 @@ __author__ = 'dolacmeo'
 restaurant = MongoHelp('restaurant')
 db_info = MongoHelp('qingke')
 db_order = MongoHelp('order_groupinvite')
-
+mongo=conn.mongo_conn()
 
 # 'wait_friends', 'wait_pay', 'already_payment', 'already_used', 'time_out'
 
@@ -150,7 +152,9 @@ class GroupInvite:
             'end_time': datetime.datetime.strptime(self.the_invite['the_time']['end'], "%Y-%m-%d %H:%M:%S"),
             'friends': [],
             'restaurant_info': self.the_invite['restaurant'],
-            'dishes': self.the_invite['menu']
+            'dishes': self.the_invite['menu'],
+
+            # 'addtime':datetime.datetime.now()
         }
         available_num = self._is_invite_open(self._id)
         if self._is_invite_open(self._id):
@@ -161,7 +165,7 @@ class GroupInvite:
         else:
             return {'_id': '', 'code': '', 'error': 'available_num is %s' % available_num}
         if is_insert:
-            return {'_id': is_insert['_id'], 'code': insert_data['invite_code'], 'error': ''}
+            return {'_id': is_insert, 'code': insert_data['invite_code'], 'error': ''}
         else:
             return {'_id': '', 'code': '', 'error': 'cant inster: %s' % is_insert}
 
@@ -193,12 +197,13 @@ class GroupInvite:
         if self.invite_order['status'] == 'timeout':
             return {'success': False, 'error': 'timeout! start_time: %s' % self.invite_order['start_time']}
         if self.invite_order['max_group'] - len(self.invite_order['friends']) >= 2:
-            get_in = db_order.fix_one({'group_id': self._id, 'invite_code': self.code},
+            #song
+            get_in = mongo.order_groupinvite.update_one({'group_id': self._id, 'invite_code': self.code},
                                         {"$addToSet": {"friends": user_id}})
             if self.invite_order['max_group'] - len(self.invite_order['friends']) == 2:
                 db_order.fix_one({'group_id': self._id, 'invite_code': self.code},
-                                 {'status': 'wait_pay'})
-            return {'success': get_in, 'error': ''}
+                                 {'status': 'wait_pay'})#'addtime':datetime.datetime.now()
+            return {'success': True, 'error': ''}
         else:
             return {'success': False, 'error': 'max group'}
 
@@ -355,14 +360,15 @@ def groupinvite_neworder():
     # 抢资格
     if request.method == 'POST':
         if auto.decodejwt(request.form['jwtstr']):
-            try:
+            # try:
                 data = GroupInvite(request.form['group_id']).new_invite(request.form['user_id'])
+                # print data
                 result = tool.return_json(0, "success", True, data)
                 return json_util.dumps(result, ensure_ascii=False, indent=2)
-            except Exception, e:
-                print e
-                result = tool.return_json(0, "field", True, str(e))
-                return json_util.dumps(result, ensure_ascii=False, indent=2)
+            # except Exception, e:
+            #     print e
+            #     result = tool.return_json(0, "field", True, str(e))
+            #     return json_util.dumps(result, ensure_ascii=False, indent=2)
         else:
             result = tool.return_json(0, "field", False, None)
             return json_util.dumps(result, ensure_ascii=False, indent=2)
@@ -392,14 +398,14 @@ def groupinvite_add_friend():
     # 接受邀请
     if request.method == 'POST':
         if auto.decodejwt(request.form['jwtstr']):
-            try:
+            # try:
                 data = GroupInvite(request.form['code']).follow(request.form['user_id'])
                 result = tool.return_json(0, "success", True, data)
                 return json_util.dumps(result, ensure_ascii=False, indent=2)
-            except Exception, e:
-                print e
-                result = tool.return_json(0, "field", True, str(e))
-                return json_util.dumps(result, ensure_ascii=False, indent=2)
+            # except Exception, e:
+            #     print e
+            #     result = tool.return_json(0, "field", True, str(e))
+            #     return json_util.dumps(result, ensure_ascii=False, indent=2)
         else:
             result = tool.return_json(0, "field", False, None)
             return json_util.dumps(result, ensure_ascii=False, indent=2)
@@ -455,7 +461,7 @@ groupinvite_order.add_parameter(name='jwtstr', parametertype='formData', type='s
                                 description='jwt串',
                                 default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 groupinvite_order.add_parameter(name='code', parametertype='formData', type='string', required=True,
-                                description='开团邀请码', default='675120')
+                                description='开团邀请码', default='735178')
 
 
 @group_invite.route(HOMEBASE + '/order/detail', methods=['POST'])
@@ -465,7 +471,20 @@ def groupinvite_order():
     if request.method == 'POST':
         if auto.decodejwt(request.form['jwtstr']):
             try:
+                # 'wait_friends', 'wait_pay', 'already_payment', 'already_used', 'time_out'
                 data = GroupInvite(request.form['code']).invite_order
+                print type(data)
+                # print time.strptime(data['addtime'], "%Y-%m-%d %H:%M:%S")
+                #song
+                if data['status'] == 'wait_friends':
+                    data['msg'] ="还有"+str(45-int((datetime.datetime.now()-datetime.datetime.strptime(data['start_time'], "%Y-%m-%d %H:%M:%S")).total_seconds()/60))+"分钟，还需要"+str(data['max_group']-1-len(data['friends']))+"位客人"
+                elif data['status'] == 'wait_pay':
+                    data['msg'] ="还有"+str(45-int((datetime.datetime.now()-datetime.datetime.strptime(data['start_time'], "%Y-%m-%d %H:%M:%S")).total_seconds()/60))+"分钟付款时间"
+                elif data['status'] == 'time_out':
+                    if data['max_group']-1-len(data['friends']) == 0:
+                        data['msg'] ="付款超时"
+                    else:
+                        data['msg'] ="45分钟内未邀请到"+str(data['max_group'])+"位好友"
                 result = tool.return_json(0, "success", True, data)
                 return json_util.dumps(result, ensure_ascii=False, indent=2)
             except Exception, e:

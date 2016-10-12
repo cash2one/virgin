@@ -1350,9 +1350,9 @@ def dish_menu_list():
                         else:
                             pass
                     json['youhui'] = y_list
-                    data['yingfu'] =str(i['total'] - dis_amounts)
-                    data['yajin'] = '100'
-                    data['dianfu'] = '200'
+                    json['yingfu'] =str(i['total'] - dis_amounts)
+                    json['yajin'] = '100'
+                    json['dianfu'] = '200'
                     json['preset_dishs'] = i['preset_dishs']
                     json['preset_wine'] = i['preset_wine']
                     json['tishi'] = mycoupons[0]
