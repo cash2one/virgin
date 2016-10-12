@@ -1842,7 +1842,8 @@ def search():
 #猜你喜欢
 hobbys = swagger("0 首页改.jpg","猜你喜欢")
 hobbys.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
-# hobbys.add_parameter(name='str',parametertype='formData',type='string',required= True,description='饭店名',default='饭店')
+hobbys.add_parameter(name='lon',parametertype='formData',type='string',required= True,description='经度',default='126.65381534034498')
+hobbys.add_parameter(name='lat',parametertype='formData',type='string',required= True,description='纬度',default='45.76196769636328')
 hobbys_json = {
   "auto": hobbys.String(description='验证是否成功'),
   "message": hobbys.String(description='SUCCESS/FIELD',default="SUCCESS"),
@@ -1877,7 +1878,7 @@ def hobbys():
                 for i in item:
                     list.append(ObjectId(i['nid']))
 
-                data['list'] = hobby(first={"_id":{"$in":list}},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3)
+                data['list'] = hobby(first={"_id":{"$in":list}},lat1=float(request.form['lat']),lon1=float(request.form['lon']),start=0,end=3)
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
