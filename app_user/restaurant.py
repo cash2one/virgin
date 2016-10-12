@@ -1683,7 +1683,9 @@ def dish_menu_one():
                     json['total'] = i['total']
                     json['deposit'] = i['deposit']
                     y_list = []
+                    dis_amounts = 0.0
                     for dis in i['dis_message']:
+                        dis_amounts+=dis['dis_amount']
                         if dis['dis_type'] == '1':
                             y_list.append({
                                 'msg':'<font size=\"3\">'+'关注即享:'+'<font size=\"3\" color=\"red\">'+str(dis['dis_amount'])+'元</font></font>',
@@ -1705,7 +1707,9 @@ def dish_menu_one():
                         else:
                             pass
                     json['youhui'] = y_list
-                    json['dianfu'] = i['total'] - i['deposit']
+                    json['yingfu'] =str(i['total'] - dis_amounts)
+                    json['yajin'] = '100'
+                    json['dianfu'] = '200'
                     json['preset_dishs'] = i['preset_dishs']
                     json['preset_wine'] = i['preset_wine']
                     json['tishi'] = mycoupons[0]
@@ -1866,7 +1870,7 @@ hobbys_json = {
 def hobbys():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
-            # try:
+            try:
                 data = {}
                 item = mongo.hobby.find()[0:3]
                 list = []
@@ -1876,10 +1880,10 @@ def hobbys():
                 data['list'] = hobby(first={"_id":{"$in":list}},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3)
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
-            # except Exception,e:
-            #     print e
-            #     result=tool.return_json(0,"field",True,str(e))
-            #     return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
