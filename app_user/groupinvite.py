@@ -480,7 +480,7 @@ def groupinvite_order():
                     data['msg'] ="还有"+str(45-int((datetime.datetime.now()-datetime.datetime.strptime(data['start_time'], "%Y-%m-%d %H:%M:%S")).total_seconds()/60))+"分钟，还需要"+str(data['max_group']-1-len(data['friends']))+"位客人"
                 elif data['status'] == 'wait_pay':
                     data['msg'] ="还有"+str(45-int((datetime.datetime.now()-datetime.datetime.strptime(data['start_time'], "%Y-%m-%d %H:%M:%S")).total_seconds()/60))+"分钟付款时间"
-                elif data['status'] == 'time_out':
+                elif data['status'] == 'timeout':
                     if data['max_group']-1-len(data['friends']) == 0:
                         data['msg'] ="付款超时"
                     else:
