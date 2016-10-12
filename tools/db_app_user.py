@@ -494,10 +494,9 @@ def hobby(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3)
                         json['dishes_discount'] = rest[key]['message']
                     elif key == 'business_dist':
                         json['district_name'] = getxingzhengqu(rest[key][0]['id'])
+                        json['business_name'] = rest[key][0]['name']
                     elif key == 'wine_discount':
                         json['wine_discount'] = rest[key]['message']
-                    elif key == 'business_dist':
-                        json['business_name'] = rest[key][0]['name']
                     elif key == 'address':
                         json['address'] = rest[key]
                     elif key == 'guide_image':
