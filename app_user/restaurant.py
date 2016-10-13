@@ -1878,7 +1878,7 @@ def hobbys():
                 for i in item:
                     list.append(ObjectId(i['nid']))
 
-                data['list'] = hobby(first={"_id":{"$in":list}},lat1=float(request.form['lat']),lon1=float(request.form['lon']),start=0,end=3)
+                data['list'] = hobby(first={"_id":{"$in":list}},lat1=request.form['lat'],lon1=request.form['lon'],start=0,end=3)
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
