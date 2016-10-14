@@ -88,6 +88,12 @@ def index():
 
             try:
                 data = {}
+                #轮换图 开始
+                imglist = []
+                turnsimg = mongo.turnsimg.find({"appid":"3"})
+                for t in turnsimg:
+                    data['turnsimg'] = t['huodong']
+                #轮换图结束
                 #开团请客 开始
                 kaituan = GroupInvite().all_item
                 list = []
