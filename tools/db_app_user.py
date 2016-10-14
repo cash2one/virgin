@@ -202,6 +202,8 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3,
     return list
 #查询所有行政区标签
 def district_list(first={}):
+    first = {"_id":{"$in":[ObjectId("56d7af296bff8928c07855dc"),ObjectId("5643898b4be1e3bc3c3cd7ff"),ObjectId("5643898b4be1e3bc3c3cd801"),
+                           ObjectId("56d9159b6bff84f2c02970d0"),ObjectId("56d93f810f884d063cdc9b0e"),ObjectId("56d93f810f884d063cdc9b0f"),]}}
     item = mongo.district.find(first,{"district_name":1})
     list = []
     for i in item:
@@ -468,7 +470,7 @@ def use_coupons(total = 50.0,dish_total = 40.0,wine_total = 10.0,restaurant_id='
         else:
             pass
     return tishi,finel
-def hobby(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3):
+def hobby(first={},lat1=None,lon1=None,start=0,end=3):
     if lat1!='y':
         print first
         item = mongo.restaurant.find(first,{"zuobiao":1})
