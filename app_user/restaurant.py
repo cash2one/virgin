@@ -101,6 +101,7 @@ def index():
                     json = {}
                     json['detail'] = k['detail']
                     json['restaurant_name'] = k['restaurant']['name']
+                    json['restaurant_id'] = k['restaurant']['rid']
                     json['size'] = k['group_info']['size']
                     json['old_price'] = k['price']['old']
                     json['now_price'] = k['price']['now']
@@ -123,6 +124,7 @@ def index():
                     rest = mongo.restaurant.find({"_id":ObjectId(idlist[num])})
                     for r in rest:
                         coupons['rest_name'] = r['name']
+                        coupons['rest_id'] = str(r['_id'])
                     coupons['title1'] = getcoupons('1',idlist[num])['content']
                     coupons['id1'] = getcoupons('1',idlist[num])['id']
                     coupons['title2'] = getcoupons('2',idlist[num])['content']

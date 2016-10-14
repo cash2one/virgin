@@ -700,6 +700,7 @@ def kaituan():
                 for i in item:
                     json = {}
                     json["rest_name"] = i['restaurant_info']['name']
+                    # json["rest_id"] = i['restaurant_info']['rid']
                     json['status'] = i['status']
                     json['invite_code'] = i['invite_code']
                     if i['status'] == 'wait_friends':
