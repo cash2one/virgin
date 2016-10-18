@@ -355,7 +355,7 @@ special_restaurant_json = {
                 "hui": special_restaurant.String(description='0没有1有惠标签',default="1"),
                 "guide_image": special_restaurant.String(description='饭店头图',default="18d19b3056c5ce33fcf1edc6ffba701c"),
                 "district_name": special_restaurant.String(description='行政区名',default="道里区"),
-                "id": special_restaurant.String(description='饭店id',default="573413c80c1d9b314998895c"),
+                "id": special_restaurant.String(description='特色名小吃id',default="573413c80c1d9b314998895c"),
               }
         ]
     }
@@ -443,5 +443,72 @@ def special_restaurant():
         else:
             result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+special_restaurant_info = swagger("4-1-1 特色名小吃详情.jpg","特色名小吃详情")
+special_restaurant_info_json = {
+    "auto": special_restaurant_info.String(description='验证是否成功'),
+    "message": special_restaurant_info.String(description='SUCCESS/FIELD',default="SUCCESS"),
+    "code": special_restaurant_info.Integer(description='',default=0),
+    "data": {
+          "headimage": special_restaurant_info.String(description='头图',default="cebe26b40721b7bf373fc8e8b952369e"),
+          "district": special_restaurant_info.String(description='行政区',default="香坊区"),
+          "dishes_type": special_restaurant_info.String(description='饭店类型',default="包子/饺子 包子/饺子 "),
+          "restaurant_sq": special_restaurant_info.String(description='商圈',default="乐松"),
+          "summary": special_restaurant_info.String(description='标题',default="舌尖上的美味、最给力的灌汤"),
+          "restaurant_name": special_restaurant_info.String(description='饭店名',default="老三灌汤包")
+    }
+}
+special_restaurant_info.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+special_restaurant_info.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店id',default='57932b1a0c1d9b54106fb7f2')
+
+#特色名小吃详情
+@coupons_user_api.route('/fm/user/v1/coupons/special_restaurant_info/',methods=['POST'])
+@swag_from(special_restaurant_info.mylpath(schemaid='special_restaurant_info',result=special_restaurant_info_json))
+def special_restaurant_info():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+
+            try:
+                pass
+                item = mongo.shop_recommend.find({"type":2,"restaurant_id":ObjectId(request.form['restaurant_id'])}).sort("addtime", pymongo.DESCENDING)[0:1]
+                data = {}
+                for i in item:
+                    data['headimage'] = i['headimage']
+                    data['restaurant_name'] = i['restaurant_name']
+                    data['district'] = getxingzhengqu(i['business_dist'][0]['id'])
+                    data['restaurant_sq'] = i['restaurant_sq']
+                    data['summary'] = i['summary']
+                    dishes_type = ''
+                    for dish in i['dishes_type']:
+                        dishes_type+=dish['name']+' '
+                    data['dishes_type'] = dishes_type
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+special_restaurant_html = swagger("4-1-1 特色名小吃详情.jpg","特色名小吃详情（html）")
+special_restaurant_html_json = {
+    "html": special_restaurant_html.String(description='html',default="html"),
+}
+special_restaurant_html.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店id',default='57932b1a0c1d9b54106fb7f2')
+
+#特色名小吃详情
+@coupons_user_api.route('/fm/user/v1/coupons/special_restaurant_html/',methods=['POST'])
+@swag_from(special_restaurant_html.mylpath(schemaid='special_restaurant_html',result=special_restaurant_html_json))
+def special_restaurant_html():
+    if request.method=='POST':
+        item = mongo.shop_recommend.find({"type":2,"restaurant_id":ObjectId(request.form['restaurant_id'])}).sort("addtime", pymongo.DESCENDING)[0:1]
+        html = ''
+        for i in item:
+            html = i['content']
+        return html
     else:
         return abort(403)
