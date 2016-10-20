@@ -786,6 +786,10 @@ def restaurant_info():
                     data['guanzhu'] =getcoupons('1',str(i['_id']))['content']
                     data['xinfener'] =getcoupons('2',str(i['_id']))['content']
                     #开团请客（暂时空着）
+                    kaituan = mongo.qingke.find({"nid":request.form["restaurant_id"]}).sort("time", pymongo.DESCENDING)[0:1]
+                    data['kaituan'] = ''
+                    for k in kaituan:
+                        data['kaituan'] = k['nr']+"人开团请客，原价"+k['zj']+"元，现价"+k['price']+"元"
                     data['concern'] = getconcern(str(i['_id']),webuser_id)
                     data['address'] = i['address']
                     data['phone'] = i['phone']
