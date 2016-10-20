@@ -514,6 +514,7 @@ def hobby(first={},lat1=None,lon1=None,start=0,end=3):
         for rest in restaurant:
             json = {}
             for key in rest.keys():
+                print '11111111111'
                 if key == '_id':
                     json['id'] = str(rest[key])
                 elif key == 'restaurant_id':
@@ -522,12 +523,11 @@ def hobby(first={},lat1=None,lon1=None,start=0,end=3):
                     json['dishes_discount'] = rest[key]['message']
                 elif key == 'business_dist':
                     json['district_name'] = getxingzhengqu(rest[key][0]['id'])
+                    json['business_name'] = rest[key][0]['name']
                 elif key == 'wine_discount':
                     json['wine_discount'] = rest[key]['message']
                 elif key == 'zuobiao':
                     json['distance'] = ''
-                elif key == 'business_dist':
-                    json['business_name'] = rest[key][0]['name']
                 elif key == 'address':
                     json['address'] = rest[key]
                 elif key == 'guide_image':
