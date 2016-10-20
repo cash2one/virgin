@@ -783,8 +783,8 @@ def restaurant_info():
                     wine_discount += i['wine_discount']['message']
                     data['wine_discount'] =wine_discount
                     data['coupons'] =getcoupons('3',str(i['_id']))
-                    data['guanzhu'] =getcoupons('1',str(i['_id']))
-                    data['xinfener'] =getcoupons('2',str(i['_id']))
+                    data['guanzhu'] =getcoupons('1',str(i['_id']))['content']
+                    data['xinfener'] =getcoupons('2',str(i['_id']))['content']
                     #开团请客（暂时空着）
                     data['concern'] = getconcern(str(i['_id']),webuser_id)
                     data['address'] = i['address']
