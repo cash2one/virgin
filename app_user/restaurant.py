@@ -744,6 +744,7 @@ restaurant_info_json = {
           },
           "guanzhu": restaurant_info.String(description='关注优惠',default="关注优惠"),
           "xinfener": restaurant_info.String(description='新粉儿优惠',default="新粉儿优惠"),
+          "kaituan": restaurant_info.String(description='开团请客',default="开团请客"),
           "concern": restaurant_info.String(description='是否关注1是0否',default="1")
     }
 }
