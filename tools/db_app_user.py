@@ -133,6 +133,8 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3,
                         json['name'] = rest[key]
                     elif key == 'restaurant_discount':
                         json['restaurant_discount'] = rest[key]['message']
+                    elif key == 'guanzhu_discount':
+                        json['guanzhu_discount'] = rest[key]['message']
                     elif key == 'dishes_discount':
                         json['dishes_discount'] = rest[key]['message']
                     elif key == 'business_dist':
@@ -176,6 +178,8 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3,
                     json['restaurant_id'] = str(rest[key])
                 elif key == 'name':
                     json['name'] = rest[key]
+                elif key == 'restaurant_discount':
+                        json['restaurant_discount'] = rest[key]['message']
                 elif key == 'guanzhu_discount':
                     json['guanzhu_discount'] = rest[key]['message']
                 elif key == 'dishes_discount':
