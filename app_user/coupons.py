@@ -154,6 +154,7 @@ def coupons_info():
                 data = {}
                 for i in item:
                     data['id'] = str(i['_id'])
+                    data['open'] = i['open']
                     data['guide_image'] = i['guide_image']
                     data['name'] = i['name']
                     dishes_type = []
@@ -231,6 +232,30 @@ def getcoupon():
                             "status": 1,
                             "msg":"抢优惠成功"
                         }
+                    #消息4
+#mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
+# appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
+                    webuser = mongo.webuser.find({"_id":ObjectId(webuser_id)})
+                    nickname = ''
+                    phone = ''
+                    for w in webuser:
+                        nickname = w['nickname']
+                        phone = w['phone']
+                    content = '抢单人：'+nickname+'，抢单类型：'+coupons['content']+'，抢单时间：'+datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+\
+                              '，联系电话：'+phone+'，剩余店粉儿优惠名额：'+coupons['num']+'。'
+                    tool.tuisong(mfrom=webuser_id,
+                             mto=restaurant_id,
+                             title='您发布的店粉儿抢优惠被抢了',
+                             info=content,
+                             goto='0',
+                             channel='店粉儿抢优惠',
+                             type='0',
+                             totype='0',
+                             appname='foodmap_shop',
+                             msgtype='message',
+                             target='device',
+                             ext='',
+                             ispush=False)
                 else:
                     json = {
                         "status": 0,
