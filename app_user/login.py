@@ -166,6 +166,7 @@ verify_login.add_parameter(name='jwtstr',parametertype='formData',type='string',
 verify_login.add_parameter(name='phone',parametertype='formData',type='string',required= True,description='电话',default='13000000000')
 verify_login.add_parameter(name='password',parametertype='formData',type='string',required= True,description='密码',default='111111')
 verify_login.add_parameter(name='ident',parametertype='formData',type='string',required= True,description='设备号',default='')
+verify_login.add_parameter(name='phonetype',parametertype='formData',type='string',required= True,description='手机类型 安卓0 IOS1',default='')
 
 verify_login_json = {
     "auto": verify_login.String(description='验证是否成功'),
@@ -238,7 +239,7 @@ code_login.add_parameter(name='jwtstr',parametertype='formData',type='string',re
 code_login.add_parameter(name='phone',parametertype='formData',type='string',required= True,description='电话',default='13000000000')
 code_login.add_parameter(name='code',parametertype='formData',type='string',required= True,description='六位验证码',default='000000')
 code_login.add_parameter(name='ident',parametertype='formData',type='string',required= True,description='设备号',default='')
-
+code_login.add_parameter(name='phonetype',parametertype='formData',type='string',required= True,description='手机类型 安卓0 IOS1',default='')
 code_login_json = {
     "auto": code_login.String(description='验证是否成功'),
     "message": code_login.String(description='SUCCESS/FIELD',default="SUCCESS"),
