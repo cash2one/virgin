@@ -16,37 +16,42 @@ import re
 from flask import request, Response
 
 import connect
-from connect import conn,settings
-from bson import ObjectId,json_util
+from connect import conn, settings
+from bson import ObjectId, json_util
 import sys
+
 reload(sys)
 sys.setdefaultencoding('utf8')
-mongo=conn.mongo_conn()
-mongouser=conn.mongo_conn_user()
-def return_json(code,message,jwt,data):
+mongo = conn.mongo_conn()
+mongouser = conn.mongo_conn_user()
+
+
+def return_json(code, message, jwt, data):
     if jwt:
         data = data
     else:
-        data = {"jwt":"field"}
-    json={
-        "code":code,
-        "message":message,
-        "auto":jwt,
+        data = {"jwt": "field"}
+    json = {
+        "code": code,
+        "message": message,
+        "auto": jwt,
         "data": data
     }
     return json
 
 
-def orderformate(pdict={},table={}):
-    pdict = dict(filter(lambda x:x[1]!='', pdict.items()))
-    data = formatp(pdict,table)
+def orderformate(pdict={}, table={}):
+    pdict = dict(filter(lambda x: x[1] != '', pdict.items()))
+    data = formatp(pdict, table)
     return data
     pass
 
-def formatp(data,table):
+
+def formatp(data, table):
     for key in data.keys():
-        data[key]=format_type(data[key], table[key])
+        data[key] = format_type(data[key], table[key])
     return data
+
 
 def format_type(data, type):
     if type == 'str':
@@ -62,6 +67,8 @@ def format_type(data, type):
     else:
         return data
     pass
+
+
 def json_value(json_data, key_name, dump=False):
     if json_data is None:
         return None
@@ -217,6 +224,7 @@ class Discount:
         self.menu_data = None
         self.new_menu = None
         self.add_dish_data = None
+
     def rebuild(self):
         if self.new_menu is None:
             rebuild_data = self.data
@@ -228,7 +236,8 @@ class Discount:
             for key in menu.keys():
                 if key == 'dishs':
                     dishs = []
-                    if menu['name'] !='优惠菜' and menu['name'] !='推荐菜' and menu['dish_type'] =='1' and menu['dishs']!=[]:
+                    if menu['name'] != '优惠菜' and menu['name'] != '推荐菜' and menu['dish_type'] == '1' and menu[
+                        'dishs'] != []:
                         for dish in menu['dishs']:
                             try:
                                 if 'id' in dish.keys():
@@ -268,8 +277,10 @@ class Discount:
 
     def re_dish(self, dish_data=None):
         self.dish_data = dish_data
+
     def add_dish(self, dish_data=None):
         self.add_dish_data = dish_data
+
     def re_menu(self, menu_data=None):
         self.menu_data = menu_data
 
@@ -285,41 +296,46 @@ class Discount:
         except Exception, e:
             return False
 
+
 def pimg(uu):
-  # try:
-    #创建一个请求
+    # try:
+    # 创建一个请求
     handlers = [StreamingHTTPHandler, StreamingHTTPRedirectHandler, StreamingHTTPSHandler]
     opener = urllib2.build_opener(*handlers)
     urllib2.install_opener(opener)
     # 打开图片
     cc = open(uu, "rb")
-    datagen, headers = multipart_encode({"image": cc })
-    #发送请求
-    request = urllib2.Request(settings.setimageIP , datagen, headers)
-    request = urllib2.Request(settings.setimageIP1 , datagen, headers)
-    #测试本地用
+    datagen, headers = multipart_encode({"image": cc})
+    # 发送请求
+    request = urllib2.Request(settings.setimageIP, datagen, headers)
+    request = urllib2.Request(settings.setimageIP1, datagen, headers)
+    # 测试本地用
     # request = urllib2.Request(settings.setimageIPlocal , datagen, headers)
 
-    #获取返回中的内容
+    # 获取返回中的内容
     re1 = r"<h1>MD5:(?P<md5>.*?)</h1>"
-    match5 = re.findall(re1,urllib2.urlopen(request).read())
+    match5 = re.findall(re1, urllib2.urlopen(request).read())
     a = match5[0]
     cc.close()
-    print str(a).replace(" ","")
-    return str(a).replace(" ","")
-  # except Exception, e:
-  #       return e
+    print str(a).replace(" ", "")
+    return str(a).replace(" ", "")
+    # except Exception, e:
+    #       return e
 
 
 def gen_rnd_filename():
     filename_prefix = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     return '%s%s' % (filename_prefix, str(random.randrange(1000, 10000)))
+
+
 correction_levels = {
     'L': qrc.constants.ERROR_CORRECT_L,
     'M': qrc.constants.ERROR_CORRECT_M,
     'Q': qrc.constants.ERROR_CORRECT_Q,
     'H': qrc.constants.ERROR_CORRECT_H
 }
+
+
 def qrcode(data, version=None, error_correction='L', box_size=10, border=0, fit=True):
     """ makes qr image using qrcode as qrc See documentation for qrcode package for info"""
     qr = qrc.QRCode(
@@ -335,187 +351,204 @@ def qrcode(data, version=None, error_correction='L', box_size=10, border=0, fit=
     out = BytesIO()
     qr_img = qr.make_image()
     filename = '%s%s' % (gen_rnd_filename(), ".PNG")
-    osstr = os.path.dirname(__file__).replace("tools","")+"static/upload/"+filename
+    osstr = os.path.dirname(__file__).replace("tools", "") + "static/upload/" + filename
     # osstr = "/www/site/foodmap/virgin/virgin/static/upload/"+filename
     qr_img.save(osstr)
     uu = pimg(osstr)
     u1 = settings.getimageIP + str(uu)
     os.remove(osstr)
     return uu
-#mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
+
+
+# mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
 # appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
-def tuisong(mfrom='', mto='', title='', info='',goto='',channel='',type='',totype='',
-            appname='',msgtype='',target='',ext='', ispush=True):
+def tuisong(mfrom='', mto='', title='', info='', goto='', channel='', type='', totype='',
+            appname='', msgtype='', target='', ext='', ispush=True, data_id='-1'):
+    ispush = False
     baseurl = 'http://127.0.0.1:10035'
     androidreq = {}
     iosreq = {}
     try:
-        #以下是获取消息来源名
+        # 以下是获取消息来源名
         infofromname = ''
         if type == '0':
-            item = mongo.webuser.find({"_id":ObjectId(mfrom)})
-            for i in item:
-                infofromname = i['nickname']
+            infofromname = '美食地图'
+            mfrom = '580da84b87f89cf90e31a894'
+            # item = mongo.webuser.find({"_id":ObjectId(mfrom)})
+            # for i in item:
+            #     infofromname = i['nickname']
         elif type == '1':
-            item = mongo.restaurant.find({"_id":ObjectId(mfrom)})
+            item = mongo.restaurant.find({"_id": ObjectId(mfrom)})
             for i in item:
                 infofromname = i['name']
         elif type == '2':
-            item = mongo.webuser.find({"_id":ObjectId(mfrom)})
+            item = mongo.webuser.find({"_id": ObjectId(mfrom)})
             for i in item:
                 infofromname = i['nickname']
         else:
             pass
             infofromname = '未知'
-        #获取消息来源名结束
+        # 获取消息来源名结束
 
 
-        #本地消息表接收方id
+        # 本地消息表接收方id
         infoto = {}
-        #安卓设备号数组
+        # 安卓设备号数组
         identandroid = ''
         identandroidlist = []
-        #IOS设备号数组
+        # IOS设备号数组
         identios = ''
         identioslist = []
-        if mto!='':
+        if mto != '':
             idlist = mto.split('_')
             for mid in idlist:
                 if mid != '' and mid != None:
                     infoto[mid] = 0
-                    #mid是接收方id 下面webuser是查询用户中心id,totype区分是谁接收，1是用户，查询用户表，0是商家，查询饭店表user字段
+                    # mid是接收方id 下面webuser是查询用户中心id,totype区分是谁接收，1是用户，查询用户表，0是商家，查询饭店表user字段
                     if totype == '1':
-                        webuser = mongo.webuser.find({"_id":ObjectId(mid)})
+                        webuser = mongo.webuser.find({"_id": ObjectId(mid)})
                         for w in webuser:
-                            #查询用户中心表usercenter得到设备类型和设备号
-                            usercenter = mongouser.user_web.find({"_id":ObjectId(w['automembers_id'])})
+                            # 查询用户中心表usercenter得到设备类型和设备号
+                            usercenter = mongouser.user_web.find({"_id": ObjectId(w['automembers_id'])})
                             for u in usercenter:
-                                #0是安卓1是IOS
+                                # 0是安卓1是IOS
                                 if u['lastlogin']['type'] == '0':
-                                    #拼接TargetValue参数
-                                    identandroidlist.append(identandroid+u['lastlogin']['ident'])
+                                    # 拼接TargetValue参数
+                                    identandroidlist.append(identandroid + u['lastlogin']['ident'])
                                 else:
-                                    identioslist.append(identandroid+u['lastlogin']['ident'])
+                                    identioslist.append(identandroid + u['lastlogin']['ident'])
                     else:
-                        restaurant = mongo.restaurant.find({"_id":ObjectId(mid)})
+                        restaurant = mongo.restaurant.find({"_id": ObjectId(mid)})
                         for r in restaurant:
                             for usercenter_id in r['user']:
-                                if usercenter_id!='' and usercenter_id!=None:
-                                    usercenter = mongouser.user_web.find({"_id":ObjectId(usercenter_id)})
+                                if usercenter_id != '' and usercenter_id != None:
+                                    usercenter = mongouser.user_web.find({"_id": ObjectId(usercenter_id)})
                                     for u in usercenter:
-                                        #0是安卓1是IOS
+                                        # 0是安卓1是IOS
                                         if u['lastlogin']['type'] == '0':
-                                            #拼接TargetValue参数
-                                            identandroidlist.append(identandroid+u['lastlogin']['ident'])
+                                            # 拼接TargetValue参数
+                                            identandroidlist.append(identandroid + u['lastlogin']['ident'])
                                         else:
-                                            identioslist.append(identandroid+u['lastlogin']['ident'])
+                                            identioslist.append(identandroid + u['lastlogin']['ident'])
                                 else:
                                     print '此饭店暂无管理员，获取不到接收方设备号'
 
         identandroid = ",".join(identandroidlist)
         identios = ",".join(identioslist)
-        print identandroid,identios
+        print identandroid, identios
         issave = True
-        #阿里网关参数安卓
+        # 阿里网关参数安卓
         androidmsg = {}
-        #阿里网关参数IOS
+        # 阿里网关参数IOS
         iosmsg = {}
-        #阿里网关返回参数
+        # 阿里网关返回参数
 
-        #target是all表示发送给所有设备
-        if target=='device':
-            #message是消息
+        # target是all表示发送给所有设备
+        if target == 'device':
+            # message是消息
             if msgtype == 'message':
-                #分别判断设备号数组串，为空就不能发
-                if identandroid!='' and ispush:
-                    #固定模板
-                    androidmsg = {"appname": appname, "type": msgtype, "Message": info, "Target": "device", "TargetValue": identandroid}
-                    #requests方式POST
-                    androidreq = requests.post(baseurl+'/push.android',data=androidmsg).json()
+                # 分别判断设备号数组串，为空就不能发
+                if identandroid != '' and ispush:
+                    # 固定模板
+                    androidmsg = {"appname": appname, "type": msgtype, "Message": info, "Target": "device",
+                                  "TargetValue": identandroid}
+                    # requests方式POST
+                    androidreq = requests.post(baseurl + '/push.android', data=androidmsg).json()
                     issave = androidreq['success']
                     if androidreq['success']:
                         print '安卓消息个推推送成功！'
                     else:
-                        print '安卓消息个推推送失败！原因'+str(androidreq['Message'])
-                if identios!='' and ispush:
-                    iosmsg = {"appname": appname, "type": msgtype, "Message": info, "Summary": title, "Target": "device", "TargetValue": identios}
-                    iosreq = requests.post(baseurl+'/push.ios',data=iosmsg).json()
+                        print '安卓消息个推推送失败！原因' + str(androidreq['Message'])
+                if identios != '' and ispush:
+                    iosmsg = {"appname": appname, "type": msgtype, "Message": info, "Summary": title,
+                              "Target": "device", "TargetValue": identios}
+                    iosreq = requests.post(baseurl + '/push.ios', data=iosmsg).json()
                     issave = iosreq['success']
                     if iosreq['success']:
                         print 'IOS消息个推推送成功！'
                     else:
-                        print 'IOS消息个推推送失败！原因'+str(iosreq['Message'])
-            #notice是通知
+                        print 'IOS消息个推推送失败！原因' + str(iosreq['Message'])
+            # notice是通知
             else:
 
-                if identandroid!='' and ispush:
-                    androidmsg = {"appname": appname, "type": msgtype, "Title": title, "Summary": "1", "Target": "device", "TargetValue": identandroid,"ext":ext}
-                    androidreq = requests.post(baseurl+'/push.android',data=androidmsg).json()
+                if identandroid != '' and ispush:
+                    androidmsg = {"appname": appname, "type": msgtype, "Title": title, "Summary": "1",
+                                  "Target": "device", "TargetValue": identandroid, "ext": ext}
+                    androidreq = requests.post(baseurl + '/push.android', data=androidmsg).json()
                     issave = androidreq['success']
                     if androidreq['success']:
                         print '安卓通知个推推送成功！'
                     else:
-                        print '安卓通知个推推送失败！原因'+str(androidreq['Message'])
-                print identios!='' and ispush
-                if identios!='' and ispush:
-                    iosmsg = {"appname": appname, "type": msgtype, "Summary": title, "Target": "device", "TargetValue": identios,"ext":ext}
-                    iosreq = requests.post(baseurl+'/push.ios',data=iosmsg).json()
+                        print '安卓通知个推推送失败！原因' + str(androidreq['Message'])
+                print identios != '' and ispush
+                if identios != '' and ispush:
+                    iosmsg = {"appname": appname, "type": msgtype, "Summary": title, "Target": "device",
+                              "TargetValue": identios, "ext": ext}
+                    iosreq = requests.post(baseurl + '/push.ios', data=iosmsg).json()
                     issave = iosreq['success']
                     if iosreq['success']:
                         print 'IOS通知个推推送成功！'
                     else:
-                        print 'IOS通知个推推送失败！原因'+str(iosreq['Message'])
-        elif target=='all':
+                        print 'IOS通知个推推送失败！原因' + str(iosreq['Message'])
+        elif target == 'all':
             if msgtype == 'message':
                 if ispush:
-                    androidmsg = {"appname": appname, "type": msgtype, "Message": info, "Target": "all", "TargetValue": "all"}
-                    androidreq = requests.post(baseurl+'/push.android',data=androidmsg).json()
+                    androidmsg = {"appname": appname, "type": msgtype, "Message": info, "Target": "all",
+                                  "TargetValue": "all"}
+                    androidreq = requests.post(baseurl + '/push.android', data=androidmsg).json()
                     issave = androidreq['success']
                     if androidreq['success']:
                         print '安卓消息全推推送成功！'
                     else:
-                        print '安卓消息全推推送失败！原因'+str(androidreq['Message'])
-                    iosmsg = {"appname": appname, "type": msgtype, "Message": info, "Summary": title, "Target": "all", "TargetValue": "all"}
-                    iosreq = requests.post(baseurl+'/push.ios',data=iosmsg).json()
+                        print '安卓消息全推推送失败！原因' + str(androidreq['Message'])
+                    iosmsg = {"appname": appname, "type": msgtype, "Message": info, "Summary": title, "Target": "all",
+                              "TargetValue": "all"}
+                    iosreq = requests.post(baseurl + '/push.ios', data=iosmsg).json()
                     issave = iosreq['success']
                     if iosreq['success']:
                         print 'IOS消息全推推送成功！'
                     else:
-                        print 'IOS消息全推推送失败！原因'+str(iosreq['Message'])
+                        print 'IOS消息全推推送失败！原因' + str(iosreq['Message'])
             else:
                 if ispush:
-                    androidmsg = {"appname": appname, "type": msgtype, "Title": title, "Summary": "1", "Target": "all", "TargetValue": "all","ext":ext}
-                    androidreq = requests.post(baseurl+'/push.android',data=androidmsg).json()
+                    androidmsg = {"appname": appname, "type": msgtype, "Title": title, "Summary": "1", "Target": "all",
+                                  "TargetValue": "all", "ext": ext}
+                    androidreq = requests.post(baseurl + '/push.android', data=androidmsg).json()
                     issave = androidreq['success']
                     if androidreq['success']:
                         print '安卓通知全推推送成功！'
                     else:
-                        print '安卓通知全推推送失败！原因'+str(androidreq['Message'])
-                    iosmsg = {"appname": appname, "type": msgtype, "Summary": title, "Target": "all", "TargetValue": "all","ext":ext}
-                    iosreq = requests.post(baseurl+'/push.ios',data=iosmsg).json()
+                        print '安卓通知全推推送失败！原因' + str(androidreq['Message'])
+                    iosmsg = {"appname": appname, "type": msgtype, "Summary": title, "Target": "all",
+                              "TargetValue": "all", "ext": ext}
+                    iosreq = requests.post(baseurl + '/push.ios', data=iosmsg).json()
                     issave = iosreq['success']
                     if iosreq['success']:
                         print 'IOS通知全推推送成功！'
                     else:
-                        print 'IOS通知全推推送失败！原因'+str(iosreq['Message'])
+                        print 'IOS通知全推推送失败！原因' + str(iosreq['Message'])
         else:
             pass
         insertjson = {
-                "infofrom" : ObjectId(mfrom),
-                "infoto" : infoto,
-                "infos" : {
-                    "infotitle" : title,
-                    "information" : info,
-                    "infofromname" : infofromname
-                },
-                "type" : 0,
-                "add_time" : datetime.datetime.now(),
-                "goto":goto,
-                "is_push":ispush,
-                "channel":channel,
-                "androidmsg" : androidmsg,
-                "iosmsg": iosmsg
+            "infofrom": ObjectId(mfrom),
+            "infoto": infoto,
+            "infos": {
+                "infotitle": title,
+                "information": info,
+                "infofromname": infofromname
+            },
+            "type": 0,
+            "add_time": datetime.datetime.now(),
+            "goto": goto,
+            "is_push": ispush,
+            "channel": channel,
+            "androidmsg": androidmsg,
+            "iosmsg": iosmsg
         }
+        if data_id != '-1':
+            insertjson['data_id'] = data_id
+        else:
+            insertjson['data_id'] = '-1'
         if issave:
             mongo.message.insert(insertjson)
             return True
@@ -526,113 +559,130 @@ def tuisong(mfrom='', mto='', title='', info='',goto='',channel='',type='',totyp
 
 
 def getdishsitem(restaurant_id):
-     rent = mongo.restaurant.find_one({"_id":ObjectId(restaurant_id)},{"menu":1,"_id":0})
-     dishs=[]
-     for a in rent["menu"]:
-         if str(a["name"]) !="优惠菜" and str(a["name"]) != "推荐菜" and int(a["dish_type"])==1:
-             for b in a["dishs"]:
-                 # print b
-                 dishs.append(b)
-     return dishs
+    rent = mongo.restaurant.find_one({"_id": ObjectId(restaurant_id)}, {"menu": 1, "_id": 0})
+    dishs = []
+    for a in rent["menu"]:
+        if str(a["name"]) != "优惠菜" and str(a["name"]) != "推荐菜" and int(a["dish_type"]) == 1:
+            for b in a["dishs"]:
+                # print b
+                dishs.append(b)
+    return dishs
+
 
 def ceshi(restaurant_id):
-                orderdishs=[]
-                dishs =getdishsitem(str(restaurant_id))
-                l=[]
-                # print "dishs："
-                # print len(dishs)
-                b = random.randint(0,20)
-                # print b
-                for i in range(b):
-                    x=random.randint(0,len(dishs)-1)
-                    print x
-                    if x in l:
-                        continue #这样你就不会选到想同的数了！
-                    else:
-                        l.append(x)
-                # print "l:"
-                # print l
-                for a in l:
-                    orderdishs.append(dishs[int(a)])
-                # print orderdishs
-                # print len(orderdishs)
-                return orderdishs
+    orderdishs = []
+    dishs = getdishsitem(str(restaurant_id))
+    l = []
+    # print "dishs："
+    # print len(dishs)
+    b = random.randint(0, 20)
+    # print b
+    for i in range(b):
+        x = random.randint(0, len(dishs) - 1)
+        print x
+        if x in l:
+            continue  # 这样你就不会选到想同的数了！
+        else:
+            l.append(x)
+    # print "l:"
+    # print l
+    for a in l:
+        orderdishs.append(dishs[int(a)])
+    # print orderdishs
+    # print len(orderdishs)
+    return orderdishs
 
-#修改order表中的全部信息
+
+# 修改order表中的全部信息
 def testpreset_dishs():
-    list=mongo.order.find({},{"preset_dishs":1})
+    list = mongo.order.find({}, {"preset_dishs": 1})
     for a in list:
         l = a["preset_dishs"]
-        list=[]
+        list = []
         for b in l:
-            json={
-                "name" : b["name"],
-                "id" : b["id"],
-                "price" : b["price"],
-                "discount_price" : b["discount_price"],
-                "num" : 1
+            json = {
+                "name": b["name"],
+                "id": b["id"],
+                "price": b["price"],
+                "discount_price": b["discount_price"],
+                "num": 1
             }
             list.append(json)
-        mongo.order.update({"_id":a["_id"]},{"$set":{"preset_dishs":list}})
+        mongo.order.update({"_id": a["_id"]}, {"$set": {"preset_dishs": list}})
     return 1
+
 
 def gen_rnd_filename():
     filename_prefix = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     return '%s%s' % (filename_prefix, str(random.randrange(1000, 10000)))
 
 
-
-#给所有饭店包房增加 大厅
+# 给所有饭店包房增加 大厅
 def adddating():
     ll = mongo.restaurant.find()
-    c=1
+    c = 1
     for a in ll:
         try:
             import time
             time.sleep(1)
             item = a["rooms"]
-            json={}
-            key=True
+            json = {}
+            key = True
             for i in item:
                 if i["room_name"] == "大厅":
-                    key=False
+                    key = False
 
             json = {
-               "room_name" : "大厅",
-               "room_type" : [
+                "room_name": "大厅",
+                "room_type": [
 
-               ],
-               "room_photo" : [
+                ],
+                "room_photo": [
 
-               ],
-               "room_id" : gen_rnd_filename(),
-               "room_state" : "0",
-               "room_people_id" : "108",
-               "room_people_name" : "大厅"
+                ],
+                "room_id": gen_rnd_filename(),
+                "room_state": "0",
+                "room_people_id": "108",
+                "room_people_name": "大厅"
             }
-                    # list = mongo.restaurant.update({"_id":a["_id"]},{"$pull":{"rooms":json}},False,False)
+            # list = mongo.restaurant.update({"_id":a["_id"]},{"$pull":{"rooms":json}},False,False)
             # json["room_people_name"] ="大厅"
             # json["room_people_id"] = "108"
             if key:
-                list = mongo.restaurant.update_one({"_id":a["_id"]},{"$push":{"rooms":json}})
+                list = mongo.restaurant.update_one({"_id": a["_id"]}, {"$push": {"rooms": json}})
             # print list
-            c=c+1
+            c = c + 1
             print c
         except Exception, e:
             print e
     return 1
-
+#检查是否发送过此推送
+def checkmsg(data_id='', goto=''):
+    pass
+    item = mongo.message.find({"data_id":data_id,"goto":goto})
+    flag = True
+    for i in item:
+        flag = False
+    return flag
+#根据包房id获取包房名
+def getroom(id='',room_id=''):
+    item = mongo.restaurant.find({"_id":ObjectId(id)})
+    rnanme = ''
+    for i in item:
+        for r in i['rooms']:
+            if room_id == r['room_id']:
+                rnanme = r['room_name']
+    return rnanme
 def test():
-        aaa = mongo.restaurant.update_one({"_id":ObjectId("57329b1f0c1d9b2f4c85f8e3")},{"$push":{"rooms":{}}})
-        print aaa.modified_count
-
+    aaa = mongo.restaurant.update_one({"_id": ObjectId("57329b1f0c1d9b2f4c85f8e3")}, {"$push": {"rooms": {}}})
+    print aaa.modified_count
 
 
 if __name__ == '__main__':
     # test()
     # adddating()
-    a=[1,2]
-    c=a[0:3]
+    a = [1, 2]
+    c = a[0:3]
     print c
     # testpreset_dishs()
     # ceshi("57340b330c1sd9b314998892f")
@@ -683,6 +733,3 @@ if __name__ == '__main__':
     # # print first.submit2db()
     # # print Restaurant({'dish_id': '201605111053268902'}).info
     # pass
-
-
-

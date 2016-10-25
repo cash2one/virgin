@@ -222,8 +222,8 @@ def getcoupon():
                             "content" : coupons['content'],
                             "expiry_date" : coupons['indate_start']+"-"+coupons['indate_end'],
                             "role" : coupons['rulename'],
-                            "indate_start" : datetime.datetime.strptime("1980-01-01", "%Y-%m-%d"),
-                            "indate_end" : datetime.datetime.strptime("2100-01-01", "%Y-%m-%d"),
+                            "indate_start" : coupons['indate_start2'],
+                            "indate_end" : coupons['indate_end2'],
                         }
                         if coupons['num']!= -1:
                             mongo.coupons.update_one({"_id":ObjectId(coupons_id)},{"$set":{"num":coupons['num'] - 1}})

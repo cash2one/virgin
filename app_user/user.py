@@ -20,6 +20,7 @@ def register():
     if request.method == "POST":
         phone = request.form["phone"]
         password = request.form["password"]
+
         data = {
             "status": 1,
             "identification": "",
@@ -31,6 +32,7 @@ def register():
             },
             "lastlogin": {
                 "ident": "",
+                "type":"",
                 "time": datetime.datetime.now()
             },
             "thirdIds": [
@@ -79,6 +81,13 @@ def verify_login():
     if request.method == "POST":
         phone = request.form["phone"]
         password = request.form["password"]
+        flag = False
+        if "phonetype" in request.form:
+            phonetype = request.form['phonetype']
+            flag = True
+        else:
+            phonetype = ''
+            pass
         found = mongo.find({'phone': phone, 'appid': {'2': True}})
         if 'seller' in request.form:
             print 'is seller'
@@ -86,6 +95,16 @@ def verify_login():
             found = found[0]
             if found['registeruser']['password'] == hashlib.md5(password).hexdigest().upper():
                 found['_id'] = str(found['_id']['$oid'])
+                if flag:
+                    data = {
+                        "_id":str(found['_id']['$oid']),
+                        "lastlogin" :{
+                            "ident": "",
+                            "type":phonetype,
+                            "time": datetime.datetime.now()
+                        },
+                    }
+                    mongo.fix(data)
                 return json.dumps({'success': True, '_id': found['_id']})
             else:
                 return json.dumps({'success': False, 'info': 'Password Not Match'})

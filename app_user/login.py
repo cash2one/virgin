@@ -108,6 +108,7 @@ def register():
                         },
                         "lastlogin": {
                             "ident": "",
+                            "type":"",
                             "time": datetime.datetime.now()
                         },
                         "thirdIds": [
@@ -186,14 +187,23 @@ def verify_login():
             try:
                 phone = request.form['phone']
                 password = request.form['password']
+                ident = request.form['ident']
+                flag = False
+                if "phonetype" in request.form:
+                    phonetype = request.form['phonetype']
+                    flag = True
+                else:
+                    phonetype = ''
+                    pass
                 found = mongo.find({'phone': phone, 'appid': {'2': True}})
                 print found
-                if found:
+                if found and flag:
                     mongo.fix({
                         "_id":found[0]['_id'],
                         "fix_data":{
                             "lastlogin": {
-                                "ident": request.form['ident'],
+                                "ident": ident,
+                                "type":phonetype,
                                 "time": datetime.datetime.now()
                             }
                         }
@@ -201,7 +211,11 @@ def verify_login():
                     found = found[0]
                     if found['registeruser']['password'] == hashlib.md5(password).hexdigest().upper():
                         found['_id'] = str(found['_id']['$oid'])
-                        result=tool.return_json(0,"success",True,{'ispass':True,'_id': found['_id'],'info': '密码登陆成功'})
+                        user = conn.mongo_conn().webuser.find({"automembers_id":str(found['_id']['$oid'])})
+                        user_id = ''
+                        for u in user:
+                            user_id = str(u['_id'])
+                        result=tool.return_json(0,"success",True,{'ispass':True,'_id': user_id,'info': '密码登陆成功'})
                         return json_util.dumps(result,ensure_ascii=False,indent=2)
                     else:
                         result=tool.return_json(0,"success",True,{'ispass':False,'_id':'','info': '密码错误'})
@@ -245,13 +259,21 @@ def code_login():
             try:
                 phone = request.form['phone']
                 code = request.form['code']
+                flag = False
+                if "phonetype" in request.form:
+                    phonetype = request.form['phonetype']
+                    flag = True
+                else:
+                    phonetype = ''
+                    pass
                 found = mongo.find({'phone': phone, 'appid': {'2': True}})
-                if found:
+                if found and flag:
                     mongo.fix({
                         "_id":found[0]['_id'],
                         "fix_data":{
                             "lastlogin": {
                                 "ident": request.form['ident'],
+                                "type":phonetype,
                                 "time": datetime.datetime.now()
                             }
                         }
@@ -264,7 +286,11 @@ def code_login():
                     req = requests.post(SMSnetgate + '/sms.validate', data)
                     if req.json()['success']:
                         found['_id'] = str(found['_id']['$oid'])
-                        result=tool.return_json(0,"success",True,{'ispass':True,'_id': found['_id'],'info': '验证码登陆成功'})
+                        user = conn.mongo_conn().webuser.find({"automembers_id":str(found['_id']['$oid'])})
+                        user_id = ''
+                        for u in user:
+                            user_id = str(u['_id'])
+                        result=tool.return_json(0,"success",True,{'ispass':True,'_id': user_id,'info': '验证码登陆成功'})
                         return json_util.dumps(result,ensure_ascii=False,indent=2)
                     else:
                         result=tool.return_json(0,"success",True,{'ispass':False,'_id':'','info': '验证码超时或错误，请重新输入'})

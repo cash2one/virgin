@@ -327,8 +327,10 @@ def coupons_by(first={}):
             elif key == 'showtime_end':
                 json['showtime_end'] = i[key].strftime('%Y年%m月%d日')
             elif key == 'indate_start':
+                json['indate_start2'] = i[key]
                 json['indate_start'] = i[key].strftime('%Y年%m月%d日')
             elif key == 'indate_end':
+                json['indate_end2'] = i[key]
                 json['indate_end'] = i[key].strftime('%Y年%m月%d日')
             elif key == 'addtime':
                 json['addtime'] = i[key].strftime('%Y年%m月%d日')
