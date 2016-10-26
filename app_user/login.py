@@ -199,8 +199,17 @@ def verify_login():
                 found = mongo.find({'phone': phone, 'appid': {'2': True}})
                 print found
                 if found and flag:
+                    print '1111111111111111111111111111'
+                    # data = {
+                    #     "lastlogin": {
+                    #             "ident": ident,
+                    #             "type":phonetype,
+                    #             "time": datetime.datetime.now()
+                    #         }
+                    # }
+                    # conn.mongo_conn().user_web.update({"_id":found[0]['_id']},{"$set":data})
                     mongo.fix({
-                        "_id":found[0]['_id'],
+                        "_id":found[0]['_id']['$oid'],
                         "fix_data":{
                             "lastlogin": {
                                 "ident": ident,
@@ -270,7 +279,7 @@ def code_login():
                 found = mongo.find({'phone': phone, 'appid': {'2': True}})
                 if found and flag:
                     mongo.fix({
-                        "_id":found[0]['_id'],
+                        "_id":found[0]['_id']['$oid'],
                         "fix_data":{
                             "lastlogin": {
                                 "ident": request.form['ident'],

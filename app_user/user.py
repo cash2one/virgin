@@ -98,11 +98,13 @@ def verify_login():
                 if flag:
                     data = {
                         "_id":str(found['_id']['$oid']),
-                        "lastlogin" :{
-                            "ident": "",
-                            "type":phonetype,
-                            "time": datetime.datetime.now()
-                        },
+                        "fix_data":{
+                            "lastlogin" :{
+                                "ident": "",
+                                "type":phonetype,
+                                "time": datetime.datetime.now()
+                            }
+                        }
                     }
                     mongo.fix(data)
                 return json.dumps({'success': True, '_id': found['_id']})

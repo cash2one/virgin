@@ -364,198 +364,199 @@ def qrcode(data, version=None, error_correction='L', box_size=10, border=0, fit=
 # appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
 def tuisong(mfrom='', mto='', title='', info='', goto='', channel='', type='', totype='',
             appname='', msgtype='', target='', ext='', ispush=True, data_id='-1'):
-    ispush = False
-    baseurl = 'http://127.0.0.1:10035'
+    # ispush = False
+    baseurl = 'http://125.211.222.237:11035'
+    # baseurl = 'http://127.0.0.1:10035'
     androidreq = {}
     iosreq = {}
-    try:
-        # 以下是获取消息来源名
-        infofromname = ''
-        if type == '0':
-            infofromname = '美食地图'
-            mfrom = '580da84b87f89cf90e31a894'
-            # item = mongo.webuser.find({"_id":ObjectId(mfrom)})
-            # for i in item:
-            #     infofromname = i['nickname']
-        elif type == '1':
-            item = mongo.restaurant.find({"_id": ObjectId(mfrom)})
-            for i in item:
-                infofromname = i['name']
-        elif type == '2':
-            item = mongo.webuser.find({"_id": ObjectId(mfrom)})
-            for i in item:
-                infofromname = i['nickname']
+    # try:
+    # 以下是获取消息来源名
+    infofromname = ''
+    if type == '0':
+        infofromname = '美食地图'
+        mfrom = '580da84b87f89cf90e31a894'
+        # item = mongo.webuser.find({"_id":ObjectId(mfrom)})
+        # for i in item:
+        #     infofromname = i['nickname']
+    elif type == '1':
+        item = mongo.restaurant.find({"_id": ObjectId(mfrom)})
+        for i in item:
+            infofromname = i['name']
+    elif type == '2':
+        item = mongo.webuser.find({"_id": ObjectId(mfrom)})
+        for i in item:
+            infofromname = i['nickname']
+    else:
+        pass
+        infofromname = '未知'
+    # 获取消息来源名结束
+
+
+    # 本地消息表接收方id
+    infoto = {}
+    # 安卓设备号数组
+    identandroid = ''
+    identandroidlist = []
+    # IOS设备号数组
+    identios = ''
+    identioslist = []
+    if mto != '':
+        idlist = mto.split('_')
+        for mid in idlist:
+            if mid != '' and mid != None:
+                infoto[mid] = 0
+                # mid是接收方id 下面webuser是查询用户中心id,totype区分是谁接收，1是用户，查询用户表，0是商家，查询饭店表user字段
+                if totype == '1':
+                    webuser = mongo.webuser.find({"_id": ObjectId(mid)})
+                    for w in webuser:
+                        # 查询用户中心表usercenter得到设备类型和设备号
+                        usercenter = mongouser.user_web.find({"_id": ObjectId(w['automembers_id'])})
+                        for u in usercenter:
+                            # 0是安卓1是IOS
+                            if u['lastlogin']['type'] == '0':
+                                # 拼接TargetValue参数
+                                identandroidlist.append(identandroid + u['lastlogin']['ident'])
+                            else:
+                                identioslist.append(identandroid + u['lastlogin']['ident'])
+                else:
+                    restaurant = mongo.restaurant.find({"_id": ObjectId(mid)})
+                    for r in restaurant:
+                        for usercenter_id in r['user']:
+                            if usercenter_id != '' and usercenter_id != None:
+                                usercenter = mongouser.user_web.find({"_id": ObjectId(usercenter_id)})
+                                for u in usercenter:
+                                    # 0是安卓1是IOS
+                                    if u['lastlogin']['type'] == '0':
+                                        # 拼接TargetValue参数
+                                        identandroidlist.append(identandroid + u['lastlogin']['ident'])
+                                    else:
+                                        identioslist.append(identandroid + u['lastlogin']['ident'])
+                            else:
+                                print '此饭店暂无管理员，获取不到接收方设备号'
+
+    identandroid = ",".join(identandroidlist)
+    identios = ",".join(identioslist)
+    print identandroid, identios
+    issave = True
+    # 阿里网关参数安卓
+    androidmsg = {}
+    # 阿里网关参数IOS
+    iosmsg = {}
+    # 阿里网关返回参数
+
+    # target是all表示发送给所有设备
+    if target == 'device':
+        # message是消息
+        if msgtype == 'message':
+            # 分别判断设备号数组串，为空就不能发
+            if identandroid != '' and ispush:
+                # 固定模板
+                androidmsg = {"appname": appname, "type": msgtype, "Message": info, "Target": "device",
+                              "TargetValue": identandroid}
+                # requests方式POST
+                androidreq = requests.post(baseurl + '/push.android', data=androidmsg).json()
+                issave = androidreq['success']
+                if androidreq['success']:
+                    print '安卓消息个推推送成功！'
+                else:
+                    print '安卓消息个推推送失败！原因' + str(androidreq['Message'])
+            if identios != '' and ispush:
+                iosmsg = {"appname": appname, "type": msgtype, "Message": info, "Summary": title,
+                          "Target": "device", "TargetValue": identios}
+                iosreq = requests.post(baseurl + '/push.ios', data=iosmsg).json()
+                issave = iosreq['success']
+                if iosreq['success']:
+                    print 'IOS消息个推推送成功！'
+                else:
+                    print 'IOS消息个推推送失败！原因' + str(iosreq['Message'])
+        # notice是通知
         else:
-            pass
-            infofromname = '未知'
-        # 获取消息来源名结束
 
-
-        # 本地消息表接收方id
-        infoto = {}
-        # 安卓设备号数组
-        identandroid = ''
-        identandroidlist = []
-        # IOS设备号数组
-        identios = ''
-        identioslist = []
-        if mto != '':
-            idlist = mto.split('_')
-            for mid in idlist:
-                if mid != '' and mid != None:
-                    infoto[mid] = 0
-                    # mid是接收方id 下面webuser是查询用户中心id,totype区分是谁接收，1是用户，查询用户表，0是商家，查询饭店表user字段
-                    if totype == '1':
-                        webuser = mongo.webuser.find({"_id": ObjectId(mid)})
-                        for w in webuser:
-                            # 查询用户中心表usercenter得到设备类型和设备号
-                            usercenter = mongouser.user_web.find({"_id": ObjectId(w['automembers_id'])})
-                            for u in usercenter:
-                                # 0是安卓1是IOS
-                                if u['lastlogin']['type'] == '0':
-                                    # 拼接TargetValue参数
-                                    identandroidlist.append(identandroid + u['lastlogin']['ident'])
-                                else:
-                                    identioslist.append(identandroid + u['lastlogin']['ident'])
-                    else:
-                        restaurant = mongo.restaurant.find({"_id": ObjectId(mid)})
-                        for r in restaurant:
-                            for usercenter_id in r['user']:
-                                if usercenter_id != '' and usercenter_id != None:
-                                    usercenter = mongouser.user_web.find({"_id": ObjectId(usercenter_id)})
-                                    for u in usercenter:
-                                        # 0是安卓1是IOS
-                                        if u['lastlogin']['type'] == '0':
-                                            # 拼接TargetValue参数
-                                            identandroidlist.append(identandroid + u['lastlogin']['ident'])
-                                        else:
-                                            identioslist.append(identandroid + u['lastlogin']['ident'])
-                                else:
-                                    print '此饭店暂无管理员，获取不到接收方设备号'
-
-        identandroid = ",".join(identandroidlist)
-        identios = ",".join(identioslist)
-        print identandroid, identios
-        issave = True
-        # 阿里网关参数安卓
-        androidmsg = {}
-        # 阿里网关参数IOS
-        iosmsg = {}
-        # 阿里网关返回参数
-
-        # target是all表示发送给所有设备
-        if target == 'device':
-            # message是消息
-            if msgtype == 'message':
-                # 分别判断设备号数组串，为空就不能发
-                if identandroid != '' and ispush:
-                    # 固定模板
-                    androidmsg = {"appname": appname, "type": msgtype, "Message": info, "Target": "device",
-                                  "TargetValue": identandroid}
-                    # requests方式POST
-                    androidreq = requests.post(baseurl + '/push.android', data=androidmsg).json()
-                    issave = androidreq['success']
-                    if androidreq['success']:
-                        print '安卓消息个推推送成功！'
-                    else:
-                        print '安卓消息个推推送失败！原因' + str(androidreq['Message'])
-                if identios != '' and ispush:
-                    iosmsg = {"appname": appname, "type": msgtype, "Message": info, "Summary": title,
-                              "Target": "device", "TargetValue": identios}
-                    iosreq = requests.post(baseurl + '/push.ios', data=iosmsg).json()
-                    issave = iosreq['success']
-                    if iosreq['success']:
-                        print 'IOS消息个推推送成功！'
-                    else:
-                        print 'IOS消息个推推送失败！原因' + str(iosreq['Message'])
-            # notice是通知
-            else:
-
-                if identandroid != '' and ispush:
-                    androidmsg = {"appname": appname, "type": msgtype, "Title": title, "Summary": "1",
-                                  "Target": "device", "TargetValue": identandroid, "ext": ext}
-                    androidreq = requests.post(baseurl + '/push.android', data=androidmsg).json()
-                    issave = androidreq['success']
-                    if androidreq['success']:
-                        print '安卓通知个推推送成功！'
-                    else:
-                        print '安卓通知个推推送失败！原因' + str(androidreq['Message'])
-                print identios != '' and ispush
-                if identios != '' and ispush:
-                    iosmsg = {"appname": appname, "type": msgtype, "Summary": title, "Target": "device",
-                              "TargetValue": identios, "ext": ext}
-                    iosreq = requests.post(baseurl + '/push.ios', data=iosmsg).json()
-                    issave = iosreq['success']
-                    if iosreq['success']:
-                        print 'IOS通知个推推送成功！'
-                    else:
-                        print 'IOS通知个推推送失败！原因' + str(iosreq['Message'])
-        elif target == 'all':
-            if msgtype == 'message':
-                if ispush:
-                    androidmsg = {"appname": appname, "type": msgtype, "Message": info, "Target": "all",
-                                  "TargetValue": "all"}
-                    androidreq = requests.post(baseurl + '/push.android', data=androidmsg).json()
-                    issave = androidreq['success']
-                    if androidreq['success']:
-                        print '安卓消息全推推送成功！'
-                    else:
-                        print '安卓消息全推推送失败！原因' + str(androidreq['Message'])
-                    iosmsg = {"appname": appname, "type": msgtype, "Message": info, "Summary": title, "Target": "all",
+            if identandroid != '' and ispush:
+                androidmsg = {"appname": appname, "type": msgtype, "Title": title, "Summary": info,
+                              "Target": "device", "TargetValue": identandroid, "ext": ext}
+                androidreq = requests.post(baseurl + '/push.android', data=androidmsg).json()
+                issave = androidreq['success']
+                if androidreq['success']:
+                    print '安卓通知个推推送成功！'
+                else:
+                    print '安卓通知个推推送失败！原因' + str(androidreq['Message'])
+            print identios != '' and ispush
+            if identios != '' and ispush:
+                iosmsg = {"appname": appname, "type": msgtype, "Summary": title, "Target": "device",
+                          "TargetValue": identios, "ext": ext}
+                iosreq = requests.post(baseurl + '/push.ios', data=iosmsg).json()
+                issave = iosreq['success']
+                if iosreq['success']:
+                    print 'IOS通知个推推送成功！'
+                else:
+                    print 'IOS通知个推推送失败！原因' + str(iosreq['Message'])
+    elif target == 'all':
+        if msgtype == 'message':
+            if ispush:
+                androidmsg = {"appname": appname, "type": msgtype, "Message": info, "Target": "all",
                               "TargetValue": "all"}
-                    iosreq = requests.post(baseurl + '/push.ios', data=iosmsg).json()
-                    issave = iosreq['success']
-                    if iosreq['success']:
-                        print 'IOS消息全推推送成功！'
-                    else:
-                        print 'IOS消息全推推送失败！原因' + str(iosreq['Message'])
-            else:
-                if ispush:
-                    androidmsg = {"appname": appname, "type": msgtype, "Title": title, "Summary": "1", "Target": "all",
-                                  "TargetValue": "all", "ext": ext}
-                    androidreq = requests.post(baseurl + '/push.android', data=androidmsg).json()
-                    issave = androidreq['success']
-                    if androidreq['success']:
-                        print '安卓通知全推推送成功！'
-                    else:
-                        print '安卓通知全推推送失败！原因' + str(androidreq['Message'])
-                    iosmsg = {"appname": appname, "type": msgtype, "Summary": title, "Target": "all",
+                androidreq = requests.post(baseurl + '/push.android', data=androidmsg).json()
+                issave = androidreq['success']
+                if androidreq['success']:
+                    print '安卓消息全推推送成功！'
+                else:
+                    print '安卓消息全推推送失败！原因' + str(androidreq['Message'])
+                iosmsg = {"appname": appname, "type": msgtype, "Message": info, "Summary": info, "Target": "all",
+                          "TargetValue": "all"}
+                iosreq = requests.post(baseurl + '/push.ios', data=iosmsg).json()
+                issave = iosreq['success']
+                if iosreq['success']:
+                    print 'IOS消息全推推送成功！'
+                else:
+                    print 'IOS消息全推推送失败！原因' + str(iosreq['Message'])
+        else:
+            if ispush:
+                androidmsg = {"appname": appname, "type": msgtype, "Title": title, "Summary": info, "Target": "all",
                               "TargetValue": "all", "ext": ext}
-                    iosreq = requests.post(baseurl + '/push.ios', data=iosmsg).json()
-                    issave = iosreq['success']
-                    if iosreq['success']:
-                        print 'IOS通知全推推送成功！'
-                    else:
-                        print 'IOS通知全推推送失败！原因' + str(iosreq['Message'])
-        else:
-            pass
-        insertjson = {
-            "infofrom": ObjectId(mfrom),
-            "infoto": infoto,
-            "infos": {
-                "infotitle": title,
-                "information": info,
-                "infofromname": infofromname
-            },
-            "type": 0,
-            "add_time": datetime.datetime.now(),
-            "goto": goto,
-            "is_push": ispush,
-            "channel": channel,
-            "androidmsg": androidmsg,
-            "iosmsg": iosmsg
-        }
-        if data_id != '-1':
-            insertjson['data_id'] = data_id
-        else:
-            insertjson['data_id'] = '-1'
-        if issave:
-            mongo.message.insert(insertjson)
-            return True
-        else:
-            return False
-    except:
-        return False
+                androidreq = requests.post(baseurl + '/push.android', data=androidmsg).json()
+                issave = androidreq['success']
+                if androidreq['success']:
+                    print '安卓通知全推推送成功！'
+                else:
+                    print '安卓通知全推推送失败！原因' + str(androidreq['Message'])
+                iosmsg = {"appname": appname, "type": msgtype, "Summary": title, "Target": "all",
+                          "TargetValue": "all", "ext": ext}
+                iosreq = requests.post(baseurl + '/push.ios', data=iosmsg).json()
+                issave = iosreq['success']
+                if iosreq['success']:
+                    print 'IOS通知全推推送成功！'
+                else:
+                    print 'IOS通知全推推送失败！原因' + str(iosreq['Message'])
+    else:
+        pass
+    insertjson = {
+        "infofrom": ObjectId(mfrom),
+        "infoto": infoto,
+        "infos": {
+            "infotitle": title,
+            "information": info,
+            "infofromname": infofromname
+        },
+        "type": 0,
+        "add_time": datetime.datetime.now(),
+        "goto": goto,
+        "is_push": ispush,
+        "channel": channel,
+        "androidmsg": androidmsg,
+        "iosmsg": iosmsg
+    }
+    if data_id != '-1':
+        insertjson['data_id'] = data_id
+    else:
+        insertjson['data_id'] = '-1'
+    # if issave:
+    mongo.message.insert(insertjson)
+    return True
+    # else:
+    #     return False
+# except:
+#     return False
 
 
 def getdishsitem(restaurant_id):
