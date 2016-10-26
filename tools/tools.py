@@ -481,7 +481,7 @@ def tuisong(mfrom='', mto='', title='', info='', goto='', channel='', type='', t
                     print '安卓通知个推推送成功！'
                 else:
                     print '安卓通知个推推送失败！原因' + str(androidreq['Message'])
-            print identios != '' and ispush
+            # print identios != '' and ispush
             if identios != '' and ispush:
                 iosmsg = {"appname": appname, "type": msgtype, "Summary": title, "Target": "device",
                           "TargetValue": identios, "ext": ext}
