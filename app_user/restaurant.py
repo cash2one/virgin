@@ -1445,12 +1445,12 @@ def getroom():
                      json['preset_dishs'] = []
                      json['preset_wine'] = []
                      json['webuser_id'] = ObjectId(request.form['webuser_id'])
-                     json['dis_message'] = [{
+                     json['dis_message'] = {
                         "dis_type":"",
                         "content":"",
                         "coupons_id":"",
                         "dis_amount":""
-                    }],
+                    },
                      json['room_id'] = ""
                      json['deposit'] = 0.0
                      json['total'] = 0.0
@@ -1459,19 +1459,19 @@ def getroom():
                      #推送1 /fm/merchant/v1/order/orderinfos/
 #mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
 # appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
-                     tool.tuisong(mfrom=request.form['webuser_id'],
-                                 mto=request.form['restaurant_id'],
-                                 title='您有一条新的订座消息',
-                                 info=content,
-                                 goto='1',
-                                 channel='订座',
-                                 type='0',
-                                 totype='0',
-                                 appname='foodmap_shop',
-                                 msgtype='notice',
-                                 target='device',
-                                 ext='{"goto":"1","id":"'+str(orderid)+'"}',
-                                 ispush=True)
+#                      tool.tuisong(mfrom=request.form['webuser_id'],
+#                                  mto=request.form['restaurant_id'],
+#                                  title='您有一条新的订座消息',
+#                                  info=content,
+#                                  goto='1',
+#                                  channel='订座',
+#                                  type='0',
+#                                  totype='0',
+#                                  appname='foodmap_shop',
+#                                  msgtype='notice',
+#                                  target='device',
+#                                  ext='{"goto":"1","id":"'+str(orderid)+'"}',
+#                                  ispush=True)
                 else:
                     mongo.order.update({'webuser_id':ObjectId(request.form['webuser_id']),"restaurant_id":ObjectId(request.form['restaurant_id']),'status':8},{"$set":json})
                     myorder = mongo.order.find({'webuser_id':ObjectId(request.form['webuser_id']),"restaurant_id":ObjectId(request.form['restaurant_id']),'status':8})
