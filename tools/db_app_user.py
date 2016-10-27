@@ -152,8 +152,10 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3,
                         else:
                             json['liansuo'] = '0'
                     else:
-                        json['distance'] = l[0]
-
+                        if l[0] >100:
+                            json['distance'] = str(float(l[0])/1000)[0:3]+'千米'
+                        else:
+                            json['distance'] = str(l[0])+'米'
                         json['menutype'] = '0'
                 list.append(json)
     else:
@@ -512,7 +514,11 @@ def hobby(first={},lat1=None,lon1=None,start=0,end=3):
                     elif key == 'name':
                         json['name'] = rest[key]
                     else:
-                        json['distance'] = l[0]
+                        # json['distance'] = l[0]
+                        if l[0] >100:
+                            json['distance'] = str(float(l[0])/1000)[0:3]+'千米'
+                        else:
+                            json['distance'] = str(l[0])+'米'
                 list.append(json)
     else:
         restaurant = mongo.restaurant.find(first).sort("addtime", pymongo.DESCENDING)[start:end]
@@ -544,7 +550,7 @@ def hobby(first={},lat1=None,lon1=None,start=0,end=3):
     return list
 if __name__ == '__main__':
     pass
-    print json_util.dumps(guess(),ensure_ascii=False,indent=2)
+    # print json_util.dumps(guess(),ensure_ascii=False,indent=2)
     # json = guess({"_id":{"$in":[ObjectId("57329e300c1d9b2f4c85f8e6")]}}, lat1='y', lon1='x', end=10,webuser_id='573feadf7c1fa8a326a9c03c')
     # for j in json:
     #     del j['distance']
@@ -564,3 +570,4 @@ if __name__ == '__main__':
     # list = coupons_by({"restaurant_id":ObjectId("57329e300c1d9b2f4c85f8e6"),"kind":"2","button":"0"})
     # print json_util.dumps(list,ensure_ascii=False,indent=2)
     # print json_util.dumps(use_coupons(total = 50.0,dish_total = 40.0,wine_total = 10.0,restaurant_id='57329e300c1d9b2f4c85f8e6',webuser_id='57396ec17c1f31a9cce960f4'),ensure_ascii=False,indent=2)
+    print str(3111.0/1000)[0:3]
