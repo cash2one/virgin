@@ -1786,7 +1786,7 @@ liansuo_json = {
 def liansuo():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
-            try:
+            # try:
                 data = {}
                 list = []
                 fendian = ''
@@ -1796,7 +1796,7 @@ def liansuo():
                     fendian = rest['fendian']['id']
                 if request.form['district_id'] !='-1':
                     dist_list = []
-                    district = mongo.district.find_one({"_id":ObjectId(request.form['district_id'])})
+                    district = mongo.district.find({"_id":ObjectId(request.form['district_id'])})
                     for dist in district:
                         for biz in dist['biz_areas']:
                             dist_list.append(str(biz['biz_area_id']))
@@ -1815,10 +1815,10 @@ def liansuo():
                 data['list'] = list
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
-            except Exception,e:
-                print e
-                result=tool.return_json(0,"field",True,str(e))
-                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            # except Exception,e:
+            #     print e
+            #     result=tool.return_json(0,"field",True,str(e))
+            #     return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
