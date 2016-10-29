@@ -96,8 +96,8 @@ def update_img():
                 fname, fext = os.path.splitext(file.filename)
                 if file:
                     filename = '%s%s' % (tool.gen_rnd_filename(), fext)
-                    # osstr = os.path.dirname(__file__).replace("\\PycharmProjects\\virgin\\app_merchant","/PycharmProjects/virgin")  +'/static/upload/'+filename
-                    osstr = "/www/site/foodmap/virgin/virgin/static/upload/"+filename
+                    # osstr = os.path.dirname(__file__).replace("\\PycharmProjects\\virgin\\app_merchant","/PycharmProjects/virgin")  +'/static2/upload/'+filename
+                    osstr = "/www/site/foodmap/virgin/virgin/static2/upload/"+filename
                     print osstr
                     file.save(osstr)
                     uu = tool.pimg(osstr)

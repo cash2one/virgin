@@ -351,8 +351,8 @@ def qrcode(data, version=None, error_correction='L', box_size=10, border=0, fit=
     out = BytesIO()
     qr_img = qr.make_image()
     filename = '%s%s' % (gen_rnd_filename(), ".PNG")
-    osstr = os.path.dirname(__file__).replace("tools", "") + "static/upload/" + filename
-    # osstr = "/www/site/foodmap/virgin/virgin/static/upload/"+filename
+    osstr = os.path.dirname(__file__).replace("tools", "") + "static2/upload/" + filename
+    # osstr = "/www/site/foodmap/virgin/virgin/static2/upload/"+filename
     qr_img.save(osstr)
     uu = pimg(osstr)
     u1 = settings.getimageIP + str(uu)
