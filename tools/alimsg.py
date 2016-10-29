@@ -150,7 +150,7 @@ def tuisong(mfrom='', mto='', title='', info='', goto='', channel='', type='', t
         else:
 
             if identandroid != '' and ispush:
-                androidmsg = {"appname": appname, "type": msgtype, "Title": title, "Summary": "1",
+                androidmsg = {"appname": appname, "type": msgtype, "Title": title, "Summary": info,
                               "Target": "device", "TargetValue": identandroid, "ext": ext}
                 androidreq = requests.post(baseurl + '/push.android', data=androidmsg).json()
                 issave = androidreq['success']
@@ -158,7 +158,7 @@ def tuisong(mfrom='', mto='', title='', info='', goto='', channel='', type='', t
                     print '安卓通知个推推送成功！'
                 else:
                     print '安卓通知个推推送失败！原因' + str(androidreq['Message'])
-            print identios != '' and ispush
+            # print identios != '' and ispush
             if identios != '' and ispush:
                 iosmsg = {"appname": appname, "type": msgtype, "Summary": title, "Target": "device",
                           "TargetValue": identios, "ext": ext}
@@ -189,7 +189,7 @@ def tuisong(mfrom='', mto='', title='', info='', goto='', channel='', type='', t
                     print 'IOS消息全推推送失败！原因' + str(iosreq['Message'])
         else:
             if ispush:
-                androidmsg = {"appname": appname, "type": msgtype, "Title": title, "Summary": "1", "Target": "all",
+                androidmsg = {"appname": appname, "type": msgtype, "Title": title, "Summary": info, "Target": "all",
                               "TargetValue": "all", "ext": ext}
                 androidreq = requests.post(baseurl + '/push.android', data=androidmsg).json()
                 issave = androidreq['success']
@@ -228,11 +228,11 @@ def tuisong(mfrom='', mto='', title='', info='', goto='', channel='', type='', t
     else:
         insertjson['data_id'] = '-1'
     print 'issave',issave
-    if issave:
-        mongo.message.insert(insertjson)
-        return True
-    else:
-        return False
+    # if issave:
+    mongo.message.insert(insertjson)
+    #     return True
+    # else:
+    #     return False
     # except:
     #     return False
 
@@ -272,7 +272,7 @@ def send7():
         if checkmsg(str(i['_id']),'7'):
             tuisong(mfrom=str(i['webuser_id']),
                      mto=str(i['rstaurant_id']),
-                     title='您发布的优惠被抢光了，快去发布新的优惠吧',
+                     title='您发布的优惠被...',
                      info='您发布的优惠被抢光了，快去发布新的优惠吧',
                      goto='7',
                      channel='优惠提醒',
@@ -289,7 +289,7 @@ def send7():
         if checkmsg(str(c['_id']),'7'):
             tuisong(mfrom=str(c['webuser_id']),
                      mto=str(c['rstaurant_id']),
-                     title='您发布的优惠过期了，快去发布新的优惠吧',
+                     title='您发布的优惠过...',
                      info='您发布的优惠过期了，快去发布新的优惠吧',
                      goto='7',
                      channel='优惠提醒',
@@ -306,7 +306,7 @@ def send7():
         if checkmsg(str(k['_id']),'7'):
             tuisong(mfrom='',
                      mto=str(k['rstaurant_id']),
-                     title='您发布的活动过期了，快去发布新的活动吧',
+                     title='您发布的活动过...',
                      info='您发布的活动过期了，快去发布新的活动吧',
                      goto='7',
                      channel='活动提醒',
@@ -324,7 +324,7 @@ def send7():
         if checkmsg(str(k2['_id']),'7') and GroupInvite()._is_invite_open(str(k2['_id'])) < 1:
             tuisong(mfrom='',
                      mto=str(k['rstaurant_id']),
-                     title='您发布的活动被抢光了，快去发布新的活动吧',
+                     title='您发布的活动被...',
                      info='您发布的活动被抢光了，快去发布新的活动吧',
                      goto='7',
                      channel='活动提醒',
@@ -346,8 +346,8 @@ def send10():
         if checkmsg(str(i['_id']),'10'):
             tuisong(mfrom='',
                      mto=str(i['restaurant_info']['rid']),
-                     title='您的'+i['restaurant_info']['name']+'开团请客失败了',
-                     info='快去看看吧！',
+                     title=i['restaurant_info']['name'],
+                     info='您的'+i['restaurant_info']['name']+'开团请客失败了',
                      goto='10',
                      channel='请客提醒',
                      type='0',
@@ -366,8 +366,8 @@ def send14():
         if checkmsg(str(i['_id']),'14'):
             tuisong(mfrom='',
                      mto=str(i['master_id']),
-                     title='您的'+i['restaurant_info']['name']+'请客活动要开餐了',
-                     info='快去看看吧！',
+                     title=i['restaurant_info']['name'],
+                     info='您的'+i['restaurant_info']['name']+'请客活动要开餐了',
                      goto='14',
                      channel='请客提醒',
                      type='0',
