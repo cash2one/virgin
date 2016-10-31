@@ -5,6 +5,7 @@ from bson import json_util
 from flask import Blueprint, render_template, request, abort, json
 from tools.db_comment import Comment
 from app_merchant import auto
+import connect.settings as settings
 
 __author__ = 'dolacmeo'
 

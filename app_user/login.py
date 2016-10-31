@@ -11,7 +11,7 @@ from tools.swagger import swagger
 reload(sys)
 sys.setdefaultencoding('utf8')
 from flask import Blueprint,abort,request,json
-from connect import conn
+from connect import conn,settings
 from bson import ObjectId,json_util
 import tools.tools as tool
 import datetime
@@ -37,7 +37,7 @@ send_sms_json = {
 }
 
 #发送验证码
-@login_user_api.route('/fm/user/v1/login/send_sms/',methods=['POST'])
+@login_user_api.route(settings.app_user_url+'/fm/user/v1/login/send_sms/',methods=['POST'])
 @swag_from(send_sms.mylpath(schemaid='send_sms',result=send_sms_json))
 def send_sms():
     if request.method=='POST':
@@ -82,7 +82,7 @@ register_json = {
 }
 
 #注册
-@login_user_api.route('/fm/user/v1/login/register/',methods=['POST'])
+@login_user_api.route(settings.app_user_url+'/fm/user/v1/login/register/',methods=['POST'])
 @swag_from(register.mylpath(schemaid='register',result=register_json))
 def register():
     if request.method=='POST':
@@ -180,7 +180,7 @@ verify_login_json = {
 }
 
 #密码登录
-@login_user_api.route('/fm/user/v1/login/verify_login/',methods=['POST'])
+@login_user_api.route(settings.app_user_url+'/fm/user/v1/login/verify_login/',methods=['POST'])
 @swag_from(verify_login.mylpath(schemaid='verify_login',result=verify_login_json))
 def verify_login():
     if request.method=='POST':
@@ -261,7 +261,7 @@ code_login_json = {
 }
 
 #验证码登录
-@login_user_api.route('/fm/user/v1/login/code_login/',methods=['POST'])
+@login_user_api.route(settings.app_user_url+'/fm/user/v1/login/code_login/',methods=['POST'])
 @swag_from(code_login.mylpath(schemaid='code_login',result=code_login_json))
 def code_login():
     if request.method=='POST':
@@ -337,7 +337,7 @@ resetpassword_json = {
 }
 
 #找回密码
-@login_user_api.route('/fm/user/v1/login/resetpassword/',methods=['POST'])
+@login_user_api.route(settings.app_user_url+'/fm/user/v1/login/resetpassword/',methods=['POST'])
 @swag_from(resetpassword.mylpath(schemaid='resetpassword',result=resetpassword_json))
 def resetpassword():
     if request.method=='POST':
