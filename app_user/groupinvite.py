@@ -3,7 +3,7 @@ import datetime
 import time
 import json
 from flask import Blueprint, render_template, request, abort
-
+import connect.settings as settings
 from connect import conn
 from connect.mongotool import MongoHelp, mongo_conn
 from app_merchant import auto
@@ -309,7 +309,7 @@ group_invite_list.add_parameter(name='jwtstr', parametertype='formData', type='s
                                 description='jwt串',
                                 default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 
-HOMEBASE = '/fm/user/v1/groupinvite'
+HOMEBASE = settings.app_user_url+'/fm/user/v1/groupinvite'
 
 
 @group_invite.route(HOMEBASE, methods=['POST'])
