@@ -20,8 +20,8 @@ import datetime
 login_user_api = Blueprint('login_user_api', __name__, template_folder='templates')
 
 mongo = MongoAPI(conn.mongo_conn_user().user_web)
-# SMSnetgate = 'http://125.211.222.237:10031'
-SMSnetgate = 'http://127.0.0.1:10032'
+SMSnetgate = 'http://125.211.222.232:10031'
+# SMSnetgate = 'http://127.0.0.1:10032'
 #发送验证码
 send_sms = swagger("0-1 注册.jpg","发送验证码")
 send_sms.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
