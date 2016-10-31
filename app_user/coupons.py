@@ -22,7 +22,7 @@ from bson import ObjectId,json_util
 import tools.tools as tool
 import tools.public_vew as public
 import datetime
-
+import connect.settings as settings
 mongo=conn.mongo_conn()
 
 coupons_user_api = Blueprint('coupons_user_api', __name__, template_folder='templates')
@@ -53,7 +53,7 @@ coupons.add_parameter(name='jwtstr',parametertype='formData',type='string',requi
 coupons.add_parameter(name='pageindex',parametertype='formData',type='string',required= True,description='页数',default='1')
 coupons.add_parameter(name='webuser_id',parametertype='formData',type='string',required= True,description='用户id',default='573feadf7c1fa8a326a9c03c')
 coupons.add_parameter(name='type',parametertype='formData',type='string',required= True,description='1全部2店粉儿抢特惠',default='1')
-@coupons_user_api.route('/fm/user/v1/coupons/coupons/',methods=['POST'])
+@coupons_user_api.route(settings.app_user_url+'/fm/user/v1/coupons/coupons/',methods=['POST'])
 @swag_from(coupons.mylpath(schemaid='coupons',result=coupons_json))
 def coupons():
     if request.method=='POST':
@@ -144,7 +144,7 @@ coupons_info_json = {
 }
 coupons_info.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 coupons_info.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店id',default='57329e300c1d9b2f4c85f8e6')
-@coupons_user_api.route('/fm/user/v1/coupons/coupons_info/',methods=['POST'])
+@coupons_user_api.route(settings.app_user_url+'/fm/user/v1/coupons/coupons_info/',methods=['POST'])
 @swag_from(coupons_info.mylpath(schemaid='coupons_info',result=coupons_info_json))
 def coupons_info():
     if request.method=='POST':
@@ -191,7 +191,7 @@ getcoupon.add_parameter(name='jwtstr',parametertype='formData',type='string',req
 getcoupon.add_parameter(name='restaurant_id',parametertype='formData',type='string',required= True,description='饭店id',default='57329e300c1d9b2f4c85f8e6')
 getcoupon.add_parameter(name='webuser_id',parametertype='formData',type='string',required= True,description='用户id',default='57df8181231abaa4d03f420f')
 getcoupon.add_parameter(name='coupons_id',parametertype='formData',type='string',required= True,description='抢优惠id',default='5784bea80c1d9b385dadae9c')
-@coupons_user_api.route('/fm/user/v1/coupons/getcoupon/',methods=['POST'])
+@coupons_user_api.route(settings.app_user_url+'/fm/user/v1/coupons/getcoupon/',methods=['POST'])
 @swag_from(getcoupon.mylpath(schemaid='getcoupon',result=getcoupon_json))
 def getcoupon():
     if request.method=='POST':
@@ -327,7 +327,7 @@ special_type_json = {
   }
 }
 #特色名小吃查询类别标签
-@coupons_user_api.route('/fm/user/v1/coupons/special_type/',methods=['POST'])
+@coupons_user_api.route(settings.app_user_url+'/fm/user/v1/coupons/special_type/',methods=['POST'])
 @swag_from(special_type.mylpath(schemaid='special_type',result=special_type_json))
 def special_type():
     if request.method=='POST':
@@ -393,7 +393,7 @@ special_restaurant.add_parameter(name='discount',parametertype='formData',type='
 special_restaurant.add_parameter(name='pageindex',parametertype='formData',type='string',required= True,description='页数',default='1')
 
 #特色名小吃列表
-@coupons_user_api.route('/fm/user/v1/coupons/special_restaurant/',methods=['POST'])
+@coupons_user_api.route(settings.app_user_url+'/fm/user/v1/coupons/special_restaurant/',methods=['POST'])
 @swag_from(special_restaurant.mylpath(schemaid='special_restaurant',result=special_restaurant_json))
 def special_restaurant():
     if request.method=='POST':
@@ -490,7 +490,7 @@ special_restaurant_info.add_parameter(name='restaurant_id',parametertype='formDa
 special_restaurant_info.add_parameter(name='webuser_id',parametertype='formData',type='string',required= True,description='用户id，可传-1',default='57396ec17c1f31a9cce960f4')
 
 #特色名小吃详情
-@coupons_user_api.route('/fm/user/v1/coupons/special_restaurant_info/',methods=['POST'])
+@coupons_user_api.route(settings.app_user_url+'/fm/user/v1/coupons/special_restaurant_info/',methods=['POST'])
 @swag_from(special_restaurant_info.mylpath(schemaid='special_restaurant_info',result=special_restaurant_info_json))
 def special_restaurant_info():
     if request.method=='POST':
@@ -528,7 +528,7 @@ def special_restaurant_info():
     else:
         return abort(403)
 #特色名小吃详情
-@coupons_user_api.route('/fm/user/v1/coupons/special_restaurant_html/<string:restaurant_id>/',methods=['GET'])
+@coupons_user_api.route(settings.app_user_url+'/fm/user/v1/coupons/special_restaurant_html/<string:restaurant_id>/',methods=['GET'])
 def special_restaurant_html(restaurant_id):
         item = mongo.shop_recommend.find({"type":2,"restaurant_id":ObjectId(restaurant_id)}).sort("addtime", pymongo.DESCENDING)[0:1]
         html = ''

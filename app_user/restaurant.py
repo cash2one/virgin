@@ -23,7 +23,7 @@ from bson import ObjectId,json_util
 import tools.tools as tool
 import tools.public_vew as public
 import datetime
-
+import connect.settings as settings
 mongo=conn.mongo_conn()
 
 restaurant_user_api = Blueprint('restaurant_user_api', __name__, template_folder='templates')
@@ -80,7 +80,7 @@ index_json = {
     }
 }
 index.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
-@restaurant_user_api.route('/fm/user/v1/restaurant/index/',methods=['POST'])
+@restaurant_user_api.route(settings.app_user_url+'/fm/user/v1/restaurant/index/',methods=['POST'])
 @swag_from(index.mylpath(schemaid='index',result=index_json))
 def index():
     if request.method=='POST':
@@ -225,7 +225,7 @@ restaurant.add_parameter(name='y',parametertype='formData',type='string',require
 restaurant.add_parameter(name='business_dist_id',parametertype='formData',type='string',required= True,description='商圈id',default='-1')
 restaurant.add_parameter(name='webuser_id',parametertype='formData',type='string',required= True,description='用户id,未登录传-1',default='57396ec17c1f31a9cce960f4')
 #饭店列表 条件很多
-@restaurant_user_api.route('/fm/user/v1/restaurant/restaurant/',methods=['POST'])
+@restaurant_user_api.route(settings.app_user_url+'/fm/user/v1/restaurant/restaurant/',methods=['POST'])
 @swag_from(restaurant.mylpath(schemaid='restaurant',result=restaurant_json))
 def restaurant():
     if request.method=='POST':
@@ -321,7 +321,7 @@ restaurant_img_json = {
              ]
         }
 }
-@restaurant_user_api.route('/fm/user/v1/restaurant/restaurant_img/',methods=['POST'])
+@restaurant_user_api.route(settings.app_user_url+'/fm/user/v1/restaurant/restaurant_img/',methods=['POST'])
 @swag_from(restaurant_img.mylpath(schemaid='restaurant_img',result=restaurant_img_json))
 def restaurant_img():
     if request.method=='POST':
@@ -426,7 +426,7 @@ restaurant_type_json = {
   },
 }
 #饭店查询类别标签
-@restaurant_user_api.route('/fm/user/v1/restaurant/restaurant_type/',methods=['POST'])
+@restaurant_user_api.route(settings.app_user_url+'/fm/user/v1/restaurant/restaurant_type/',methods=['POST'])
 @swag_from(restaurant_type.mylpath(schemaid='restaurant_type',result=restaurant_type_json))
 def restaurant_type():
     if request.method=='POST':
@@ -499,7 +499,7 @@ getbusiness_dist_json = {
   }
 }
 #根据坐标查询商圈
-@restaurant_user_api.route('/fm/user/v1/restaurant/getbusiness_dist/',methods=['POST'])
+@restaurant_user_api.route(settings.app_user_url+'/fm/user/v1/restaurant/getbusiness_dist/',methods=['POST'])
 @swag_from(getbusiness_dist.mylpath(schemaid='getbusiness_dist',result=getbusiness_dist_json))
 def getbusiness_dist():
     if request.method=='POST':
@@ -547,7 +547,7 @@ getdistrict_list_json = {
     }
 }
 #查询所有行政区
-@restaurant_user_api.route('/fm/user/v1/restaurant/getdistrict_list/',methods=['POST'])
+@restaurant_user_api.route(settings.app_user_url+'/fm/user/v1/restaurant/getdistrict_list/',methods=['POST'])
 @swag_from(getdistrict_list.mylpath(schemaid='getdistrict_list',result=getdistrict_list_json))
 def getdistrict_list():
     if request.method=='POST':
@@ -595,7 +595,7 @@ getbusiness_dist_byid_json = {
   }
 }
 #根据行政区标签查询商圈
-@restaurant_user_api.route('/fm/user/v1/restaurant/getbusiness_dist_byid/',methods=['POST'])
+@restaurant_user_api.route(settings.app_user_url+'/fm/user/v1/restaurant/getbusiness_dist_byid/',methods=['POST'])
 @swag_from(getbusiness_dist_byid.mylpath(schemaid='getbusiness_dist_byid',result=getbusiness_dist_byid_json))
 def getbusiness_dist_byid():
     if request.method=='POST':
@@ -628,7 +628,7 @@ concern_json = {
   }
 }
 #关注饭店
-@restaurant_user_api.route('/fm/user/v1/restaurant/concern/',methods=['POST'])
+@restaurant_user_api.route(settings.app_user_url+'/fm/user/v1/restaurant/concern/',methods=['POST'])
 @swag_from(concern.mylpath(schemaid='concern',result=concern_json))
 def concern():
     if request.method=='POST':
@@ -752,7 +752,7 @@ restaurant_info_json = {
     }
 }
 #饭店详情
-@restaurant_user_api.route('/fm/user/v1/restaurant/restaurant_info/',methods=['POST'])
+@restaurant_user_api.route(settings.app_user_url+'/fm/user/v1/restaurant/restaurant_info/',methods=['POST'])
 @swag_from(restaurant_info.mylpath(schemaid='restaurant_info',result=restaurant_info_json))
 def restaurant_info():
     if request.method=='POST':
@@ -880,7 +880,7 @@ pic_menu_json = {
 }
 }
 #图片菜单
-@restaurant_user_api.route('/fm/user/v1/restaurant/pic_menu/',methods=['POST'])
+@restaurant_user_api.route(settings.app_user_url+'/fm/user/v1/restaurant/pic_menu/',methods=['POST'])
 @swag_from(pic_menu.mylpath(schemaid='pic_menu',result=pic_menu_json))
 def pic_menu():
     if request.method=='POST':
@@ -1007,7 +1007,7 @@ dish_menu_json = {
 
 }
 #点菜菜单
-@restaurant_user_api.route('/fm/user/v1/restaurant/dish_menu/',methods=['POST'])
+@restaurant_user_api.route(settings.app_user_url+'/fm/user/v1/restaurant/dish_menu/',methods=['POST'])
 @swag_from(dish_menu.mylpath(schemaid='dish_menu',result=dish_menu_json))
 def dish_menu():
     if request.method=='POST':
@@ -1095,7 +1095,7 @@ dish_menu_count_json = {
 
 }
 #点菜菜单加减
-@restaurant_user_api.route('/fm/user/v1/restaurant/dish_menu_count/',methods=['POST'])
+@restaurant_user_api.route(settings.app_user_url+'/fm/user/v1/restaurant/dish_menu_count/',methods=['POST'])
 @swag_from(dish_menu_count.mylpath(schemaid='dish_menu_count',result=dish_menu_count_json))
 def dish_menu_count():
     if request.method=='POST':
@@ -1307,7 +1307,7 @@ dish_menu_list_json = {
 
 }
 #我的菜单列表
-@restaurant_user_api.route('/fm/user/v1/restaurant/dish_menu_list/',methods=['POST'])
+@restaurant_user_api.route(settings.app_user_url+'/fm/user/v1/restaurant/dish_menu_list/',methods=['POST'])
 @swag_from(dish_menu_list.mylpath(schemaid='dish_menu_list',result=dish_menu_list_json))
 def dish_menu_list():
     if request.method=='POST':
@@ -1414,7 +1414,7 @@ getroom_json = {
 
 }
 #用户订座
-@restaurant_user_api.route('/fm/user/v1/restaurant/getroom/',methods=['POST'])
+@restaurant_user_api.route(settings.app_user_url+'/fm/user/v1/restaurant/getroom/',methods=['POST'])
 @swag_from(getroom.mylpath(schemaid='getroom',result=getroom_json))
 def getroom():
     if request.method=='POST':
@@ -1558,7 +1558,7 @@ settlement_json = {
 
 }
 #结算
-@restaurant_user_api.route('/fm/user/v1/restaurant/settlement/',methods=['POST'])
+@restaurant_user_api.route(settings.app_user_url+'/fm/user/v1/restaurant/settlement/',methods=['POST'])
 @swag_from(settlement.mylpath(schemaid='settlement',result=settlement_json))
 def settlement():
     if request.method=='POST':
@@ -1614,7 +1614,7 @@ getphone_json = {
 
 }
 #联系饭店的电话
-@restaurant_user_api.route('/fm/user/v1/restaurant/getphone/',methods=['POST'])
+@restaurant_user_api.route(settings.app_user_url+'/fm/user/v1/restaurant/getphone/',methods=['POST'])
 @swag_from(getphone.mylpath(schemaid='getphone',result=getphone_json))
 def getphone():
     if request.method=='POST':
@@ -1678,7 +1678,7 @@ dish_menu_one_json = {
 
 }
 #单条我的菜单
-@restaurant_user_api.route('/fm/user/v1/restaurant/dish_menu_one/',methods=['POST'])
+@restaurant_user_api.route(settings.app_user_url+'/fm/user/v1/restaurant/dish_menu_one/',methods=['POST'])
 @swag_from(dish_menu_one.mylpath(schemaid='dish_menu_one',result=dish_menu_one_json))
 def dish_menu_one():
     if request.method=='POST':
@@ -1784,7 +1784,7 @@ liansuo_json = {
 
 }
 #连锁店列表
-@restaurant_user_api.route('/fm/user/v1/restaurant/liansuo/',methods=['POST'])
+@restaurant_user_api.route(settings.app_user_url+'/fm/user/v1/restaurant/liansuo/',methods=['POST'])
 @swag_from(liansuo.mylpath(schemaid='liansuo',result=liansuo_json))
 def liansuo():
     if request.method=='POST':
@@ -1846,7 +1846,7 @@ search_json = {
 
 }
 #首页搜索
-@restaurant_user_api.route('/fm/user/v1/restaurant/search/',methods=['POST'])
+@restaurant_user_api.route(settings.app_user_url+'/fm/user/v1/restaurant/search/',methods=['POST'])
 @swag_from(search.mylpath(schemaid='search',result=search_json))
 def search():
     if request.method=='POST':
@@ -1899,7 +1899,7 @@ hobbys_json = {
 
 }
 #猜你喜欢
-@restaurant_user_api.route('/fm/user/v1/restaurant/hobbys/',methods=['POST'])
+@restaurant_user_api.route(settings.app_user_url+'/fm/user/v1/restaurant/hobbys/',methods=['POST'])
 @swag_from(hobbys.mylpath(schemaid='hobbys',result=hobbys_json))
 def hobbys():
     if request.method=='POST':

@@ -49,7 +49,7 @@ me_json = {
 me.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 me.add_parameter(name='webuser_id',parametertype='formData',type='string',required= True,description='用户id',default='5770c069dcc88e5b8591d3bd')
 
-@me_user_api.route('/fm/user/v1/me/me/',methods=['POST'])
+@me_user_api.route(settings.app_user_url+'/fm/user/v1/me/me/',methods=['POST'])
 @swag_from(me.mylpath(schemaid='me',result=me_json))
 def me():
     if request.method=='POST':
@@ -86,7 +86,7 @@ update_img_json = {
 update_img.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 update_img.add_parameter(name='topImage',parametertype='formData',type='file',required= True,description='上传的图片',default='')
 
-@me_user_api.route('/fm/user/v1/me/update_img/',methods=['POST'])
+@me_user_api.route(settings.app_user_url+'/fm/user/v1/me/update_img/',methods=['POST'])
 @swag_from(update_img.mylpath(schemaid='update_img',result=update_img_json))
 def update_img():
      if request.method=='POST':
@@ -131,7 +131,7 @@ infos_update.add_parameter(name='webuser_id',parametertype='formData',type='stri
 infos_update.add_parameter(name='nickname',parametertype='formData',type='string',required= True,description='用户名',default='57c3a7d7dcc88e6f2a7bb3ea')
 infos_update.add_parameter(name='headimage',parametertype='formData',type='string',required= True,description='头像',default='111111111')
 
-@me_user_api.route('/fm/user/v1/me/infos_update/',methods=['POST'])
+@me_user_api.route(settings.app_user_url+'/fm/user/v1/me/infos_update/',methods=['POST'])
 @swag_from(infos_update.mylpath(schemaid='infos_update',result=infos_update_json))
 def infos_update():
     if request.method=='POST':
@@ -179,7 +179,7 @@ my_message.add_parameter(name='webuser_id',parametertype='formData',type='string
 my_message.add_parameter(name='type',parametertype='formData',type='string',required= True,description='1订单信息2优惠信息',default='1')
 my_message.add_parameter(name='pageindex',parametertype='formData',type='string',required= True,description='页数',default='1')
 
-@me_user_api.route('/fm/user/v1/me/my_message/', methods=['POST'])
+@me_user_api.route(settings.app_user_url+'/fm/user/v1/me/my_message/', methods=['POST'])
 @swag_from(my_message.mylpath(schemaid='my_message',result=my_message_json))
 def my_message():
     if request.method=='POST':
@@ -235,7 +235,7 @@ messageinfo.add_parameter(name='jwtstr',parametertype='formData',type='string',r
 messageinfo.add_parameter(name='webuser_id',parametertype='formData',type='string',required= True,description='用户id',default='57396fd67c1f31a9cce960f8')
 messageinfo.add_parameter(name='message_id',parametertype='formData',type='string',required= True,description='消息id',default='5785e120dcc88e5732fdc6e6')
 
-@me_user_api.route('/fm/user/v1/me/messageinfo/', methods=['POST'])
+@me_user_api.route(settings.app_user_url+'/fm/user/v1/me/messageinfo/', methods=['POST'])
 @swag_from(messageinfo.mylpath(schemaid='messageinfo',result=messageinfo_json))
 def messageinfo():
     if request.method=='POST':
@@ -297,7 +297,7 @@ concern_restaurant.add_parameter(name='pageindex',parametertype='formData',type=
 
 
 #我的关注列表
-@me_user_api.route('/fm/user/v1/coupons/concern_restaurant/',methods=['POST'])
+@me_user_api.route(settings.app_user_url+'/fm/user/v1/coupons/concern_restaurant/',methods=['POST'])
 @swag_from(concern_restaurant.mylpath(schemaid='concern_restaurant',result=concern_restaurant_json))
 def concern_restaurant():
     if request.method=='POST':
@@ -399,7 +399,7 @@ mycoupons.add_parameter(name='status',parametertype='formData',type='string',req
 mycoupons.add_parameter(name='pageindex',parametertype='formData',type='string',required= True,description='页数',default='1')
 
 #我的优惠列表
-@me_user_api.route('/fm/user/v1/coupons/mycoupons/',methods=['POST'])
+@me_user_api.route(settings.app_user_url+'/fm/user/v1/coupons/mycoupons/',methods=['POST'])
 @swag_from(mycoupons.mylpath(schemaid='mycoupons',result=mycoupons_json))
 def mycoupons():
     if request.method=='POST':
@@ -468,7 +468,7 @@ myorder_json = {
 }
 
 #我的订单
-@me_user_api.route('/fm/user/v1/order/myorder/',methods=['POST'])
+@me_user_api.route(settings.app_user_url+'/fm/user/v1/order/myorder/',methods=['POST'])
 @swag_from(myorder.mylpath(schemaid='myorder',result=myorder_json))
 def myorder():
     if request.method=='POST':
@@ -570,7 +570,7 @@ order_info_json = {
 }
 
 #订单详细
-@me_user_api.route('/fm/user/v1/order/order_info/',methods=['POST'])
+@me_user_api.route(settings.app_user_url+'/fm/user/v1/order/order_info/',methods=['POST'])
 @swag_from(order_info.mylpath(schemaid='order_info',result=order_info_json))
 def order_info():
     if request.method=='POST':
@@ -681,7 +681,7 @@ kaituan_json = {
 }
 
 #我的开团请客
-@me_user_api.route('/fm/user/v1/order/kaituan/',methods=['POST'])
+@me_user_api.route(settings.app_user_url+'/fm/user/v1/order/kaituan/',methods=['POST'])
 @swag_from(kaituan.mylpath(schemaid='kaituan',result=kaituan_json))
 def kaituan():
     if request.method=='POST':

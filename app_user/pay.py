@@ -24,6 +24,7 @@ from bson import ObjectId,json_util
 import tools.tools as tool
 import tools.public_vew as public
 import datetime
+import connect.settings as settings
 
 mongo=conn.mongo_conn()
 
@@ -44,7 +45,7 @@ deal.add_parameter(name='jwtstr',parametertype='formData',type='string',required
 deal.add_parameter(name='type',parametertype='formData',type='string',required= True,description='订单传order 开团传group',default='order')
 deal.add_parameter(name='deal_id',parametertype='formData',type='string',required= True,description='订单或者开团请客id',default='573153c4e0fdb78f29b42826')
 
-@pay_user_api.route('/fm/user/v1/pay/deal/',methods=['POST'])
+@pay_user_api.route(settings.app_user_url+'/fm/user/v1/pay/deal/',methods=['POST'])
 @swag_from(deal.mylpath(schemaid='deal',result=deal_json))
 def deal():
     if request.method=='POST':
@@ -91,7 +92,7 @@ payorder.add_parameter(name='jwtstr',parametertype='formData',type='string',requ
 payorder.add_parameter(name='payOrder_id',parametertype='formData',type='string',required= True,description='支付订单id',default='57ecbd62fb98a416503ce901')
 payorder.add_parameter(name='service',parametertype='formData',type='string',required= True,description='支付方式 支付宝alipay 微信wxpay',default='wxpay')
 
-@pay_user_api.route('/fm/user/v1/pay/payorder/',methods=['POST'])
+@pay_user_api.route(settings.app_user_url+'/fm/user/v1/pay/payorder/',methods=['POST'])
 @swag_from(payorder.mylpath(schemaid='payorder',result=payorder_json))
 def payorder():
     if request.method=='POST':
