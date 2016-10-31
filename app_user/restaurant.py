@@ -86,7 +86,7 @@ def index():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
 
-            try:
+            # try:
                 data = {}
                 #轮换图 开始
                 imglist = []
@@ -172,10 +172,10 @@ def index():
                 #猜你喜欢 结束
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
-            except Exception,e:
-                print e
-                result=tool.return_json(0,"field",False,None)
-                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            # except Exception,e:
+            #     print e
+            #     result=tool.return_json(0,"success",False,str(e))
+            #     return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
