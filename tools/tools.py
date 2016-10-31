@@ -405,35 +405,37 @@ def tuisong(mfrom='', mto='', title='', info='', goto='', channel='', type='', t
         for mid in idlist:
             if mid != '' and mid != None:
                 infoto[mid] = 0
-                # mid是接收方id 下面webuser是查询用户中心id,totype区分是谁接收，1是用户，查询用户表，0是商家，查询饭店表user字段
-                if totype == '1':
-                    webuser = mongo.webuser.find({"_id": ObjectId(mid)})
-                    for w in webuser:
-                        # 查询用户中心表usercenter得到设备类型和设备号
-                        usercenter = mongouser.user_web.find({"_id": ObjectId(w['automembers_id'])})
-                        for u in usercenter:
-                            # 0是安卓1是IOS
-                            if u['lastlogin']['type'] == '0':
-                                # 拼接TargetValue参数
-                                identandroidlist.append(identandroid + u['lastlogin']['ident'])
-                            else:
-                                identioslist.append(identandroid + u['lastlogin']['ident'])
-                else:
-                    restaurant = mongo.restaurant.find({"_id": ObjectId(mid)})
-                    for r in restaurant:
-                        for usercenter_id in r['user']:
-                            if usercenter_id != '' and usercenter_id != None:
-                                usercenter = mongouser.user_web.find({"_id": ObjectId(usercenter_id)})
-                                for u in usercenter:
-                                    # 0是安卓1是IOS
-                                    if u['lastlogin']['type'] == '0':
-                                        # 拼接TargetValue参数
-                                        identandroidlist.append(identandroid + u['lastlogin']['ident'])
-                                    else:
-                                        identioslist.append(identandroid + u['lastlogin']['ident'])
-                            else:
-                                print '此饭店暂无管理员，获取不到接收方设备号'
-
+                try:
+                    # mid是接收方id 下面webuser是查询用户中心id,totype区分是谁接收，1是用户，查询用户表，0是商家，查询饭店表user字段
+                    if totype == '1':
+                        webuser = mongo.webuser.find({"_id": ObjectId(mid)})
+                        for w in webuser:
+                            # 查询用户中心表usercenter得到设备类型和设备号
+                            usercenter = mongouser.user_web.find({"_id": ObjectId(w['automembers_id'])})
+                            for u in usercenter:
+                                # 0是安卓1是IOS
+                                if u['lastlogin']['type'] == '0':
+                                    # 拼接TargetValue参数
+                                    identandroidlist.append(identandroid + u['lastlogin']['ident'])
+                                else:
+                                    identioslist.append(identandroid + u['lastlogin']['ident'])
+                    else:
+                        restaurant = mongo.restaurant.find({"_id": ObjectId(mid)})
+                        for r in restaurant:
+                            for usercenter_id in r['user']:
+                                if usercenter_id != '' and usercenter_id != None:
+                                    usercenter = mongouser.user_web.find({"_id": ObjectId(usercenter_id)})
+                                    for u in usercenter:
+                                        # 0是安卓1是IOS
+                                        if u['lastlogin']['type'] == '0':
+                                            # 拼接TargetValue参数
+                                            identandroidlist.append(identandroid + u['lastlogin']['ident'])
+                                        else:
+                                            identioslist.append(identandroid + u['lastlogin']['ident'])
+                                else:
+                                    print '此饭店暂无管理员，获取不到接收方设备号'
+                except  Exception,e:
+                    print str(e)+'获取不到接收方设备号'
     identandroid = ",".join(identandroidlist)
     identios = ",".join(identioslist)
     print identandroid, identios
