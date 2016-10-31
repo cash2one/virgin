@@ -13,3 +13,5 @@ setimageIPlocal = 'http://125.211.222.237:17937/'
 # setimageIP1='http://pic2.hljpic.cn/'
 
 getapk = 'http://192.168.22.102:17937/apk/'
+
+app_user_url="/app_user"
