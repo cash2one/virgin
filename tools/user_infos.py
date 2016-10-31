@@ -9,8 +9,8 @@ _author_ = 'dolacmeo'
 
 
 class GetUser:
-    # SMSnetgate = 'http://125.211.222.237:10031'
-    SMSnetgate = 'http://127.0.0.1:10032'
+    SMSnetgate = 'http://125.211.222.237:10031'
+    # SMSnetgate = 'http://127.0.0.1:10032'
 
     def __init__(self, params):
         self.shop_info = None
