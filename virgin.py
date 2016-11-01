@@ -60,5 +60,10 @@ def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
 
+@app.route('/abcabc')
+def abcabc():
+    return "abcabc"
+
+
 if __name__ == '__main__':
     app.run()
