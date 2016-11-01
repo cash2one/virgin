@@ -73,7 +73,7 @@ def not_found(error):
 
 @app.route('/abcabc')
 def abcabc():
-    return render_template("/apidocs/index.html")
+    return render_template("/appuser.html")
 
 
 if __name__ == '__main__':
