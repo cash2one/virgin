@@ -159,7 +159,7 @@ def index():
                             recommend['restaurant_id'] = str(i[key])
                         elif key == 'restaurant_name':
                             recommend['restaurant_name'] = i[key]
-                        elif key == 'content':
+                        elif key == 'summary':
                             recommend['content'] = i[key]
                         elif key == 'dishs':
                             recommend['dishs'] = i[key][0:3]
