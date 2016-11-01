@@ -87,7 +87,7 @@ register_json = {
 def register():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
-            try:
+            # try:
                 phone = request.form['phone']
                 password = request.form['password']
                 code = request.form['code']
@@ -120,41 +120,54 @@ def register():
                         "appid": {'2': True}
                     }
                     # item = mongo.user_web.insert(json)
-                    if not mongo.find({'phone': phone, 'appid': {'2': True}}):
-                        item = mongo.add(data)
-                        if item['success']:
-                            from tools.tools import qrcode as qr
-                            webuser_add = conn.mongo_conn().webuser.insert({"automembers_id": item['_id'],
-                                                                            "nickname": '',
-                                                                            "gender": 1,
-                                                                            "birthday": "",
-                                                                            "headimage": "",
-                                                                            "phone": phone})
-                            webuser_add = json_util.loads(json_util.dumps(webuser_add))
-                            print webuser_add
-                            user_addqr = conn.mongo_conn().webuser.update({'_id': ObjectId(webuser_add)},
-                                                                          {'$set': {'qrcode_img': qr(json.dumps({
-                                                                              'fuc': 'webuser',
-                                                                              'info': {
-                                                                                  'user_id': str(webuser_add)
-                                                                              }
-                                                                          }))}})
-                            user_addqr = json_util.loads(json_util.dumps(user_addqr))
-                            result=tool.return_json(0,"success",True,{'ispass':True,'_id': str(webuser_add),'info': '注册成功'})
-                            return json_util.dumps(result,ensure_ascii=False,indent=2)
-                        else:
-                            result=tool.return_json(0,"success",True,{'ispass':False})
-                            return json_util.dumps(result,ensure_ascii=False,indent=2)
+                    user_web = mongo.find({'phone': phone})
+                    if not user_web:
+                            item = mongo.add(data)
+                            if item['success']:
+                                from tools.tools import qrcode as qr
+                                webuser_add = conn.mongo_conn().webuser.insert({"automembers_id": item['_id'],
+                                                                                "nickname": '',
+                                                                                "gender": 1,
+                                                                                "birthday": "",
+                                                                                "headimage": "",
+                                                                                "phone": phone})
+                                webuser_add = json_util.loads(json_util.dumps(webuser_add))
+                                print webuser_add
+                                user_addqr = conn.mongo_conn().webuser.update({'_id': ObjectId(webuser_add)},
+                                                                              {'$set': {'qrcode_img': qr(json.dumps({
+                                                                                  'fuc': 'webuser',
+                                                                                  'info': {
+                                                                                      'user_id': str(webuser_add)
+                                                                                  }
+                                                                              }))}})
+                                user_addqr = json_util.loads(json_util.dumps(user_addqr))
+                                result=tool.return_json(0,"success",True,{'ispass':True,'_id': str(webuser_add),'info': '注册成功'})
+                                return json_util.dumps(result,ensure_ascii=False,indent=2)
+                            else:
+                                result=tool.return_json(0,"success",True,{'ispass':False})
+                                return json_util.dumps(result,ensure_ascii=False,indent=2)
+                    elif  '2' not in user_web[0]['appid']:
+                        #非用户
+                        # print user_web
+                        # print user_web[0]["_id"]
+                        # print user_web[0]["_id"]["$oid"]
+                        # mongo.fix({
+                        #     "_id":user_web[0]["_id"]["$oid"],
+                        #     "appid":{"1":True,"2":True}
+                        # })
+                        mongo.conn.update_one({"_id":ObjectId(user_web[0]["_id"]["$oid"])},{"$set":{"appid":{"1":True,"2":True}}})
+                        result=tool.return_json(0,"success",True,{'ispass':True,'_id': str(user_web[0]["_id"]["$oid"]),'info': '注册成功'})
+                        return json_util.dumps(result,ensure_ascii=False,indent=2)
                     else:
                         result=tool.return_json(0,"success",True,{'ispass':False,'_id':'','info': '此账号已注册'})
                         return json_util.dumps(result,ensure_ascii=False,indent=2)
                 else:
                     result=tool.return_json(0,"success",True,{'ispass':False,'_id':'','info': '验证码超时或错误，请重新输入'})
                     return json_util.dumps(result,ensure_ascii=False,indent=2)
-            except Exception,e:
-                print e
-                result=tool.return_json(0,"field",True,str(e))
-                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            # except Exception,e:
+            #     print e
+            #     result=tool.return_json(0,"field",True,str(e))
+            #     return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
