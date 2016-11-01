@@ -43,17 +43,17 @@ def send_sms():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
             try:
-                if mongo.find({"phone":request.form['phone']}):
-                    data = {'sign': '美食地图',
-                            'tpl': 'SMS_8161119',
-                            'param': json.dumps({"code": str(random.randint(1000000, 9999999))[1:]}),
-                            'tel': request.form['phone'],
-                            'ex': '#foodmap.mobile'
-                            }
-                    req = requests.post(SMSnetgate + '/sms.send', data)
-                    result=tool.return_json(0,"success",True,{"ispass":req.json()['success']})
-                else:
-                    result=tool.return_json(0,"field",True,{"ispass":False,"message":"请先注册"})
+                # if mongo.find({"phone":request.form['phone']}):
+                data = {'sign': '美食地图',
+                        'tpl': 'SMS_8161119',
+                        'param': json.dumps({"code": str(random.randint(1000000, 9999999))[1:]}),
+                        'tel': request.form['phone'],
+                        'ex': '#foodmap.mobile'
+                        }
+                req = requests.post(SMSnetgate + '/sms.send', data)
+                result=tool.return_json(0,"success",True,{"ispass":req.json()['success']})
+                # else:
+                #     result=tool.return_json(0,"field",True,{"ispass":False,"message":"请先注册"})
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e
