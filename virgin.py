@@ -1,6 +1,6 @@
 # --coding:utf-8--#
 # import jwt
-from flask import Flask, make_response, jsonify
+from flask import Flask, make_response, jsonify,render_template
 from werkzeug.security import safe_str_cmp
 
 from app_merchant.coupons import coupons_api
@@ -58,6 +58,11 @@ app.register_blueprint(pay_user_api)
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
+
+
+@app.route('/abcabc')
+def abcabc():
+    return render_template("/apidocs/index.html")
 
 
 if __name__ == '__main__':
