@@ -71,9 +71,9 @@ def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
 
-@app.route('/abcabc')
+@app.route('/swagger')
 def abcabc():
-    return render_template("/apidocs/index.html")
+    return render_template("/test/swagger.html")
 
 
 if __name__ == '__main__':
