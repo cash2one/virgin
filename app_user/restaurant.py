@@ -1796,7 +1796,10 @@ def liansuo():
 
                 restaurant = mongo.restaurant.find({"_id":ObjectId(request.form['restaurant_id'])})
                 for rest in restaurant:
-                    fendian = rest['fendian']['id']
+                    if 'id' in rest['fendian'].keys():
+                        fendian = rest['fendian']['id']
+                    else:
+                        fendian = ""
                 if request.form['district_id'] !='-1':
                     dist_list = []
                     district = mongo.district.find({"_id":ObjectId(request.form['district_id'])})
