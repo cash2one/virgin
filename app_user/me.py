@@ -576,7 +576,7 @@ def order_info():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
 
-            try:
+            # try:
                 # TimeCheck(status= [0,2], source=[2], timeout=45)
                 # TimeCheck(status= [1], source=[2], timeout=45)
 
@@ -615,7 +615,8 @@ def order_info():
                     y_list = []
                     dis_amounts = 0.0
                     for dis in i['dis_message']:
-                        dis_amounts+=dis['dis_amount']
+                        if dis['dis_amount'] != "":
+                            dis_amounts+=dis['dis_amount']
                         if dis['dis_type'] == '1':
                             y_list.append({
                                 'msg':'<font size=\"3\">'+'关注即享:'+'<font size=\"3\" color=\"red\">'+str(dis['dis_amount'])+'元</font></font>',
@@ -650,10 +651,10 @@ def order_info():
                                 data['room_name'] = room['room_name']
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
-            except Exception,e:
-                print e
-                result=tool.return_json(0,"field",True,str(e))
-                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            # except Exception,e:
+            #     print e
+            #     result=tool.return_json(0,"field",True,str(e))
+            #     return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
