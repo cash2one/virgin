@@ -23,7 +23,7 @@ mongo=conn.mongo_conn()
 mongouser=conn.mongo_conn_user()
 
 message_api = Blueprint('message_api', __name__, template_folder='templates')
-#接单 推送yh_3
+#接单 推送11
 @message_api.route('/fm/merchant/v1/message/sendmessage_yh_3/', methods=['POST'])
 def sendmessage_yh_3():
     if request.method=='POST':
@@ -34,7 +34,7 @@ def sendmessage_yh_3():
 # appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
                 item = tool.tuisong(mfrom=request.form['restaurant_id'],
                              mto=request.form['webuserids'],
-                             title='您的订餐已被安排',
+                             title='您的订座已被安排',
                              info='快去看看吧！',
                              goto='11',
                              channel='接单',
@@ -44,6 +44,39 @@ def sendmessage_yh_3():
                              msgtype='notice',
                              target='device',
                              ext='{"goto":"11","id":"'+request.form['order_id']+'"}',
+                             ispush=True)
+                result=tool.return_json(0,"success",True,item)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",False,None)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+#接单推送12
+@message_api.route('/fm/merchant/v1/message/sendmessage_yh_31/', methods=['POST'])
+def sendmessage_yh_31():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+
+            try:
+#mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
+# appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
+                item = tool.tuisong(mfrom=request.form['restaurant_id'],
+                             mto=request.form['webuserids'],
+                             title='您的点菜已被安排',
+                             info='快去看看吧！',
+                             goto='12',
+                             channel='接单',
+                             type='1',
+                             totype='1',
+                             appname='foodmap_user',
+                             msgtype='notice',
+                             target='device',
+                             ext='{"goto":"12","id":"'+request.form['order_id']+'"}',
                              ispush=True)
                 result=tool.return_json(0,"success",True,item)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
