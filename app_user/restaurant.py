@@ -765,7 +765,7 @@ def restaurant_info():
                     data['id'] = str(i['_id'])
                     data['zc1'] = i['zc1']
                     data['zc2'] = i['zc2']
-                    data['show_photos'] = i['guide_image']
+                    data['show_photos'] = {"img": i['guide_image'],"desc": ""}
                     if i['show_photos'] != []:
                         data['photos_num'] = tool.pic_num(request.form['restaurant_id'])
                     else:
