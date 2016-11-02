@@ -682,14 +682,47 @@ def getroom(id='',room_id=''):
 def test():
     aaa = mongo.restaurant.update_one({"_id": ObjectId("57329b1f0c1d9b2f4c85f8e3")}, {"$push": {"rooms": {}}})
     print aaa.modified_count
-
-
+def pic_num(restaurant_id):
+    item = mongo.restaurant.find({'_id':ObjectId(restaurant_id)})
+    data ={}
+    dishs_list =[]
+    photo_list = []
+    room_list = []
+    for i in item:
+        #菜品图片 开始
+        for dishs in i['menu']:
+            if  dishs['dish_type'] =='0' and dishs['dishs']!=[]:
+                for dish in dishs['dishs']:
+                    json = {}
+                    json['img'] = dish
+                    json['desc'] = ''
+                    dishs_list.append(json)
+        #菜品图片 结束
+        #环境图片 开始
+        for photo in i['show_photos']:
+            pjson = {}
+            pjson['img'] = photo['img']
+            pjson['desc'] = photo['desc']
+            photo_list.append(pjson)
+        #环境图片 结束
+        #包房图片 开始
+        for room in i['rooms']:
+            for room_photo in room['room_photo']:
+                rjson = {}
+                rjson['img'] = room_photo['img']
+                rjson['desc'] = room_photo['desc']
+                room_list.append(rjson)
+        #包房图片 结束
+    dishs_list[0:0] = room_list
+    dishs_list[0:0] = photo_list
+    return len(dishs_list)
 if __name__ == '__main__':
+    print pic_num('57329b1f0c1d9b2f4c85f8e3')
     # test()
     # adddating()
-    a = [1, 2]
-    c = a[0:3]
-    print c
+    # a = [1, 2]
+    # c = a[0:3]
+    # print c
     # testpreset_dishs()
     # ceshi("57340b330c1sd9b314998892f")
     # pass
