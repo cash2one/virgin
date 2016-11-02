@@ -743,3 +743,44 @@ def kaituan():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+#版本更新
+banben = swagger("版本更新","版本更新")
+banben.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+banben_json = {
+    "auto": banben.String(description='验证是否成功'),
+    "message": banben.String(description='SUCCESS/FIELD',default="SUCCESS"),
+    "code": banben.Integer(description='',default=0),
+    "data": {
+        banben.String(description='url',default="SUCCESS"),
+        banben.String(description='describe',default="SUCCESS"),
+        banben.String(description='version',default="SUCCESS")
+        }
+}
+
+@me_user_api.route(settings.app_user_url+'/fm/user/v1/me/banben/',methods=['POST'])
+@swag_from(banben.mylpath(schemaid='banben',result=banben_json))
+def banben():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+
+            try:
+                data = {}
+                item = mongo.android_version.find({"appid":2}).sort("addtime", pymongo.DESCENDING)[0:1]
+                for i in item:
+                    data = {
+                            "url" : i['url'],
+                            "describe" : i['describe'],
+                            "version" : i['version']
+
+                    }
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)

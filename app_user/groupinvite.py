@@ -30,8 +30,12 @@ class GroupInvite:
         elif len(mod) == 6:
             self.code = mod
             self.invite_order = self._find_code_invite(self.code)
-            self._id = self.invite_order['group_id']
-            self.the_invite = self.__format_db_info(db_info.find_one({'_id': self._id}))
+            if self.invite_order:
+                self._id = self.invite_order['group_id']
+                self.the_invite = self.__format_db_info(db_info.find_one({'_id': self._id}))
+            else:
+                self._id = ''
+                self.the_invite = {}
         elif len(mod) == 24:
             self.the_invite = self.__format_db_info(db_info.find_one({'_id': mod}))
             if self.the_invite:
@@ -191,6 +195,8 @@ class GroupInvite:
             self.mark_timeout(n)
 
     def follow(self, user_id):
+        if not self.the_invite:
+            return {'success': False, 'error': 'code error'}
         if not user_id or (user_id == self.invite_order['master_id']):
             raise Exception('mod need user_id inside or the user is master')
         self.mark_timeout()
@@ -449,19 +455,19 @@ def groupinvite_add_friend():
 #mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
 # appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
                 content = '快去看看吧！'
-                # tool.tuisong(mfrom='',
-                #              mto=info2['master_id'],
-                #              title='有人加入了您的'+info['restaurant']['name']+'开团请客活动',
-                #              info=content,
-                #              goto='1',
-                #              channel='应邀开团',
-                #              type='0',
-                #              totype='1',
-                #              appname='foodmap_user',
-                #              msgtype='notice',
-                #              target='device',
-                #              ext='{"goto":"8","id":"'+info['_id']+'"}',
-                #              ispush=True)
+                tool.tuisong(mfrom='',
+                             mto=info2['master_id'],
+                             title='有人加入了您的'+info['restaurant']['name']+'开团请客活动',
+                             info=content,
+                             goto='1',
+                             channel='应邀开团',
+                             type='0',
+                             totype='1',
+                             appname='foodmap_user',
+                             msgtype='notice',
+                             target='device',
+                             ext='{"goto":"8","id":"'+info['code']+'"}',
+                             ispush=True)
                 result = tool.return_json(0, "success", True, data)
                 return json_util.dumps(result, ensure_ascii=False, indent=2)
             # except Exception, e:

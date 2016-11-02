@@ -121,7 +121,30 @@ def tuisong(mfrom='', mto='', title='', info='', goto='', channel='', type='', t
     # 阿里网关参数IOS
     iosmsg = {}
     # 阿里网关返回参数
-
+    insertjson = {
+        "infofrom": ObjectId(mfrom),
+        "infoto": infoto,
+        "infos": {
+            "infotitle": title,
+            "information": info,
+            "infofromname": infofromname
+        },
+        "type": 0,
+        "add_time": datetime.datetime.now(),
+        "goto": goto,
+        "is_push": ispush,
+        "channel": channel,
+        "androidmsg": androidmsg,
+        "iosmsg": iosmsg
+    }
+    if data_id != '-1':
+        insertjson['data_id'] = data_id
+    else:
+        insertjson['data_id'] = '-1'
+    # if issave:
+    mes = mongo.message.insert(insertjson)
+    if goto == "5":
+        ext = '{"goto":"5","id":"'+str(mes)+'"}'
     # target是all表示发送给所有设备
     if target == 'device':
         # message是消息
@@ -208,29 +231,8 @@ def tuisong(mfrom='', mto='', title='', info='', goto='', channel='', type='', t
                     print 'IOS通知全推推送失败！原因' + str(iosreq['Message'])
     else:
         pass
-    insertjson = {
-        "infofrom": ObjectId(mfrom),
-        "infoto": infoto,
-        "infos": {
-            "infotitle": title,
-            "information": info,
-            "infofromname": infofromname
-        },
-        "type": 0,
-        "add_time": datetime.datetime.now(),
-        "goto": goto,
-        "is_push": ispush,
-        "channel": channel,
-        "androidmsg": androidmsg,
-        "iosmsg": iosmsg
-    }
-    if data_id != '-1':
-        insertjson['data_id'] = data_id
-    else:
-        insertjson['data_id'] = '-1'
-    print 'issave',issave
-    # if issave:
-    mongo.message.insert(insertjson)
+    mongo.message.update_one({"_id":str(mes)},{"$set":{"androidmsg": androidmsg,"iosmsg": iosmsg}})
+    return True
     #     return True
     # else:
     #     return False
