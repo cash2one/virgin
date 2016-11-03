@@ -1341,7 +1341,7 @@ def dish_menu_list():
                     r_name = ''
                     for r in restaurant:
                         r_name = r['name']
-                    json['id'] = str(i['_id'])
+                    json['id'] = str(i['restaurant_id'])
                     json['r_name'] = r_name
                     json['total'] = i['total']
                     json['deposit'] = i['deposit']
@@ -1711,7 +1711,7 @@ def dish_menu_one():
                     mycoupons = use_coupons(total = total,dish_total = dish_total,wine_total = wine_total,restaurant_id=str(i['restaurant_id']),webuser_id=request.form['webuser_id'])
                     print mycoupons
                     json = {}
-                    json['id'] = str(i['_id'])
+                    json['id'] = str(i['restaurant_id'])
                     json['r_name'] = r_name
                     json['total'] = i['total']
                     json['deposit'] = i['deposit']
