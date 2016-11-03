@@ -76,7 +76,7 @@ def me():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
-update_img = swagger("5-1 账号信息.jpg","获取头像MD5")
+update_img = swagger("5-1 账号信息.jpg","账号信息修改")
 update_img_json = {
     "auto": update_img.String(description='验证是否成功'),
     "message": update_img.String(description='SUCCESS/FIELD',default="SUCCESS"),
@@ -96,8 +96,9 @@ def update_img():
                 fname, fext = os.path.splitext(file.filename)
                 if file:
                     filename = '%s%s' % (tool.gen_rnd_filename(), fext)
-                    osstr = os.path.dirname(__file__).replace("\\PycharmProjects\\virgin\\app_merchant","/PycharmProjects/virgin")  +'/static2/upload/'+filename
+                    # osstr = os.path.dirname(__file__).replace("\\PycharmProjects\\virgin\\app_merchant","/PycharmProjects/virgin")  +'/static2/upload/'+filename
                     # osstr = "/www/site/foodmap/virgin/virgin/static2/upload/"+filename
+                    osstr = "/www/site/hallelujiah/virgin/static2/upload/"+filename
                     print osstr
                     file.save(osstr)
                     uu = tool.pimg(osstr)
