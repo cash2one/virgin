@@ -1058,7 +1058,7 @@ def dish_menu():
                 total = 0
                 for d in order_list:
                     dish_num+=d[1]
-                    total+=d[2]
+                    total+=(d[2]*d[1])
                 data['dish_num'] = dish_num
                 data['total'] = float("%.2f" % total)
                 data['menu'] = list
