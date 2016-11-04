@@ -307,7 +307,7 @@ def pimg(uu):
     cc = open(uu, "rb")
     datagen, headers = multipart_encode({"image": cc})
     # 发送请求
-    request = urllib2.Request(settings.setimageIP, datagen, headers)
+    # request = urllib2.Request(settings.setimageIP, datagen, headers)
     request = urllib2.Request(settings.setimageIP1, datagen, headers)
     # 测试本地用
     # request = urllib2.Request(settings.setimageIPlocal , datagen, headers)
