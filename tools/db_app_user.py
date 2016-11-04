@@ -67,6 +67,10 @@ def getxingzhengqu(xid):
     item = mongo.district.find({"biz_areas.biz_area_id":int(xid)},{"district_name":1})
     for i in item:
         return i["district_name"]
+def getxingzhengqu_id(xid):
+    item = mongo.district.find({"biz_areas.biz_area_id":int(xid)},{"_id":1})
+    for i in item:
+        return str(i["_id"])
 #获取用户1是0否关注饭店
 def getconcern(restaurant_id,webuser_id):
     try:
@@ -139,6 +143,7 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3,
                         json['dishes_discount'] = rest[key]['message']
                     elif key == 'business_dist':
                         json['district_name'] = getxingzhengqu(rest[key][0]['id'])
+                        json['district_id'] = getxingzhengqu_id(rest[key][0]['id'])
                         json['business_name'] = rest[key][0]['name']
                     elif key == 'guide_image':
                         json['guide_image'] = rest[key]
@@ -188,6 +193,7 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3,
                     json['dishes_discount'] = rest[key]['message']
                 elif key == 'business_dist':
                     json['district_name'] = getxingzhengqu(rest[key][0]['id'])
+                    json['district_id'] = getxingzhengqu_id(rest[key][0]['id'])
                     json['business_name'] = rest[key][0]['name']
                 elif key == 'guide_image':
                     json['guide_image'] = rest[key]
@@ -570,4 +576,4 @@ if __name__ == '__main__':
     # list = coupons_by({"restaurant_id":ObjectId("57329e300c1d9b2f4c85f8e6"),"kind":"2","button":"0"})
     # print json_util.dumps(list,ensure_ascii=False,indent=2)
     # print json_util.dumps(use_coupons(total = 50.0,dish_total = 40.0,wine_total = 10.0,restaurant_id='57329e300c1d9b2f4c85f8e6',webuser_id='57396ec17c1f31a9cce960f4'),ensure_ascii=False,indent=2)
-    print str(3111.0/1000)[0:3]
+    print getxingzhengqu_id(4193433)
