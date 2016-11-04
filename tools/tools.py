@@ -307,15 +307,17 @@ def pimg(uu):
     cc = open(uu, "rb")
     datagen, headers = multipart_encode({"image": cc})
     # 发送请求
-
-    request = urllib2.Request(settings.setimageIP1, datagen, headers)
-    request = urllib2.Request(settings.setimageIP, datagen, headers)
+    request1 = urllib2.Request(settings.setimageIP, datagen, headers)
+    request2 = urllib2.Request(settings.setimageIP1, datagen, headers)
     # 测试本地用
     # request = urllib2.Request(settings.setimageIPlocal , datagen, headers)
-
+    re2 = r"<h1>MD5:(?P<md5>.*?)</h1>"
+    match52 = re.findall(re2, urllib2.urlopen(request1).read())
+    b = match52[0]
+    print str(b).replace(" ", "")
     # 获取返回中的内容
     re1 = r"<h1>MD5:(?P<md5>.*?)</h1>"
-    match5 = re.findall(re1, urllib2.urlopen(request).read())
+    match5 = re.findall(re1, urllib2.urlopen(request2).read())
     a = match5[0]
     cc.close()
     print str(a).replace(" ", "")
