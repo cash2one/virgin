@@ -153,9 +153,9 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3,
                             json['liansuo'] = '0'
                     else:
                         if l[0] >100:
-                            json['distance'] = str(float(l[0])/1000)[0:3]+'千米'
+                            json['distance'] = str(float(l[0])/1000)[0:3]+'km'
                         else:
-                            json['distance'] = str(l[0])+'米'
+                            json['distance'] = str(l[0])+'m'
                         json['menutype'] = '0'
                 list.append(json)
     else:
@@ -516,9 +516,9 @@ def hobby(first={},lat1=None,lon1=None,start=0,end=3):
                     else:
                         # json['distance'] = l[0]
                         if l[0] >100:
-                            json['distance'] = str(float(l[0])/1000)[0:3]+'千米'
+                            json['distance'] = str(float(l[0])/1000)[0:3]+'km'
                         else:
-                            json['distance'] = str(l[0])+'米'
+                            json['distance'] = str(l[0])+'m'
                 list.append(json)
     else:
         restaurant = mongo.restaurant.find(first).sort("addtime", pymongo.DESCENDING)[start:end]
