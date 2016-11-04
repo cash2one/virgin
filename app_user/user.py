@@ -176,6 +176,18 @@ def admin_login():
         elif request.form['method'] == 'shop_id':
             if req.is_admin:
                 # print req.admin_shop_id
+                data = {
+                    "_id":str(req.user_center_id),
+                    "fix_data":{
+                        "lastlogin" :{
+                            "ident": "",
+                            # "type": request.form.get('phonetype', ''),
+                            "type":request.form['phonetype'] if "phonetype" in request.form else "",
+                            "time": datetime.datetime.now()
+                        }
+                    }
+                }
+                mongo.fix(data)
                 return json.dumps(req.admin_shop_id)
             else:
                 return json.dumps({'success': False, 'info': 'Not admin'})
