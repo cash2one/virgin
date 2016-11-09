@@ -107,7 +107,7 @@ def verify_login():
         else:
             phonetype = ''
             pass
-        found = mongo.find({'phone': phone, 'appid': {'2': True}})
+        found = mongo.find({'phone': phone, 'appid.2': True})
         if 'seller' in request.form:
             print 'is seller'
         if found:
@@ -141,7 +141,7 @@ def verify_login():
 def is_user():
     if request.method == "POST":
         phone = request.form['phone']
-        found = mongo.find({'phone': phone, 'appid': {'2': True}})
+        found = mongo.find({'phone': phone, 'appid.2': True})
         if found:
             found = found[0]
             return json.dumps({'success': True, '_id': str(found['_id'])})
@@ -157,7 +157,7 @@ def password_reset():
     if request.method in ['POST', 'PATCH']:
         phone = request.form["phone"]
         password = request.form["password"]
-        found = mongo.find({'phone': phone, 'appid': {'2': True}})
+        found = mongo.find({'phone': phone, 'appid.2': True})
         if found:
             found = found[0]
             fix_psw = {'registeruser.password': hashlib.md5(password).hexdigest().upper()}
