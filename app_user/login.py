@@ -209,7 +209,7 @@ def verify_login():
                 else:
                     phonetype = ''
                     pass
-                found = mongo.find({'phone': phone, 'appid': {'2': True}})
+                found = mongo.find({'phone': phone, 'appid.2': True})
                 print found
                 if found and flag:
                     print '1111111111111111111111111111'
@@ -289,7 +289,7 @@ def code_login():
                 else:
                     phonetype = ''
                     pass
-                found = mongo.find({'phone': phone, 'appid': {'2': True}})
+                found = mongo.find({'phone': phone, 'appid.2': True})
                 if found and flag:
                     mongo.fix({
                         "_id":found[0]['_id']['$oid'],
@@ -365,7 +365,7 @@ def resetpassword():
                         'code': code}
                 req = requests.post(SMSnetgate + '/sms.validate', data)
                 if req.json()['success']:
-                    found = mongo.find({'phone': phone, 'appid': {'2': True}})
+                    found = mongo.find({'phone': phone, 'appid.2':True})
                     if found:
                         found = found[0]
                         fix_psw = {'registeruser.password': hashlib.md5(password).hexdigest().upper()}
@@ -536,4 +536,6 @@ if __name__ == '__main__':
     # print register()
     # print verify_login()
     # print code_login()
-    print resetpassword()
+    # print resetpassword()
+    found = mongo.find({'phone': '15636322331', 'appid.2': True})
+    print json_util.dumps(found,ensure_ascii=False,indent=2)

@@ -15,63 +15,82 @@ user_api = Blueprint("user_api", __name__, template_folder='templates')
 mongo = MongoAPI(conn.mongo_conn_user().user_web)
 
 
+
+
 @user_api.route('/usercenter/v1/register/', methods=['POST'])
 def register():
     if request.method == "POST":
         phone = request.form["phone"]
         password = request.form["password"]
+        user_data = mongo.find({'phone': phone})
 
-        data = {
-            "status": 1,
-            "identification": "",
-            "registeruser": {
-                "nick": "",
-                "password": hashlib.md5(password).hexdigest().upper(),
-                "headimage": "",
-                "name": ""
-            },
-            "lastlogin": {
-                "ident": "",
-                "type":"",
-                "time": datetime.datetime.now()
-            },
-            "thirdIds": [
-            ],
-            "phone": phone,
-            "addtime": datetime.datetime.now(),
-            "type": 3,
-            "identype": "0",
-            "appid": {'2': True}
-        }
-        # item = mongo.user_web.insert(json)
-        if not mongo.find({'phone': phone, 'appid': {'2': True}}):
+        if user_data:   # 判断是否存在用户数据
+            data = user_data[0]
+            user_id = str(user_data[0]['_id']['$oid'])
+            if '2' in data['appid']:  # 如果已经注册
+                return json_util.dumps({'success': False, 'info': 'Database already had one'})
+            else:   # 如果未注册用户版
+                data['registeruser'] = dict(
+                    nick='',
+                    password=hashlib.md5(password).hexdigest().upper(),
+                    headimage='',
+                    name=''
+                )
+                data['appid']['2']=True
+            print data
+            data['addtime'] = datetime.datetime.now()
+            data['lastlogin']['time'] = datetime.datetime.now()
+            del data['_id']
+            data = dict(fix_data=data, _id=user_id)
+            # data['_id'] = user_id
+
+            item = mongo.fix(data)
+            item['_id'] = user_id
+        else:   # 不存在用户数据
+            data = {
+                "status": 1,
+                "identification": "",
+                "registeruser": {
+                    "nick": "",
+                    "password": hashlib.md5(password).hexdigest().upper(),
+                    "headimage": "",
+                    "name": ""
+                },
+                "lastlogin": {
+                    "ident": "",
+                    "type": "",
+                    "time": datetime.datetime.now()
+                },
+                "thirdIds": [
+                ],
+                "phone": phone,
+                "addtime": datetime.datetime.now(),
+                "type": 3,
+                "identype": "0",
+                "appid": {'2': True}
+            }
             item = mongo.add(data)
-            if item['success']:
-                from tools.tools import qrcode as qr
-                webuser_add = conn.mongo_conn().webuser.insert({"automembers_id": item['_id'],
-                                                                "nickname": request.form["nickname"],
-                                                                "gender": 1,
-                                                                "birthday": "",
-                                                                "headimage": "",
-                                                                "phone": request.form["phone"]})
-                webuser_add = json_util.loads(json_util.dumps(webuser_add))
-                print webuser_add
-                user_addqr = conn.mongo_conn().webuser.update({'_id': ObjectId(webuser_add)},
-                                                              {'$set': {'qrcode_img': qr(json.dumps({
-                                                                  'fuc': 'webuser',
-                                                                  'info': {
-                                                                      'user_id': str(webuser_add)
-                                                                  }
-                                                              }))}})
-                user_addqr = json_util.loads(json_util.dumps(user_addqr))
-                return json_util.dumps({'success': True, '_id': str(webuser_add)})
-            else:
-                return json_util.dumps(item.update({'success': False}))
+        if item['success']:
+            from tools.tools import qrcode as qr
+            webuser_add = conn.mongo_conn().webuser.insert({"automembers_id": item['_id'],
+                                                            "nickname": request.form["nickname"],
+                                                            "gender": 1,
+                                                            "birthday": "",
+                                                            "headimage": "",
+                                                            "phone": request.form["phone"]})
+            webuser_add = json_util.loads(json_util.dumps(webuser_add))
+            print webuser_add
+            user_addqr = conn.mongo_conn().webuser.update({'_id': ObjectId(webuser_add)},
+                                                          {'$set': {'qrcode_img': qr(json.dumps({
+                                                              'fuc': 'webuser',
+                                                              'info': {
+                                                                  'user_id': str(webuser_add)
+                                                              }
+                                                          }))}})
+            user_addqr = json_util.loads(json_util.dumps(user_addqr))
+            return json_util.dumps({'success': True, '_id': str(webuser_add)})
         else:
-            return json_util.dumps({'success': False, 'info': 'Database already had one'})
-            # print str(item)
-            # r = {"id": str(item)}
-            # return json_util.dumps(item, ensure_ascii=False, indent=2)
+            return json_util.dumps(item.update({'success': False}))
     else:
         return abort(403)
 
@@ -196,69 +215,6 @@ def admin_login():
     else:
         return abort(403)
     pass
-
-
-class Test:
-    @staticmethod
-    def find_user():
-        test = mongo.find({'phone': '19782349087190'})
-        print str(test[0]['_id']['$oid'])
-        print json_util.dumps(test, indent=2)
-
-    @staticmethod
-    def login():
-        phone = '18504513506'
-        password = '123'
-        found = mongo.find({'phone': phone, 'appid': 2})
-        if found:
-            found = found[0]
-        if found:
-            print hashlib.md5(password).hexdigest().upper()
-            if found['registeruser']['password'] == hashlib.md5(password).hexdigest().upper():
-                found['_id'] = str(found['_id']['$oid'])
-                print found['registeruser']['password']
-                print json.dumps({'success': True, 'info': found})
-            else:
-                print json.dumps({'success': False, 'info': 'Password Not Match'})
-        else:
-            print json.dumps({'success': False, 'info': 'Not Found'})
-
-    @staticmethod
-    def fix_password():
-        password = '123'
-        fix_psw = {'registeruser.password': hashlib.md5(password).hexdigest().upper()}
-        print fix_psw
-        is_fix = mongo.fix({'_id': '573e5c00dcc88e6873eab9ad', 'fix_data': fix_psw})
-        print is_fix
-        pass
-
-    @staticmethod
-    def add_user():
-        phone = '123134134'
-        password = 'asdfasdf'
-        data = {
-            "status": 1,
-            "identification": "",
-            "registeruser": {
-                "nick": "",
-                "password": hashlib.md5(password).hexdigest().upper(),
-                "headimage": "",
-                "name": ""
-            },
-            "lastlogin": {
-                "ident": "",
-                "time": datetime.datetime.now()
-            },
-            "thirdIds": [
-            ],
-            "phone": phone,
-            "addtime": datetime.datetime.now(),
-            "type": 3,
-            "identype": "0",
-            "appid": {'2': True}
-        }
-        item = mongo.add(data)
-        print item
 
 
 if __name__ == '__main__':
