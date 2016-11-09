@@ -362,7 +362,7 @@ def restaurant_img():
                                 room_list.append(rjson)
                     #包房图片 结束
                 pageindex = request.form["pageindex"]
-                pagenum = 10
+                pagenum = 100
                 star = (int(pageindex)-1)*pagenum
                 end = (pagenum*int(pageindex))
                 dishs_list[0:0] = room_list
