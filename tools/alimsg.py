@@ -4,8 +4,6 @@ import sys
 import requests
 from bson import ObjectId
 
-
-
 reload(sys)
 sys.setdefaultencoding('utf8')
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -14,31 +12,37 @@ import datetime
 import logging
 from connect import conn
 
-#datetime.datetime.now()-datetime.timedelta(seconds = timeout * 60)
-mongo=conn.mongo_conn()
+# datetime.datetime.now()-datetime.timedelta(seconds = timeout * 60)
+mongo = conn.mongo_conn()
 mongouser = conn.mongo_conn_user()
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S',
                     filename='log1.txt',
                     filemode='a')
-#检查是否发送过此推送
+
+
+# 检查是否发送过此推送
 def checkmsg(data_id='', goto=''):
     pass
-    item = mongo.message.find({"data_id":data_id,"goto":goto})
+    item = mongo.message.find({"data_id": data_id, "goto": goto})
     flag = True
     for i in item:
         flag = False
     return flag
-#根据包房id获取包房名
-def getroom(id='',room_id=''):
-    item = mongo.restaurant.find({"_id":ObjectId(id)})
+
+
+# 根据包房id获取包房名
+def getroom(id='', room_id=''):
+    item = mongo.restaurant.find({"_id": ObjectId(id)})
     rnanme = ''
     for i in item:
         for r in i['rooms']:
             if room_id == r['room_id']:
                 rnanme = r['room_name']
     return rnanme
+
+
 def tuisong(mfrom='', mto='', title='', info='', goto='', channel='', type='', totype='',
             appname='', msgtype='', target='', ext='', ispush=True, data_id='-1'):
     ispush = False
@@ -110,8 +114,8 @@ def tuisong(mfrom='', mto='', title='', info='', goto='', channel='', type='', t
                                             identioslist.append(identandroid + u['lastlogin']['ident'])
                                 else:
                                     print '此饭店暂无管理员，获取不到接收方设备号'
-                except  Exception,e:
-                    print str(e)+'获取不到接收方设备号'
+                except  Exception, e:
+                    print str(e) + '获取不到接收方设备号'
     identandroid = ",".join(identandroidlist)
     identios = ",".join(identioslist)
     print identandroid, identios
@@ -144,7 +148,7 @@ def tuisong(mfrom='', mto='', title='', info='', goto='', channel='', type='', t
     # if issave:
     mes = mongo.message.insert(insertjson)
     if goto == "5":
-        ext = '{"goto":"5","id":"'+str(mes)+'"}'
+        ext = '{"goto":"5","id":"' + str(mes) + '"}'
     # target是all表示发送给所有设备
     if target == 'device':
         # message是消息
@@ -231,7 +235,7 @@ def tuisong(mfrom='', mto='', title='', info='', goto='', channel='', type='', t
                     print 'IOS通知全推推送失败！原因' + str(iosreq['Message'])
     else:
         pass
-    mongo.message.update_one({"_id":str(mes)},{"$set":{"androidmsg": androidmsg,"iosmsg": iosmsg}})
+    mongo.message.update_one({"_id": str(mes)}, {"$set": {"androidmsg": androidmsg, "iosmsg": iosmsg}})
     return True
     #     return True
     # else:
@@ -239,194 +243,210 @@ def tuisong(mfrom='', mto='', title='', info='', goto='', channel='', type='', t
     # except:
     #     return False
 
-#订座点菜提前一小时发给商家
+
+# 订座点菜提前一小时发给商家
 def send56():
     pass
-    item = mongo.order.find({"preset_time":{"$gte":datetime.datetime.now() , '$lt': datetime.datetime.now()+datetime.timedelta(hours=1)}})
+    item = mongo.order.find({"preset_time": {"$gte": datetime.datetime.now(),
+                                             '$lt': datetime.datetime.now() + datetime.timedelta(hours=1)}})
 
-#mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
-# appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
+    # mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
+    # appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
     for i in item:
         print '111'
         # if i['webuser_id'] != '' and checkmsg(str(i['_id']),'5'):
         rname = getroom(str(i['restaurant_id']), i['room_id'])
         tuisong(mfrom='',
-                 mto=str(i['restaurant_id']),
-                 title=rname+'在'+i['preset_time'].strftime('%Y年%m月%d日 %H:%M:%S')+'有预定',
-                 info='快去看看吧！',
-                 goto='5',
-                 channel='订单提醒',
-                 type='0',
-                 totype='0',
-                 appname='foodmap_shop',
-                 msgtype='notice',
-                 target='device',
-                 ext='{"goto":"5","id":"'+str(i['_id'])+'"}',
-                 ispush=True,
-                 data_id=str(i['_id']))
+                mto=str(i['restaurant_id']),
+                title='订单提醒',
+                info=rname + '在' + i['preset_time'].strftime('%Y年%m月%d日 %H:%M:%S') + '有预定',
+                goto='5',
+                channel='订单提醒',
+                type='0',
+                totype='0',
+                appname='foodmap_shop',
+                msgtype='notice',
+                target='device',
+                ext='{"goto":"5","id":"' + str(i['_id']) + '"}',
+                ispush=True,
+                data_id=str(i['_id']))
     print 'send56:订座点菜提前一小时发给商家'
-#优惠/活动过期/被抢光 一天
+
+
+# 优惠/活动过期/被抢光 一天
 def send7():
     pass
-#mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
-# appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
+    # mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
+    # appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
     coupons = mongo.coupons.find({"num": 0})
     for i in coupons:
-        if checkmsg(str(i['_id']),'7'):
+        if checkmsg(str(i['_id']), '7'):
             tuisong(mfrom=str(i['webuser_id']),
-                     mto=str(i['rstaurant_id']),
-                     title='您发布的优惠被...',
-                     info='您发布的优惠被抢光了，快去发布新的优惠吧',
-                     goto='7',
-                     channel='优惠提醒',
-                     type='0',
-                     totype='0',
-                     appname='foodmap_shop',
-                     msgtype='notice',
-                     target='device',
-                     ext='',
-                     ispush=False,
-                     data_id=str(i['_id']))
-    coupons2 = mongo.coupons.find({"showtime_end": {"$gte":datetime.datetime.now()}})
+                    mto=str(i['rstaurant_id']),
+                    title='您发布的优惠被...',
+                    info='您发布的优惠被抢光了，快去发布新的优惠吧',
+                    goto='7',
+                    channel='优惠提醒',
+                    type='0',
+                    totype='0',
+                    appname='foodmap_shop',
+                    msgtype='notice',
+                    target='device',
+                    ext='',
+                    ispush=False,
+                    data_id=str(i['_id']))
+    coupons2 = mongo.coupons.find({"showtime_end": {"$gte": datetime.datetime.now()}})
     for c in coupons2:
-        if checkmsg(str(c['_id']),'7'):
+        if checkmsg(str(c['_id']), '7'):
             tuisong(mfrom=str(c['webuser_id']),
-                     mto=str(c['rstaurant_id']),
-                     title='您发布的优惠过...',
-                     info='您发布的优惠过期了，快去发布新的优惠吧',
-                     goto='7',
-                     channel='优惠提醒',
-                     type='0',
-                     totype='0',
-                     appname='foodmap_shop',
-                     msgtype='notice',
-                     target='device',
-                     ext='',
-                     ispush=False,
-                     data_id=str(c['_id']))
-    kaituan = mongo.order_groupinvite.find({"time2":{"$gte":datetime.datetime.now()}})
+                    mto=str(c['rstaurant_id']),
+                    title='您发布的优惠过...',
+                    info='您发布的优惠过期了，快去发布新的优惠吧',
+                    goto='7',
+                    channel='优惠提醒',
+                    type='0',
+                    totype='0',
+                    appname='foodmap_shop',
+                    msgtype='notice',
+                    target='device',
+                    ext='',
+                    ispush=False,
+                    data_id=str(c['_id']))
+    kaituan = mongo.order_groupinvite.find({"time2": {"$gte": datetime.datetime.now()}})
     for k in kaituan:
-        if checkmsg(str(k['_id']),'7'):
+        if checkmsg(str(k['_id']), '7'):
             tuisong(mfrom='',
-                     mto=str(k['rstaurant_id']),
-                     title='您发布的活动过...',
-                     info='您发布的活动过期了，快去发布新的活动吧',
-                     goto='7',
-                     channel='活动提醒',
-                     type='0',
-                     totype='0',
-                     appname='foodmap_shop',
-                     msgtype='notice',
-                     target='device',
-                     ext='',
-                     ispush=False,
-                     data_id=str(k['_id']))
+                    mto=str(k['rstaurant_id']),
+                    title='您发布的活动过...',
+                    info='您发布的活动过期了，快去发布新的活动吧',
+                    goto='7',
+                    channel='活动提醒',
+                    type='0',
+                    totype='0',
+                    appname='foodmap_shop',
+                    msgtype='notice',
+                    target='device',
+                    ext='',
+                    ispush=False,
+                    data_id=str(k['_id']))
     kaituan2 = mongo.order_groupinvite.find({})
     from app_user.groupinvite import GroupInvite
     for k2 in kaituan2:
-        if checkmsg(str(k2['_id']),'7') and GroupInvite()._is_invite_open(str(k2['_id'])) < 1:
+        if checkmsg(str(k2['_id']), '7') and GroupInvite()._is_invite_open(str(k2['_id'])) < 1:
             tuisong(mfrom='',
-                     mto=str(k['rstaurant_id']),
-                     title='您发布的活动被...',
-                     info='您发布的活动被抢光了，快去发布新的活动吧',
-                     goto='7',
-                     channel='活动提醒',
-                     type='0',
-                     totype='0',
-                     appname='foodmap_shop',
-                     msgtype='notice',
-                     target='device',
-                     ext='',
-                     ispush=False,
-                     data_id=str(k['_id']))
+                    mto=str(k['rstaurant_id']),
+                    title='您发布的活动被...',
+                    info='您发布的活动被抢光了，快去发布新的活动吧',
+                    goto='7',
+                    channel='活动提醒',
+                    type='0',
+                    totype='0',
+                    appname='foodmap_shop',
+                    msgtype='notice',
+                    target='device',
+                    ext='',
+                    ispush=False,
+                    data_id=str(k['_id']))
     print 'send7:优惠/活动过期/被抢光 一天'
-#开团请客失败
+
+
+# 开团请客失败
 def send10():
-#mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
-# appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
-    kaituan = mongo.order_groupinvite.find({"status":{"$in":["timeout","else"]}})
+    # mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
+    # appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
+    kaituan = mongo.order_groupinvite.find({"status": {"$in": ["timeout", "else"]}})
     for i in kaituan:
-        if checkmsg(str(i['_id']),'10'):
+        if checkmsg(str(i['_id']), '10'):
             tuisong(mfrom='',
-                     mto=str(i['restaurant_info']['rid']),
-                     title=i['restaurant_info']['name'],
-                     info='您的'+i['restaurant_info']['name']+'开团请客失败了',
-                     goto='10',
-                     channel='请客提醒',
-                     type='0',
-                     totype='1',
-                     appname='foodmap_user',
-                     msgtype='notice',
-                     target='device',
-                     ext='{"goto":"10","id":"'+str(i['_id'])+'"}',
-                     ispush=True,
-                     data_id=str(i['_id']))
+                    mto=str(i['restaurant_info']['rid']),
+                    title=i['restaurant_info']['name'],
+                    info='您的' + i['restaurant_info']['name'] + '开团请客失败了',
+                    goto='10',
+                    channel='请客提醒',
+                    type='0',
+                    totype='1',
+                    appname='foodmap_user',
+                    msgtype='notice',
+                    target='device',
+                    ext='{"goto":"10","id":"' + str(i['_id']) + '"}',
+                    ispush=True,
+                    data_id=str(i['_id']))
     print 'send10:开团请客失败'
-#开团请客就餐提醒 一天
+
+
+# 开团请客就餐提醒 一天
 def send14():
-    kaituan = mongo.order_groupinvite.find({"end_time":{'$lt': datetime.datetime.now()+datetime.timedelta(hours=24)}})
+    kaituan = mongo.order_groupinvite.find(
+        {"end_time": {'$lt': datetime.datetime.now() + datetime.timedelta(hours=24)}})
     for i in kaituan:
-        if checkmsg(str(i['_id']),'14'):
+        if checkmsg(str(i['_id']), '14'):
             tuisong(mfrom='',
-                     mto=str(i['master_id']),
-                     title=i['restaurant_info']['name'],
-                     info='您的'+i['restaurant_info']['name']+'请客活动要开餐了',
-                     goto='14',
-                     channel='请客提醒',
-                     type='0',
-                     totype='1',
-                     appname='foodmap_user',
-                     msgtype='notice',
-                     target='device',
-                     ext='{"goto":"14","id":"'+str(i['_id'])+'"}',
-                     ispush=True,
-                     data_id=str(i['_id']))
+                    mto=str(i['master_id']),
+                    title=i['restaurant_info']['name'],
+                    info='您的' + i['restaurant_info']['name'] + '请客活动要开餐了',
+                    goto='14',
+                    channel='请客提醒',
+                    type='0',
+                    totype='1',
+                    appname='foodmap_user',
+                    msgtype='notice',
+                    target='device',
+                    ext='{"goto":"14","id":"' + str(i['_id']) + '"}',
+                    ispush=True,
+                    data_id=str(i['_id']))
     print 'send14:开团请客就餐提醒 一天'
-#优惠到期提醒 一天
+
+
+# 优惠到期提醒 一天
 def send15():
-    kaituan = mongo.mycoupons.find({"indate_end":{'$lt': datetime.datetime.now()+datetime.timedelta(hours=24)}})
+    kaituan = mongo.mycoupons.find({"indate_end": {'$lt': datetime.datetime.now() + datetime.timedelta(hours=24)}})
     for i in kaituan:
-        if checkmsg(str(i['_id']),'15'):
+        if checkmsg(str(i['_id']), '15'):
             tuisong(mfrom='',
-                     mto=str(i['webuser_id']),
-                     title='您的优惠快到期了',
-                     info='店铺名称：'+i['r_name']+'，优惠：'+i['content']+'，有效期：'+i['expiry_date'],
-                     goto='15',
-                     channel='优惠提醒',
-                     type='0',
-                     totype='1',
-                     appname='foodmap_user',
-                     msgtype='notice',
-                     target='device',
-                     ext='',
-                     ispush=False,
-                     data_id=str(i['_id']))
+                    mto=str(i['webuser_id']),
+                    title='您的优惠快到期了',
+                    info='店铺名称：' + i['r_name'] + '，优惠：' + i['content'] + '，有效期：' + i['expiry_date'],
+                    goto='15',
+                    channel='优惠提醒',
+                    type='0',
+                    totype='1',
+                    appname='foodmap_user',
+                    msgtype='notice',
+                    target='device',
+                    ext='',
+                    ispush=False,
+                    data_id=str(i['_id']))
     print 'send15:优惠到期提醒 一天'
-#未按时支付 订单自动取消
+
+
+# 未按时支付 订单自动取消
 def send16():
-    order = mongo.order.find({"status":6})
+    order = mongo.order.find({"status": 6})
     for i in order:
-        if checkmsg(str(i['_id']),'16'):
+        if checkmsg(str(i['_id']), '16'):
             tuisong(mfrom='',
-                     mto=str(i['webuser_id']),
-                     title='您的订单已被取消',
-                     info='快去看看吧！',
-                     goto='16',
-                     channel='订单提醒',
-                     type='0',
-                     totype='1',
-                     appname='foodmap_user',
-                     msgtype='notice',
-                     target='device',
-                     ext='{"goto":"16","id":"'+str(i['_id'])+'"}',
-                     ispush=True,
-                     data_id=str(i['_id']))
+                    mto=str(i['webuser_id']),
+                    title='您的订单已被取消',
+                    info='快去看看吧！',
+                    goto='16',
+                    channel='订单提醒',
+                    type='0',
+                    totype='1',
+                    appname='foodmap_user',
+                    msgtype='notice',
+                    target='device',
+                    ext='{"goto":"16","id":"' + str(i['_id']) + '"}',
+                    ispush=True,
+                    data_id=str(i['_id']))
     print 'send16:未按时支付 订单自动取消'
+
+
 def my_listener(event):
     if event.exception:
         print '任务出错了！！！！！！'
     else:
         print '任务照常运行...'
+
 
 # scheduler = BlockingScheduler()
 # # scheduler.add_job(func=date_test, args=('一定性任务,会出错',), trigger='interval',seconds=3, id='date_task')

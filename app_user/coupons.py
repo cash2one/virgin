@@ -91,7 +91,7 @@ def coupons():
                             if request.form['webuser_id'] != '-1':
                                 json['concern'] =getconcern(rest[key],request.form['webuser_id'])
                             else:
-                                pass
+                                json['concern'] = "0"
                         elif key == 'restaurant_id':
                             json['restaurant_id'] = str(rest[key])
                         elif key == 'name':

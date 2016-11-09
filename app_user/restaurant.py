@@ -97,8 +97,8 @@ def index():
                 #开团请客 开始
                 kaituan = GroupInvite().all_item
                 list = []
+                json = {}
                 for k in kaituan:
-                    json = {}
                     json['detail'] = k['detail']
                     json['restaurant_name'] = k['restaurant']['name']
                     json['restaurant_id'] = k['restaurant']['rid']
@@ -216,9 +216,9 @@ restaurant.add_parameter(name='jwtstr',parametertype='formData',type='string',re
 restaurant.add_parameter(name='dishes_type',parametertype='formData',type='string',required= True,description='菜系',default='10')
 restaurant.add_parameter(name='discount',parametertype='formData',type='string',required= True,description='优惠',default='dish')
 restaurant.add_parameter(name='room_people_id',parametertype='formData',type='string',required= True,description='包房id',default='40')
-restaurant.add_parameter(name='room_type',parametertype='formData',type='string',required= True,description='包房特色',default='36')
-restaurant.add_parameter(name='tese',parametertype='formData',type='string',required= True,description='特色',default='51')
-restaurant.add_parameter(name='pay_type',parametertype='formData',type='string',required= True,description='支付',default='48')
+restaurant.add_parameter(name='room_type',parametertype='formData',type='string',required= True,description='包房特色 id_id_id',default='36')
+restaurant.add_parameter(name='tese',parametertype='formData',type='string',required= True,description='特色 id_id_id',default='51')
+restaurant.add_parameter(name='pay_type',parametertype='formData',type='string',required= True,description='支付 id_id_id',default='48')
 restaurant.add_parameter(name='pageindex',parametertype='formData',type='string',required= True,description='页数',default='1')
 restaurant.add_parameter(name='x',parametertype='formData',type='string',required= True,description='经度坐标x，没有传x',default='126.62687122442075')
 restaurant.add_parameter(name='y',parametertype='formData',type='string',required= True,description='纬度坐标y，没有传y',default='45.764067772341264')
