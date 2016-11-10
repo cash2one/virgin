@@ -1927,6 +1927,53 @@ def hobbys():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+@restaurant_user_api.route(settings.app_user_url+'/fm/user/v1/restaurant/wap_dish_menu/',methods=['POST'])
+def wap_dish_menu():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                item = conn.mongo_conn().restaurant.find({"_id":ObjectId(request.form['restaurant_id'])})
+                list = []
+                for i in item:
+                    for menu in i['menu']:
+                        if menu['dish_type'] == '1' and menu['dishs'] != []:
+                            dishjson = {}
+                            dishlist = []
+                            for dishs in menu['dishs']:
+                                dish = {}
+                                if menu['name'] == '酒水':
+                                    dish['type'] = '1'
+                                else:
+                                    dish['type'] = '0'
+                                dish['name'] = dishs['name']
+                                dish['price'] = dishs['price']
+                                dish['discount_price'] = dishs['discount_price']
+                                dish['id'] = dishs['id']
+                                dish['is_recommend'] = dishs['is_recommend']
+                                if dishs['price'] > dishs['discount_price']:
+                                    dish['is_discount'] = True
+                                else:
+                                    dish['is_discount'] = False
+                                dish['guide_image'] = dishs['guide_image']
+                                dish['num'] = 0
+                                dishlist.append(dish)
+                            dishjson['list'] = dishlist
+                            dishjson['name'] = menu['name']
+                            list.append(dishjson)
+                data = {}
+                data['menu'] = list
+                result=tool.return_json(0,"success",True,data)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+
 if __name__ == '__main__':
     kaituan = GroupInvite().all_item
     print json_util.dumps(kaituan,ensure_ascii=False,indent=2)
