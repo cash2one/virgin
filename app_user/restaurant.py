@@ -99,6 +99,7 @@ def index():
                 list = []
                 json = {}
                 for k in kaituan:
+                    # json['group_id'] = k['_id']
                     json['detail'] = k['detail']
                     json['restaurant_name'] = k['restaurant']['name']
                     json['restaurant_id'] = k['restaurant']['rid']
@@ -1926,3 +1927,6 @@ def hobbys():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+if __name__ == '__main__':
+    kaituan = GroupInvite().all_item
+    print json_util.dumps(kaituan,ensure_ascii=False,indent=2)

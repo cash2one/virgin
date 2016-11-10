@@ -121,12 +121,12 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3,
                 for key in rest.keys():
                     if key == '_id':
                         json['id'] = str(rest[key])
-                        # json['kind1'] = getcoupons('1',rest[key])['content']
-                        # json['kind2'] = getcoupons('2',rest[key])['content']
-                        # json['kind3'] = getcoupons('3',rest[key])['content']
-                        json['kind1'] = '满多少打多少折'
-                        json['kind2'] = '满多少减多少元'
-                        json['kind3'] = '任性就是送'
+                        json['kind1'] = getcoupons('1',rest[key])['content']
+                        json['kind2'] = getcoupons('2',rest[key])['content']
+                        json['kind3'] = getcoupons('3',rest[key])['content']
+                        # json['kind1'] = '满多少打多少折'
+                        # json['kind2'] = '满多少减多少元'
+                        # json['kind3'] = '任性就是送'
                         if webuser_id !='-1':
                             json['concern'] =getconcern(rest[key],webuser_id)
                         else:
@@ -171,12 +171,12 @@ def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3,
             for key in rest.keys():
                 if key == '_id':
                     json['id'] = str(rest[key])
-                    # json['kind1'] = getcoupons('1',rest[key])['content']
-                    # json['kind2'] = getcoupons('2',rest[key])['content']
-                    # json['kind3'] = getcoupons('3',rest[key])['content']
-                    json['kind1'] = '满多少打多少折'
-                    json['kind2'] = '满多少减多少元'
-                    json['kind3'] = '任性就是送'
+                    json['kind1'] = getcoupons('1',rest[key])['content']
+                    json['kind2'] = getcoupons('2',rest[key])['content']
+                    json['kind3'] = getcoupons('3',rest[key])['content']
+                    # json['kind1'] = '满多少打多少折'
+                    # json['kind2'] = '满多少减多少元'
+                    # json['kind3'] = '任性就是送'
                     if webuser_id !='-1':
                         json['concern'] =getconcern(rest[key],webuser_id)
                     else:

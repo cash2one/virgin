@@ -80,14 +80,14 @@ def coupons():
                     for key in rest.keys():
                         if key == '_id':
                             json['id'] = str(rest[key])
-                            # json['kind1'] = getcoupons('1',rest[key])['content']
-                            # json['kind2'] = getcoupons('2',rest[key])['content']
-                            # json['kind3'] = getcoupons('3',rest[key])['content']
-                            # json['num'] = getcoupons('3',rest[key])['num']
-                            json['kind1'] = '满多少打多少折'
-                            json['kind2'] = '满多少减多少元'
-                            json['kind3'] = '任性就是送'
-                            json['num'] = '1'
+                            json['kind1'] = getcoupons('1',rest[key])['content']
+                            json['kind2'] = getcoupons('2',rest[key])['content']
+                            json['kind3'] = getcoupons('3',rest[key])['content']
+                            json['num'] = getcoupons('3',rest[key])['num']
+                            # json['kind1'] = '满多少打多少折'
+                            # json['kind2'] = '满多少减多少元'
+                            # json['kind3'] = '任性就是送'
+                            # json['num'] = '1'
                             if request.form['webuser_id'] != '-1':
                                 json['concern'] =getconcern(rest[key],request.form['webuser_id'])
                             else:
