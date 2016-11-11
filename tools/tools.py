@@ -368,8 +368,6 @@ def qrcode(data, version=None, error_correction='L', box_size=10, border=0, fit=
 def tuisong(mfrom='', mto='', title='', info='', goto='', channel='', type='', totype='',
             appname='', msgtype='', target='', ext='', ispush=True, data_id='-1'):
     print mto
-    # ispush = False
-    # baseurl = 'http://125.211.222.237:11035'
     baseurl = settings.tuisongIP
     androidreq = {}
     iosreq = {}

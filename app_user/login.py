@@ -18,9 +18,9 @@ import datetime
 
 
 login_user_api = Blueprint('login_user_api', __name__, template_folder='templates')
-
+mongouser = conn.mongo_conn_user()
 mongo = MongoAPI(conn.mongo_conn_user().user_web)
-SMSnetgate = 'http://125.211.222.232:10031'
+SMSnetgate = settings.SMSnetgate
 # SMSnetgate = 'http://127.0.0.1:10032'
 #发送验证码
 send_sms = swagger("0-1 注册.jpg","发送验证码")
@@ -54,6 +54,62 @@ def send_sms():
                 result=tool.return_json(0,"success",True,{"ispass":req.json()['success']})
                 # else:
                 #     result=tool.return_json(0,"field",True,{"ispass":False,"message":"请先注册"})
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+send_sms2 = swagger("0-1 注册.jpg","发送验证码2：加判断")
+send_sms2.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+send_sms2.add_parameter(name='phone',parametertype='formData',type='string',required= True,description='电话号码',default='13000000000')
+send_sms2.add_parameter(name='flag',parametertype='formData',type='string',required= True,description='登陆传user_login，注册传user_register',default='user_register')
+
+send_sms2_json = {
+    "auto": send_sms2.String(description='验证是否成功'),
+    "message": send_sms2.String(description='SUCCESS/FIELD',default="SUCCESS"),
+    "code": send_sms2.Integer(description='',default=0),
+    "data": {
+            "ispass":send_sms2.Boolean(description='是否发送成功',default=True),
+    }
+}
+
+#发送验证码
+@login_user_api.route(settings.app_user_url+'/fm/user/v1/login/send_sms2/',methods=['POST'])
+@swag_from(send_sms2.mylpath(schemaid='send_sms2',result=send_sms2_json))
+def send_sms2():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                flag = request.form['flag']
+                if flag == 'user_login':
+                    if mongo.find({"phone":request.form['phone'],"appid.2":True}):
+                        data = {'sign': '美食地图',
+                                'tpl': 'SMS_8161119',
+                                'param': json.dumps({"code": str(random.randint(1000000, 9999999))[1:]}),
+                                'tel': request.form['phone'],
+                                'ex': '#foodmap.mobile'
+                                }
+                        req = requests.post(SMSnetgate + '/sms.send', data)
+                        result=tool.return_json(0,"success",True,{"ispass":req.json()['success']})
+                    else:
+                        result=tool.return_json(0,"field",True,{"ispass":False,"message":"请先注册"})
+                    pass
+                elif flag == 'user_register':
+                    data = {'sign': '美食地图',
+                            'tpl': 'SMS_8161119',
+                            'param': json.dumps({"code": str(random.randint(1000000, 9999999))[1:]}),
+                            'tel': request.form['phone'],
+                            'ex': '#foodmap.mobile'
+                            }
+                    req = requests.post(SMSnetgate + '/sms.send', data)
+                    result=tool.return_json(0,"success",True,{"ispass":req.json()['success']})
+                else:
+                    result=tool.return_json(0,"field",True,{"ispass":False,"message":"请使用正确的type"})
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e
@@ -390,146 +446,49 @@ def resetpassword():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
-#发验证码
-# def send_sms():
-#     data = {'sign': '美食地图',
-#             'tpl': 'SMS_8161119',
-#             'param': json.dumps({"code": str(random.randint(1000000, 9999999))[1:]}),
-#             'tel': request.form['phone'],
-#             'ex': '#foodmap.mobile'
-#             }
-#     req = requests.post(SMSnetgate + '/sms.send', data)
-#     return req.json()
-#     pass
-# #验证验证码
-# def sms_validate():
-#         data = {'tel': '18746428128',
-#                 'ex': '#foodmap.mobile',
-#                 'tpl': 'SMS_8161119',
-#                 'code': '359790'}
-#         req = requests.post(SMSnetgate + '/sms.validate', data)
-#         return req.json()['success']
-# #注册
-# def register():
-#         data = {'tel': '18746428128',
-#                 'ex': '#foodmap.mobile',
-#                 'tpl': 'SMS_8161119',
-#                 'code': '359790'}
-#         req = requests.post(SMSnetgate + '/sms.validate', data)
-#         if req.json()['success']:
-#             phone = '18746428128'
-#             password = '111111'
-#             data = {
-#                 "status": 1,
-#                 "identification": "",
-#                 "registeruser": {
-#                     "nick": "",
-#                     "password": hashlib.md5(password).hexdigest().upper(),
-#                     "headimage": "",
-#                     "name": ""
-#                 },
-#                 "lastlogin": {
-#                     "ident": "",
-#                     "time": datetime.datetime.now()
-#                 },
-#                 "thirdIds": [
-#                 ],
-#                 "phone": phone,
-#                 "addtime": datetime.datetime.now(),
-#                 "type": 3,
-#                 "identype": "0",
-#                 "appid": {'2': True}
-#             }
-#             # item = mongo.user_web.insert(json)
-#             if not mongo.find({'phone': phone, 'appid': {'2': True}}):
-#                 item = mongo.add(data)
-#                 if item['success']:
-#                     from tools.tools import qrcode as qr
-#                     webuser_add = conn.mongo_conn().webuser.insert({"automembers_id": item['_id'],
-#                                                                     "nickname": '送送',
-#                                                                     "gender": 1,
-#                                                                     "birthday": "",
-#                                                                     "headimage": "",
-#                                                                     "phone": '18746428128'})
-#                     webuser_add = json_util.loads(json_util.dumps(webuser_add))
-#                     print webuser_add
-#                     user_addqr = conn.mongo_conn().webuser.update({'_id': ObjectId(webuser_add)},
-#                                                                   {'$set': {'qrcode_img': qr(json.dumps({
-#                                                                       'fuc': 'webuser',
-#                                                                       'info': {
-#                                                                           'user_id': str(webuser_add)
-#                                                                       }
-#                                                                   }))}})
-#                     user_addqr = json_util.loads(json_util.dumps(user_addqr))
-#                     return json_util.dumps({'success': True, '_id': str(webuser_add)})
-#                 else:
-#                     return json_util.dumps(item.update({'success': False}))
-#             else:
-#                 return json_util.dumps({'success': False, 'info': 'Database already had one'})
-#         else:
-#             return json_util.dumps({'success': False, 'info': '验证码超时或错误，请重新输入'})
-# #密码登陆
-# def verify_login():
-#         phone = '18746428128'
-#         password = '111112'
-#         found = mongo.find({'phone': phone, 'appid': {'2': True}})
-#         # if 'seller' in request.form:
-#         #     print 'is seller'
-#         print found
-#         if found:
-#             found = found[0]
-#             if found['registeruser']['password'] == hashlib.md5(password).hexdigest().upper():
-#                 found['_id'] = str(found['_id']['$oid'])
-#                 return json.dumps({'success': True, '_id': found['_id']})
-#             else:
-#                 return json.dumps({'success': False, 'info': 'Password Not Match'})
-#         else:
-#             return json.dumps({'success': False, 'info': 'Not Found'})
-#         pass
-# #验证码登陆
-# def code_login():
-#         phone = '18746428128'
-#         code = '359790'
-#         found = mongo.find({'phone': phone, 'appid': {'2': True}})
-#         # if 'seller' in request.form:
-#         #     print 'is seller'
-#         if found:
-#             found = found[0]
-#             data = {'tel': phone,
-#                 'ex': '#foodmap.mobile',
-#                 'tpl': 'SMS_8161119',
-#                 'code': code}
-#             req = requests.post(SMSnetgate + '/sms.validate', data)
-#             if req.json()['success']:
-#                 found['_id'] = str(found['_id']['$oid'])
-#                 return json.dumps({'success': True, '_id': found['_id']})
-#             else:
-#                 return json.dumps({'success': False, 'info': '验证码超时或错误，请重新输入'})
-#         else:
-#             return json.dumps({'success': False, 'info': 'Not Found'})
-#         pass
-# def resetpassword():
-#         phone = '18746428128'
-#         code = '359790'
-#         password = '111111'
-#         data = {'tel': phone,
-#                 'ex': '#foodmap.mobile',
-#                 'tpl': 'SMS_8161119',
-#                 'code': code}
-#         req = requests.post(SMSnetgate + '/sms.validate', data)
-#         if req.json()['success']:
-#             found = mongo.find({'phone': phone, 'appid': {'2': True}})
-#             if found:
-#                 found = found[0]
-#                 fix_psw = {'registeruser.password': hashlib.md5(password).hexdigest().upper()}
-#                 is_fix = mongo.fix({'_id': str(found['_id']['$oid']), 'fix_data': fix_psw})
-#                 is_fix['_id'] = str(found['_id']['$oid'])
-#                 return json.dumps(is_fix)
-#                 pass
-#             else:
-#                 return json.dumps({'success': False, 'info': 'Not Found'})
-#         else:
-#             return json.dumps({'success': False, 'info': '验证码超时或错误，请重新输入'})
+checkphonetype = swagger("其他","改用户中心lastlogin最后登录type 用来修改BUG数据")
+checkphonetype.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+checkphonetype.add_parameter(name='phone',parametertype='formData',type='string',required= True,description='电话',default='13000000000')
+checkphonetype.add_parameter(name='password',parametertype='formData',type='string',required= True,description='密码',default='111111')
+checkphonetype.add_parameter(name='code',parametertype='formData',type='string',required= True,description='六位验证码',default='000000')
+
+checkphonetype_json = {
+    "auto": checkphonetype.String(description='验证是否成功'),
+    "message": checkphonetype.String(description='SUCCESS/FIELD',default="SUCCESS"),
+    "code": checkphonetype.Integer(description='',default=0),
+    "data": checkphonetype.String(description='修改成功',default="无需修改"),
+}
+
+#改最后登录type 用来修改数据
+@login_user_api.route(settings.app_user_url+'/fm/user/v1/login/checkphonetype/',methods=['POST'])
+@swag_from(checkphonetype.mylpath(schemaid='checkphonetype',result=checkphonetype_json))
+def checkphonetype():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                user_id = request.form['user_id']
+                phonetype = request.form['phonetype']
+                msg = ""
+                item = mongouser.user_web.find({"_id":ObjectId(user_id)})
+                for i in item:
+                    if "type" not in i['lastlogin'].keys():
+                        mongouser.user_web.update_one({"_id":ObjectId(user_id)},{"$set":{"lastlogin.type":phonetype}})
+                        msg = "修改成功"
+                    else:
+                        msg = "无需修改"
+                        pass
+                result=tool.return_json(0,"success",True,msg)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+
 if __name__ == '__main__':
     # print send_sms()
     # print sms_validate()

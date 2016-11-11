@@ -1,17 +1,17 @@
 # coding=utf-8
 import datetime
 import requests
-from connect import conn
+# from connect import conn
 from bson import ObjectId, json_util
 import json
-
+from connect import conn,settings
 _author_ = 'dolacmeo'
 
 
 class GetUser:
     # SMSnetgate = 'http://125.211.222.237:10031'
     # SMSnetgate = 'http://127.0.0.1:10032'
-    SMSnetgate = 'http://125.211.222.232:10031'
+    SMSnetgate = settings.SMSnetgate
 
     def __init__(self, params):
         self.shop_info = None
