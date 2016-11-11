@@ -78,7 +78,7 @@ send_sms2_json = {
     }
 }
 
-#发送验证码
+#发送验证码2
 @login_user_api.route(settings.app_user_url+'/fm/user/v1/login/send_sms2/',methods=['POST'])
 @swag_from(send_sms2.mylpath(schemaid='send_sms2',result=send_sms2_json))
 def send_sms2():
@@ -100,14 +100,18 @@ def send_sms2():
                         result=tool.return_json(0,"field",True,{"ispass":False,"message":"请先注册"})
                     pass
                 elif flag == 'user_register':
-                    data = {'sign': '美食地图',
-                            'tpl': 'SMS_8161119',
-                            'param': json.dumps({"code": str(random.randint(1000000, 9999999))[1:]}),
-                            'tel': request.form['phone'],
-                            'ex': '#foodmap.mobile'
-                            }
-                    req = requests.post(SMSnetgate + '/sms.send', data)
-                    result=tool.return_json(0,"success",True,{"ispass":req.json()['success']})
+                    if mongo.find({"phone":request.form['phone'],"appid.2":True}):
+                        result=tool.return_json(0,"field",True,{"ispass":False,"message":"已注册，请登录"})
+                    else:
+                        data = {'sign': '美食地图',
+                                'tpl': 'SMS_8161119',
+                                'param': json.dumps({"code": str(random.randint(1000000, 9999999))[1:]}),
+                                'tel': request.form['phone'],
+                                'ex': '#foodmap.mobile'
+                                }
+                        req = requests.post(SMSnetgate + '/sms.send', data)
+                        result=tool.return_json(0,"success",True,{"ispass":req.json()['success']})
+
                 else:
                     result=tool.return_json(0,"field",True,{"ispass":False,"message":"请使用正确的type"})
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
