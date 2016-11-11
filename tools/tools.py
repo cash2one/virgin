@@ -370,7 +370,7 @@ def tuisong(mfrom='', mto='', title='', info='', goto='', channel='', type='', t
     print mto
     # ispush = False
     # baseurl = 'http://125.211.222.237:11035'
-    baseurl = 'http://127.0.0.1:10035'
+    baseurl = settings.tuisongIP
     androidreq = {}
     iosreq = {}
     # try:

@@ -99,7 +99,7 @@ def index():
                 list = []
                 json = {}
                 for k in kaituan:
-                    # json['group_id'] = k['_id']
+                    json['group_id'] = k['_id']
                     json['detail'] = k['detail']
                     json['restaurant_name'] = k['restaurant']['name']
                     json['restaurant_id'] = k['restaurant']['rid']
