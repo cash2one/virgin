@@ -28,17 +28,6 @@ from app_user.groupinvite import group_invite
 from flasgger import Swagger
 
 app = Flask(__name__)
-app.config['SWAGGER'] = {
-    "swagger_version": "2.0",
-    "specs": [
-        {
-            "version": "1.0.1",
-            "title": "A swagger API",
-            "endpoint": 'spec',
-            "route": '/fm/user/spec',
-        }
-    ]
-}
 Swagger(app)
 app.config['DEBUG'] = True
 
