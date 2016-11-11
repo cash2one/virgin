@@ -448,9 +448,8 @@ def resetpassword():
         return abort(403)
 checkphonetype = swagger("其他","改用户中心lastlogin最后登录type 用来修改BUG数据")
 checkphonetype.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
-checkphonetype.add_parameter(name='phone',parametertype='formData',type='string',required= True,description='电话',default='13000000000')
-checkphonetype.add_parameter(name='password',parametertype='formData',type='string',required= True,description='密码',default='111111')
-checkphonetype.add_parameter(name='code',parametertype='formData',type='string',required= True,description='六位验证码',default='000000')
+checkphonetype.add_parameter(name='phonetype',parametertype='formData',type='string',required= True,description='设备类型：安卓传0，IOS传1',default='0')
+checkphonetype.add_parameter(name='user_id',parametertype='formData',type='string',required= True,description='用户中心id',default='')
 
 checkphonetype_json = {
     "auto": checkphonetype.String(description='验证是否成功'),
