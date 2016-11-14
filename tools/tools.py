@@ -469,7 +469,7 @@ def tuisong(mfrom='', mto='', title='', info='', goto='', channel='', type='', t
         insertjson['data_id'] = '-1'
     # if issave:
     mes = mongo.message.insert(insertjson)
-    if goto == "5":
+    if goto == "5" or goto == "19":
         ext = '{"goto":"5","id":"'+str(mes)+'"}'
     # target是all表示发送给所有设备
     if target == 'device':

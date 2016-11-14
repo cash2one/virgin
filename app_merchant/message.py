@@ -119,7 +119,7 @@ def sendmessage_yh_6():
                              appname='foodmap_user',
                              msgtype='notice',
                              target='device',
-                             ext='{"goto":"19","id":"'+request.form['order_id']+'"}',
+                             ext='',
                              ispush=True)
                 result=tool.return_json(0,"success",True,item)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
