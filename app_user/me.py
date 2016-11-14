@@ -304,7 +304,7 @@ def concern_restaurant():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
 
-            try:
+            # try:
                 pass
                 data = {}
                 first = {}
@@ -366,15 +366,15 @@ def concern_restaurant():
                 data['list'] = list
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
-            except Exception,e:
-                print e
-                result=tool.return_json(0,"field",True,str(e))
-                return json_util.dumps(result,ensure_ascii=False,indent=2)
-        else:
-            result=tool.return_json(0,"field",False,None)
-            return json_util.dumps(result,ensure_ascii=False,indent=2)
-    else:
-        return abort(403)
+    #         except Exception,e:
+    #             print e
+    #             result=tool.return_json(0,"field",True,str(e))
+    #             return json_util.dumps(result,ensure_ascii=False,indent=2)
+    #     else:
+    #         result=tool.return_json(0,"field",False,None)
+    #         return json_util.dumps(result,ensure_ascii=False,indent=2)
+    # else:
+    #     return abort(403)
 mycoupons = swagger("5-5 我的优惠.jpg","我的优惠列表")
 mycoupons_json = {
     "auto": mycoupons.String(description='验证是否成功'),

@@ -689,7 +689,7 @@ def updateorder():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
 
-            try:
+            # try:
                 pdict = {
                     'username':request.form["username"],
                     'phone':request.form["phone"],
@@ -712,7 +712,7 @@ def updateorder():
                              mto=user_id,
                              title='您的餐位预订已修改',
                              info='快去看看吧',
-                             goto='18',
+                             goto='19',
                              channel='商家拒单',
                              type='1',
                              totype='1',
@@ -727,10 +727,10 @@ def updateorder():
                 }
                 result=tool.return_json(0,"success",True,json)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
-            except Exception,e:
-                print e
-                result=tool.return_json(0,"field",False,None)
-                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            # except Exception,e:
+            #     print e
+            #     result=tool.return_json(0,"field",False,None)
+            #     return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
