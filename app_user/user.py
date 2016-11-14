@@ -214,7 +214,7 @@ def admin_login():
                         "lastlogin" :{
                             "ident": request.form['ident'],
                             # "type": request.form.get('phonetype', ''),
-                            "type":request.form['phonetype'] if "phonetype" in request.form else "",
+                            "type":request.form.get('phonetype',''),
                             "time": datetime.datetime.now()
                         }
                     }
