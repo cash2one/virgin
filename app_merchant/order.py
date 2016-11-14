@@ -342,12 +342,11 @@ def orderinfos():
                             json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M:%S')
                         elif key == 'room_id':
                             item = mongo.restaurant.find({"_id":ObjectId(i['restaurant_id'])},{"rooms":1})
+                            json['rname'] = ''
                             for t in item:
                                 for r in t['rooms']:
                                     if r['room_id'] == i['room_id']:
                                         json['rname'] = r['room_name']
-                                    else:
-                                        json['rname'] = ''
                         elif key == 'webuser_id':
                             json['webuser_id'] = str(i[key])
                         elif key == 'total':
@@ -700,6 +699,28 @@ def updateorder():
                     'preset_time':datetime.datetime.strptime(request.form["preset_time"], "%Y-%m-%d %H:%M:%S")
                 }
                 mongo.order.update_one({'_id':ObjectId(request.form['id'])},{"$set":tools.orderformate(pdict, table)})
+#mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
+# appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
+                order = mongo.order.find({"_id":ObjectId(request.form['id'])})
+                r_id = ''
+                user_id = ''
+                for o in order:
+                    r_id = o['restaurant_id']
+                    user_id = o['webuser_id']
+                if user_id !='':
+                    item = tool.tuisong(mfrom=r_id,
+                             mto=user_id,
+                             title='您的餐位预订已修改',
+                             info='快去看看吧',
+                             goto='18',
+                             channel='商家拒单',
+                             type='1',
+                             totype='1',
+                             appname='foodmap_user',
+                             msgtype='notice',
+                             target='device',
+                             ext='{"goto":"19","id":"'+request.form['id']+'"}',
+                             ispush=True)
                 json = {
                         "status": 1,
                         "msg":""
@@ -723,6 +744,32 @@ def updatestatus():
         if auto.decodejwt(request.form['jwtstr']):
             try:
                 mongo.order.update_one({'_id':ObjectId(request.form['order_id'])},{"$set":{"status":int(request.form["status"])}})
+#mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
+# appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
+                if request.form['status'] == '7':
+                    rest = mongo.restaurant.find({"_id":ObjectId(request.form['restaurant_id'])})
+                    phone = ''
+                    r_name = ''
+                    for r in rest:
+                        phone = r['phone']
+                        r_name = r['name']
+                    order = mongo.order.find({"_id":ObjectId(request.form['order_id'])})
+                    addtime = ''
+                    for o in order:
+                        addtime = o['addtime']
+                    item = tool.tuisong(mfrom=request.form['restaurant_id'],
+                                 mto=request.form['webuserids'],
+                                 title='您的餐位预订已取消',
+                                 info='您原定在'+addtime+r_name+'用餐，现在您预定的餐位已经取消，如有疑问请拨打商家电话：'+phone,
+                                 goto='17',
+                                 channel='商家退单',
+                                 type='1',
+                                 totype='1',
+                                 appname='foodmap_user',
+                                 msgtype='notice',
+                                 target='device',
+                                 ext='{"goto":"11","id":"'+request.form['order_id']+'"}',
+                                 ispush=True)
                 json = {
                         "status": 1,
                         "msg":""
