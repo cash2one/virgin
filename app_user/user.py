@@ -10,7 +10,7 @@ import hashlib
 
 __author__ = 'hcy'
 
-user_api = Blueprint("user_api", __name__, template_folder='templates')
+user_api = Blueprint("user_api", __name__, template_folder='templates',url_prefix='')
 # mongo = conn.mongo_conn_user()
 mongo = MongoAPI(conn.mongo_conn_user().user_web)
 
@@ -182,7 +182,7 @@ def admin_login():
                        'ex': '#foodmap.mobile',
                        'tpl': 'SMS_8161119',
                        'code': request.form['code'] if 'code' in request.form else '',
-                       'phonetype':request.form['phonetype']})
+                       'phonetype':request.form['phonetype'] if "phonetype" in request.form else ""})
         if request.form['method'] == 'send_sms':
             if req.is_admin:
                 try:
