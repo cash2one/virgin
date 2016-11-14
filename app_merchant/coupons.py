@@ -88,7 +88,7 @@ def findcoupons():
                             elif key == 'restaurant_id':
                                 json['restaurant_id'] = str(i[key])
                             elif key == 'button':
-                                json['button'] = i[key]
+                                json['button'] = str(i[key])
                             elif key == 'rule':
                                 if i[key] == '0':
                                     json['rule'] = i[key]

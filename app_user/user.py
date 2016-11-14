@@ -181,7 +181,8 @@ def admin_login():
                        'ident': request.form['ident'],
                        'ex': '#foodmap.mobile',
                        'tpl': 'SMS_8161119',
-                       'code': request.form['code'] if 'code' in request.form else ''})
+                       'code': request.form['code'] if 'code' in request.form else '',
+                       'phonetype':request.form['phonetype']})
         if request.form['method'] == 'send_sms':
             if req.is_admin:
                 try:
@@ -199,7 +200,7 @@ def admin_login():
                     "_id":str(req.user_center_id),
                     "fix_data":{
                         "lastlogin" :{
-                            "ident": "",
+                            "ident": request.form['ident'],
                             # "type": request.form.get('phonetype', ''),
                             "type":request.form['phonetype'] if "phonetype" in request.form else "",
                             "time": datetime.datetime.now()

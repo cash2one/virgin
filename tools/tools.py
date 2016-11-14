@@ -513,6 +513,7 @@ def tuisong(mfrom='', mto='', title='', info='', goto='', channel='', type='', t
                 iosmsg = {"appname": appname, "type": msgtype, "Summary": title, "Target": "device",
                           "TargetValue": identios, "ext": ext}
                 iosreq = requests.post(baseurl + '/push.ios', data=iosmsg).json()
+                print iosreq
                 issave = iosreq['success']
                 if iosreq['success']:
                     print 'IOS通知个推推送成功！'

@@ -186,7 +186,7 @@ def register():
                             if item['success']:
                                 from tools.tools import qrcode as qr
                                 webuser_add = conn.mongo_conn().webuser.insert({"automembers_id": item['_id'],
-                                                                                "nickname": '',
+                                                                                "nickname": phone,
                                                                                 "gender": 1,
                                                                                 "birthday": "",
                                                                                 "headimage": "",

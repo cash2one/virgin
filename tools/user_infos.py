@@ -39,7 +39,9 @@ class GetUser:
             if self.sms_validate():
                 self.validity = True
                 self.user_center_conn.update_one({"_id": ObjectId(self.user_center_id)},
-                                                 {"$set": {'lastlogin': {"ident": self.params['ident'],
+                                                 {"$set": {'lastlogin': {
+                                                                         "type":self.params['phonetype'],
+                                                                         "ident": self.params['ident'],
                                                                          "time": datetime.datetime.now()}}})
                 self.shop_info = self.restaurant_conn.find({"user": {"$in": [ObjectId(self.user_center_id)]}})
                 if self.shop_info:
@@ -54,7 +56,8 @@ class GetUser:
                 if self.params['password'] == self.center_info['registeruser']['password']:
                     self.validity = True
                     self.user_center_conn.update_one({"_id": ObjectId(self.user_center_id)},
-                                                     {"$set": {'lastlogin': {"ident": self.params['ident'],
+                                                     {"$set": {'lastlogin': {"type":self.params['phonetype'],
+                                                                             "ident": self.params['ident'],
                                                                              "time": datetime.datetime.now()}}})
         pass
 

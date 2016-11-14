@@ -109,7 +109,7 @@ def sendmessage_yh_6():
                     addtime = o['add_time']
                 item = tool.tuisong(mfrom=request.form['restaurant_id'],
                              mto=request.form['webuserids'],
-                             title='很抱歉，'+r_name+'无法为您安排就餐',
+                             title=r_name,
                              info='您在'+addtime.strftime('%Y年%m月%d日 %H:%M:%S')+'向'+r_name+
                                   '发出了就餐需求，十分抱歉，该饭店预订已满，无法为您安排就餐，如有疑问请拨打商家电话：'+phone,
                              goto='19',
