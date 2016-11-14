@@ -66,9 +66,13 @@ def coupons():
                 end = (pagenum*int(pageindex))
                 type = request.form['type']
                 if type == '1':
-                    first = {}
+                    rest = mongo.coupons.find({"$or":[{"button":"0"}, {"button":0}],"showtime_start": {"$lt": datetime.datetime.now()},"showtime_end": {"$gte": datetime.datetime.now()}})
+                    r_list = []
+                    for i in rest:
+                        r_list.append(ObjectId(i['restaurant_id']))
+                    first = {"_id":{"$in":r_list}}
                 else:
-                    rest = mongo.coupons.find({"$or":[{"button":"0"}, {"button":0}],"kind":"3"})
+                    rest = mongo.coupons.find({"$or":[{"button":"0"}, {"button":0}],"kind":"3","showtime_start": {"$lt": datetime.datetime.now()},"showtime_end": {"$gte": datetime.datetime.now()}})
                     r_list = []
                     for i in rest:
                         r_list.append(ObjectId(i['restaurant_id']))
