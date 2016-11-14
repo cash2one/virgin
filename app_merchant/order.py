@@ -707,7 +707,8 @@ def updateorder():
                 for o in order:
                     r_id = o['restaurant_id']
                     user_id = o['webuser_id']
-                if user_id !='':
+                flag = request.form.get('flag','')
+                if user_id !='' and flag == '1':
                     item = tool.tuisong(mfrom=str(r_id),
                              mto=str(user_id),
                              title='您的餐位预订已修改',
