@@ -204,6 +204,13 @@ def getcoupon():
                 restaurant_id = request.form['restaurant_id']
                 webuser_id = request.form['webuser_id']
                 coupons_id = request.form['coupons_id']
+                if getconcern(restaurant_id,webuser_id) == '0':
+                    json = {
+                        "status": 2,
+                        "msg":"请先关注"
+                    }
+                    result=tool.return_json(0,"success",True,json)
+                    return json_util.dumps(result,ensure_ascii=False,indent=2)
                 mycoupons = mongo.mycoupons.find({"coupons_id":ObjectId(coupons_id)})
                 m_flag = True
                 for m in mycoupons:

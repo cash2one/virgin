@@ -61,20 +61,21 @@ class GetUser:
                                                                              "time": datetime.datetime.now()}}})
         pass
 
-    def send_sms(self):
-        import random
-        if self.is_admin:
-            data = {'sign': '美食地图',
-                    'tpl': 'SMS_8161119',
-                    'param': json.dumps({"code": str(random.randint(1000000, 9999999))[1:]}),
-                    'tel': self.params['phone'],
-                    'ex': self.params['ex']
-                    }
-            req = requests.post(self.SMSnetgate + '/sms.send', data)
-            return req.json()
-        else:
-            return {'success': False}
-        pass
+    def send_sms(self, tpl=None):
+            import random
+            if self.is_admin:
+                data = {'sign': '美食地图',
+                        'tpl': 'SMS_8161119' if tpl is None else tpl,
+                        'param': json.dumps({"code": str(random.randint(1000000, 9999999))[1:]}),
+                        'tel': self.params['phone'],
+                        'ex': self.params['ex']
+                        }
+                req = requests.post(self.SMSnetgate + '/sms.send', data)
+                return req.json()
+            else:
+                return {'success': False}
+            pass
+
 
     def sms_validate(self):
         data = {'tel': self.params['phone'],

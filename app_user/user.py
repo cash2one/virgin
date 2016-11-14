@@ -172,7 +172,23 @@ def password_reset():
         pass
     pass
 
-
+def make_sure_sms_send(phone, ident):
+    tpl_list = ['8161119', '7945138', '16040003', '16035004']
+    result = None
+    from tools.user_infos import GetUser
+    for tpl in tpl_list:
+        req = GetUser({'phone': phone,
+                       'ident': ident,
+                       'ex': '#foodmap.mobile',
+                       'tpl': 'SMS_'+tpl,
+                       'code': ''})
+        result = req.send_sms('SMS_'+tpl)['callback']
+        if 'result' in result:
+            result['success'] = True
+            return result
+    result['success'] = False
+    return result
+    pass
 @user_api.route('/admin/v1/login/', methods=['POST'])
 def admin_login():
     if request.method == 'POST':
@@ -182,15 +198,11 @@ def admin_login():
                        'ex': '#foodmap.mobile',
                        'tpl': 'SMS_8161119',
                        'code': request.form['code'] if 'code' in request.form else '',
-                       'phonetype':request.form['phonetype'] if "phonetype" in request.form else ""})
+                       'phonetype':request.form.get('phonetype','')})
         if request.form['method'] == 'send_sms':
             if req.is_admin:
-                try:
-                    req.send_sms()
-                    return json.dumps({'success': True})
-                except Exception, e:
-                    print e
-                    return json.dumps({'success': False})
+                send = make_sure_sms_send(request.form['phone'], request.form['ident'])
+                return json.dumps(send)
             else:
                 return json.dumps({'success': False, 'info': 'Not admin'})
         elif request.form['method'] == 'shop_id':
