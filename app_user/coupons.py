@@ -442,7 +442,7 @@ def special_restaurant():
                 pagenum = 10
                 star = (int(pageindex)-1)*pagenum
                 end = (pagenum*int(pageindex))
-                shop_recommend = mongo.shop_recommend.find({"type":2})
+                shop_recommend = mongo.shop_recommend.find({"type":2}).sort("addtime", pymongo.DESCENDING)
 
                 rid_list = []
                 for s in shop_recommend:
