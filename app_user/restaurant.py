@@ -816,7 +816,10 @@ def restaurant_info():
                         data['weixin'] = '1' if '48' == pay_type['id'] else '0'
                         data['zhifubao'] = '1' if '49' == pay_type['id'] else '0'
                     room_name = []
-                    rooms = {}
+                    rooms =  {
+                              "room_name": "",
+                              "room_type": ""
+                            }
                     for room in i['rooms']:
                         if room['room_name'] != '大厅':
                             room_name.append(room['room_name'])
