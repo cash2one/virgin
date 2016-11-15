@@ -820,10 +820,10 @@ def restaurant_info():
                     for room in i['rooms']:
                         if room['room_name'] != '大厅':
                             room_name.append(room['room_name'])
+                        rooms['room_type'] = ''
                         if room['room_type'] !=[]:
                             rooms['room_type'] = room['room_type'][0]['name']
-                        else:
-                            rooms['room_type'] = ''
+
                     rooms['room_name'] = ' '.join(room_name)
                     data['rooms'] = rooms
                     data['tuijiancai'] =''
