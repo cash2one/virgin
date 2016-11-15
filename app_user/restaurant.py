@@ -97,8 +97,8 @@ def index():
                 #开团请客 开始
                 kaituan = GroupInvite().all_item
                 list = []
-                json = {}
                 for k in kaituan:
+                    json = {}
                     json['group_id'] = k['_id']
                     json['detail'] = k['detail']
                     json['restaurant_name'] = k['restaurant']['name']

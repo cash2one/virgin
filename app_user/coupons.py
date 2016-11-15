@@ -523,7 +523,8 @@ def special_restaurant_info():
                     data['restaurant_sq'] = i['restaurant_sq']
                     data['summary'] = i['summary']
                     dishes_type = ''
-                    data['url'] = 'http://125.211.222.237:11087/fm/user/v1/coupons/special_restaurant_html/'+request.form['restaurant_id']+'/'
+                    data['url'] = 'https://www.msdt.cn/fm/user/v1/coupons/special_restaurant_html/'+request.form['restaurant_id']+'/'
+                    # data['url'] = 'http://125.211.222.237:11087/fm/user/v1/coupons/special_restaurant_html/'+request.form['restaurant_id']+'/'
                     for dish in i['dishes_type']:
                         dishes_type+=dish['name']+' '
                     data['dishes_type'] = dishes_type
