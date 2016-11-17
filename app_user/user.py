@@ -10,7 +10,8 @@ import hashlib
 
 __author__ = 'hcy'
 
-user_api = Blueprint("user_api", __name__, template_folder='templates',url_prefix='/fm/user')
+user_api = Blueprint("user_api", __name__, template_folder='templates',url_prefix='')
+# user_api = Blueprint("user_api", __name__, template_folder='templates',url_prefix='/fm/merchant')
 # mongo = conn.mongo_conn_user()
 mongo = MongoAPI(conn.mongo_conn_user().user_web)
 
