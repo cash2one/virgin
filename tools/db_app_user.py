@@ -12,6 +12,12 @@ import datetime
 mongo=conn.mongo_conn()
 #根据类别和饭店id获取一条店粉优惠
 def getcoupons(kind, restaurant_id, flag='1'):
+    if kind == '1':
+        title = '关注享：'
+    elif kind == '2':
+        title = '新粉享：'
+    else:
+        title = '抢优惠：'
     item = mongo.coupons.find({"$or":[{"button":"0"}, {"button":0}],'restaurant_id':ObjectId(restaurant_id),'kind':kind,'showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()}}).sort("showtime_start", pymongo.DESCENDING)[0:1]
     json = {
         'id':'',
@@ -28,25 +34,26 @@ def getcoupons(kind, restaurant_id, flag='1'):
             json['num'] = ''
         if i['type'] == '1':
             if i['rule'] == '0':
-                json['content'] = '下单即减'+str(i['cross-claim'])+'元'
+                json['content'] = title+'下单即减'+str(i['cross-claim'])+'元'
             elif i['rule'] == '1':
-                json['content'] = '全品满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
+                json['content'] = title+'全品满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
             elif i['rule'] == '2':
-                json['content'] = '菜品满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
+                json['content'] = title+'菜品满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
             elif i['rule'] == '3':
-                json['content'] = '酒类满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
+                json['content'] = title+'酒类满'+str(i['money'])+'元'+'减'+str(i['cross-claim'])+'元'
             else:
                 pass
         elif i['type'] == '2':
             if i['rule'] == '0':
-                json['content'] = '下单即打'+str(i['cross-claim'])+'折'
+                json['content'] = title+'下单即打'+str(i['cross-claim'])+'折'
             elif i['rule'] == '1':
-                json['content'] = '全品满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
+                json['content'] = title+'全品满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
             elif i['rule'] == '2':
-                json['content'] = '菜品满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
+                json['content'] = title+'菜品满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
             elif i['rule'] == '3':
-                json['content'] = '酒类满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
+                json['content'] = title+'酒类满'+str(i['money'])+'元'+'打'+str(i['cross-claim'])+'折'
             else:
+                pass
                 pass
         else:
             json['content'] = i['content']
