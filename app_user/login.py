@@ -453,7 +453,7 @@ def resetpassword():
 checkphonetype = swagger("其他","改用户中心lastlogin最后登录type 用来修改BUG数据")
 checkphonetype.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 checkphonetype.add_parameter(name='phonetype',parametertype='formData',type='string',required= True,description='设备类型：安卓传0，IOS传1',default='0')
-checkphonetype.add_parameter(name='user_id',parametertype='formData',type='string',required= True,description='用户中心id',default='')
+checkphonetype.add_parameter(name='user_id',parametertype='formData',type='string',required= True,description='用户id',default='')
 
 checkphonetype_json = {
     "auto": checkphonetype.String(description='验证是否成功'),
@@ -470,12 +470,16 @@ def checkphonetype():
         if auto.decodejwt(request.form['jwtstr']):
             try:
                 user_id = request.form['user_id']
+                user = conn.mongo_conn().webuser.find({"_id":ObjectId(user_id)})
+                u_id = ''
+                for u in user:
+                    u_id = u['automembers_id']
                 phonetype = request.form['phonetype']
                 msg = ""
-                item = mongouser.user_web.find({"_id":ObjectId(user_id)})
+                item = mongouser.user_web.find({"_id":ObjectId(u_id)})
                 for i in item:
                     if "type" not in i['lastlogin'].keys():
-                        mongouser.user_web.update_one({"_id":ObjectId(user_id)},{"$set":{"lastlogin.type":phonetype}})
+                        mongouser.user_web.update_one({"_id":ObjectId(u_id)},{"$set":{"lastlogin.type":phonetype}})
                         msg = "修改成功"
                     else:
                         msg = "无需修改"

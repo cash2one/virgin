@@ -1123,7 +1123,7 @@ def dish_menu_count():
                         "username" : "",
                         "status" : 8,
                         "type" : 1,
-                        "source" : 0,
+                        "source" : 2,
                         "is_room" : True,
                         "restaurant_id" : ObjectId(request.form['restaurant_id']),
                         "preset_dishs" : [],
@@ -1497,7 +1497,7 @@ def getroom():
                                  appname='foodmap_shop',
                                  msgtype='notice',
                                  target='device',
-                                 ext='{"goto":"1","id":"'+str(orderid)+'"}',
+                                 ext='{"goto":"2","id":"'+str(orderid)+'"}',
                                  ispush=True)
                 data = {
                     "status": 1,
