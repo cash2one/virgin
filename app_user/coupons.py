@@ -516,7 +516,7 @@ def special_restaurant_info():
                 else:
                     data['concern'] = '0'
                 for i in item:
-
+                    data['restaurant_id'] = request.form['restaurant_id']
                     data['headimage'] = i['headimage']
                     data['restaurant_name'] = i['restaurant_name']
                     data['district'] = getxingzhengqu(i['business_dist'][0]['id'])
