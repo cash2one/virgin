@@ -1250,7 +1250,7 @@ def dish_menu_count():
                                         "dis_type":c['kind'],
                                         "content":content,
                                         "coupons_id":str(c['_id']),
-                                        "dis_amount":float("%.2f" % m[0])
+                                        "dis_amount":float("%.2f" % m[3])
                                     }
                                 )
                     mongo.order.update_one(pdict,{"$set": {'deposit':float("%.2f" % deposit),'dis_message':dis_message,'total': float("%.2f" % total)}})
@@ -1375,8 +1375,8 @@ def dish_menu_list():
                             pass
                     json['youhui'] = y_list
                     json['yingfu'] =str(i['total'] - dis_amounts)
-                    json['yajin'] = '100'
-                    json['dianfu'] = '200'
+                    json['yajin'] = str(float(i['total'] - dis_amounts) * 0.1)
+                    json['dianfu'] = str(float(i['total'] - dis_amounts) * 0.9)
                     json['preset_dishs'] = i['preset_dishs']
                     json['preset_wine'] = i['preset_wine']
                     json['tishi'] = mycoupons[0]
@@ -1567,7 +1567,7 @@ settlement_json = {
 def settlement():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
-            try:
+            # try:
                 item = mongo.order.find({'_id':ObjectId(request.form['order_id'])})
                 json = {}
                 for i in item:
@@ -1589,16 +1589,41 @@ def settlement():
                     json['preset_dishs'] = i['preset_dishs']
                     json['preset_wine'] = i['preset_wine']
                     json['total'] = i['total']
-                    json['yingfu'] = i['total']
-                    json['youhui'] = i['dis_message']
                     json['deposit'] = i['deposit']
-                    json['dianfu'] = i['total'] - i['deposit']
+                    y_list = []
+                    dis_amounts = 0.0
+                    for dis in i['dis_message']:
+                        dis_amounts+=dis['dis_amount']
+                        if dis['dis_type'] == '1':
+                            y_list.append({
+                                'msg':'<font size=\"3\">'+'关注即享:'+'<font size=\"3\" color=\"red\">'+str(dis['dis_amount'])+'元</font></font>',
+                                'first':'关注即享:',
+                                'second':str(dis['dis_amount'])
+                            })
+                        elif dis['dis_type'] == '2':
+                            y_list.append({
+                                'msg':'<font size=\"3\">'+'新粉优惠:'+'<font size=\"3\" color=\"red\">'+str(dis['dis_amount'])+'元</font></font>',
+                                'first':'新粉优惠:',
+                                'second':str(dis['dis_amount'])
+                            })
+                        elif dis['dis_type'] == '3':
+                            y_list.append({
+                                'msg':'<font size=\"3\">'+'店粉抢优惠:'+'<font size=\"3\" color=\"red\">'+str(dis['dis_amount'])+'元</font></font>',
+                                'first':'店粉抢优惠:',
+                                'second':str(dis['dis_amount'])
+                            })
+                        else:
+                            pass
+                    json['youhui'] = y_list
+                    json['yingfu'] =str(i['total'] - dis_amounts)
+                    json['yajin'] = str(float(i['total'] - dis_amounts) * 0.1)
+                    json['dianfu'] = str(float(i['total'] - dis_amounts) * 0.9)
                 result=tool.return_json(0,"success",True,json)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
-            except Exception,e:
-                print e
-                result=tool.return_json(0,"field",True,str(e))
-                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            # except Exception,e:
+            #     print e
+            #     result=tool.return_json(0,"field",True,str(e))
+            #     return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
@@ -1745,8 +1770,8 @@ def dish_menu_one():
                             pass
                     json['youhui'] = y_list
                     json['yingfu'] =str(i['total'] - dis_amounts)
-                    json['yajin'] = '100'
-                    json['dianfu'] = '200'
+                    json['yajin'] = str(float(i['total'] - dis_amounts) * 0.1)
+                    json['dianfu'] = str(float(i['total'] - dis_amounts) * 0.9)
                     json['preset_dishs'] = i['preset_dishs']
                     json['preset_wine'] = i['preset_wine']
                     json['tishi'] = mycoupons[0]
