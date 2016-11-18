@@ -215,7 +215,30 @@ def register():
                         #     "_id":user_web[0]["_id"]["$oid"],
                         #     "appid":{"1":True,"2":True}
                         # })
-                        mongo.conn.update_one({"_id":ObjectId(user_web[0]["_id"]["$oid"])},{"$set":{"appid":{"1":True,"2":True}}})
+                        userweb = mongo.conn.update_one({"_id":ObjectId(user_web[0]["_id"]["$oid"])},{"$set":{"appid":{"1":True,"2":True},                        "registeruser": {
+                            "nick": "",
+                            "password": hashlib.md5(password).hexdigest().upper(),
+                            "headimage": "",
+                            "name": ""
+                        },}})
+                        from tools.tools import qrcode as qr
+                        webuser_add = conn.mongo_conn().webuser.insert({"automembers_id": user_web[0]["_id"]["$oid"],
+                                                                        "nickname": phone,
+                                                                        "gender": 1,
+                                                                        "birthday": "",
+                                                                        "headimage": "",
+                                                                        "qrcode_img":"",
+                                                                        "phone": phone})
+                        webuser_add = json_util.loads(json_util.dumps(webuser_add))
+                        print webuser_add
+                        user_addqr = conn.mongo_conn().webuser.update({'_id': ObjectId(webuser_add)},
+                                                                      {'$set': {'qrcode_img': qr(json.dumps({
+                                                                          'fuc': 'webuser',
+                                                                          'info': {
+                                                                              'user_id': str(webuser_add)
+                                                                          }
+                                                                      }))}})
+                        user_addqr = json_util.loads(json_util.dumps(user_addqr))
                         result=tool.return_json(0,"success",True,{'ispass':True,'_id': str(user_web[0]["_id"]["$oid"]),'info': '注册成功'})
                         return json_util.dumps(result,ensure_ascii=False,indent=2)
                     else:

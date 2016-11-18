@@ -78,6 +78,7 @@ def register():
                                                             "gender": 1,
                                                             "birthday": "",
                                                             "headimage": "",
+                                                            "qrcode_img":"",
                                                             "phone": request.form["phone"]})
             webuser_add = json_util.loads(json_util.dumps(webuser_add))
             print webuser_add
