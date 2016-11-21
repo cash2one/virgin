@@ -24,6 +24,7 @@ logging.basicConfig(level=logging.INFO,
 
 # 检查是否发送过此推送
 def checkmsg(data_id='', goto=''):
+    print '检查'
     pass
     item = mongo.message.find({"data_id": data_id, "goto": goto})
     flag = True
@@ -448,18 +449,18 @@ def my_listener(event):
         print '任务照常运行...'
 
 
-# scheduler = BlockingScheduler()
-# # scheduler.add_job(func=date_test, args=('一定性任务,会出错',), trigger='interval',seconds=3, id='date_task')
-# # scheduler.add_job(func=aps_test, args=('循环任务',1), trigger='interval', seconds=3, id='interval_task')
-# scheduler.add_job(func=send56,trigger='interval', seconds=3600,id='interval_task1')
-# scheduler.add_job(func=send7,trigger='interval', seconds=86400,id='interval_task2')
-# scheduler.add_job(func=send10,trigger='interval', seconds=60,id='interval_task3')
-# scheduler.add_job(func=send14,trigger='interval', seconds=86400,id='interval_task4')
-# scheduler.add_job(func=send15,trigger='interval', seconds=86400,id='interval_task5')
-# scheduler.add_job(func=send16,trigger='interval', seconds=60,id='interval_task6')
-# scheduler.add_listener(my_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
-# scheduler._logger = logging
+scheduler = BlockingScheduler()
+# scheduler.add_job(func=date_test, args=('一定性任务,会出错',), trigger='interval',seconds=3, id='date_task')
+# scheduler.add_job(func=aps_test, args=('循环任务',1), trigger='interval', seconds=3, id='interval_task')
+scheduler.add_job(func=send56,trigger='interval', seconds=3600,id='interval_task1')
+scheduler.add_job(func=send7,trigger='interval', seconds=86400,id='interval_task2')
+scheduler.add_job(func=send10,trigger='interval', seconds=5,id='interval_task3')
+scheduler.add_job(func=send14,trigger='interval', seconds=86400,id='interval_task4')
+scheduler.add_job(func=send15,trigger='interval', seconds=86400,id='interval_task5')
+scheduler.add_job(func=send16,trigger='interval', seconds=60,id='interval_task6')
+scheduler.add_listener(my_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
+scheduler._logger = logging
 
-# scheduler.start()
-if __name__ == '__main__':
-    send56()
+scheduler.start()
+# if __name__ == '__main__':
+#     send56()

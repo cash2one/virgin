@@ -785,3 +785,39 @@ def banben():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+#关于我们
+about_us = swagger("关于我们","关于我们")
+about_us.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+about_us_json = {
+    "auto": about_us.String(description='验证是否成功'),
+    "message": about_us.String(description='SUCCESS/FIELD',default="SUCCESS"),
+    "code": about_us.Integer(description='',default=0),
+    "data": {
+        about_us.String(description='url',default="SUCCESS")
+        }
+}
+
+@me_user_api.route(settings.app_user_url+'/fm/user/v1/me/about_us/',methods=['POST'])
+@swag_from(about_us.mylpath(schemaid='about_us',result=about_us_json))
+def about_us():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+
+            try:
+                json={
+                    "url":"/fm/user/v1/me/abouthtml/"
+                }
+                result=tool.return_json(0,"success",True,json)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+@me_user_api.route('/fm/user/v1/me/abouthtml/',methods=["GET"])
+def abouthtml():
+    return render_template("/test/about.html")
