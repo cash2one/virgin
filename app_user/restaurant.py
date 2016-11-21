@@ -1445,7 +1445,7 @@ def getroom():
                 for i in item:
                     flag = False
                 if flag:
-                     json['order_id'] = "MSDT%s%03d" % (int(time.time() * 1000), random.randint(1, 999)),
+                     json['order_id'] = "MSDT%s%03d" % (int(time.time() * 1000), random.randint(1, 999))
                      json['type'] = 0
                      json['source'] = 2
                      json['restaurant_id'] = ObjectId(request.form['restaurant_id'])
