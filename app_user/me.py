@@ -639,9 +639,9 @@ def order_info():
                         else:
                             pass
                     data['youhui'] = y_list
-                    data['yingfu'] =str(i['total'] - dis_amounts)
-                    data['yajin'] = '100'
-                    data['dianfu'] = '200'
+                    data['yingfu'] =str(round(i['total'] - dis_amounts,2))
+                    data['yajin'] = str(round(float(i['total'] - dis_amounts) * 0.1,2))
+                    data['dianfu'] = str(round(float(i['total'] - dis_amounts) * 0.9,2))
                     restaurant = mongo.restaurant.find({"_id":ObjectId(i['restaurant_id'])})
                     for r in restaurant:
                         data['rest_name'] = r['name']

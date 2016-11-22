@@ -1506,9 +1506,9 @@ def dish_menu_list():
                         else:
                             pass
                     json['youhui'] = y_list
-                    json['yingfu'] = str(i['total'] - dis_amounts)
-                    json['yajin'] = str(float(i['total'] - dis_amounts) * 0.1)
-                    json['dianfu'] = str(float(i['total'] - dis_amounts) * 0.9)
+                    json['yingfu'] =str(round(i['total'] - dis_amounts,2))
+                    json['yajin'] = str(round(float(i['total'] - dis_amounts) * 0.1,2))
+                    json['dianfu'] = str(round(float(i['total'] - dis_amounts) * 0.9,2))
                     json['preset_dishs'] = i['preset_dishs']
                     json['preset_wine'] = i['preset_wine']
                     json['tishi'] = mycoupons[0]
@@ -1773,9 +1773,9 @@ def settlement():
                     else:
                         pass
                 json['youhui'] = y_list
-                json['yingfu'] = str(i['total'] - dis_amounts)
-                json['yajin'] = str(float(i['total'] - dis_amounts) * 0.1)
-                json['dianfu'] = str(float(i['total'] - dis_amounts) * 0.9)
+                json['yingfu'] =str(round(i['total'] - dis_amounts,2))
+                json['yajin'] = str(round(float(i['total'] - dis_amounts) * 0.1,2))
+                json['dianfu'] = str(round(float(i['total'] - dis_amounts) * 0.9,2))
             result = tool.return_json(0, "success", True, json)
             return json_util.dumps(result, ensure_ascii=False, indent=2)
             # except Exception,e:
@@ -1946,9 +1946,9 @@ def dish_menu_one():
                         else:
                             pass
                     json['youhui'] = y_list
-                    json['yingfu'] = str(i['total'] - dis_amounts)
-                    json['yajin'] = str(float(i['total'] - dis_amounts) * 0.1)
-                    json['dianfu'] = str(float(i['total'] - dis_amounts) * 0.9)
+                    json['yingfu'] =str(round(i['total'] - dis_amounts,2))
+                    json['yajin'] = str(round(float(i['total'] - dis_amounts) * 0.1,2))
+                    json['dianfu'] = str(round(float(i['total'] - dis_amounts) * 0.9,2))
                     json['preset_dishs'] = i['preset_dishs']
                     json['preset_wine'] = i['preset_wine']
                     json['tishi'] = mycoupons[0]
