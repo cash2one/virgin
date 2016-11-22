@@ -525,7 +525,7 @@ def special_restaurant_info():
                     dishes_type = ''
                     # data['url'] = 'https://www.msdt.cn/fm/user/v1/coupons/special_restaurant_html/'+request.form['restaurant_id']+'/'
                     # data['url'] = 'http://125.211.222.237:11087/fm/user/v1/coupons/special_restaurant_html/'+request.form['restaurant_id']+'/'
-                    data['url'] = 'http://125.211.222.237:11041/m/tsmsxx/'+request.form['restaurant_id']+'/'
+                    data['url'] = 'http://125.211.222.237:11041/m/tsmsxx/'+request.form['restaurant_id']
 
                     for dish in i['dishes_type']:
                         dishes_type+=dish['name']+' '
