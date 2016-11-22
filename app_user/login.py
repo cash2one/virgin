@@ -110,7 +110,7 @@ def send_sms2():
                                 'ex': '#foodmap.mobile'
                                 }
                         req = requests.post(SMSnetgate + '/sms.send', data)
-                        result=tool.return_json(0,"success",True,{"ispass":req.json()['success']})
+                        result=tool.return_json(0,"success",True,{"ispass":req.json()['success'],"message":"成功"})
 
                 else:
                     result=tool.return_json(0,"field",True,{"ispass":False,"message":"请使用正确的type"})

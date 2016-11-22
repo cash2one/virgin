@@ -675,21 +675,6 @@ if __name__ == '__main__':
     # print GroupInvite('205314').mark_used()
     # print json_util.dumps(GroupInvite().all_item,ensure_ascii=False,indent=2)
     # print json_util.dumps(GroupInvite('588692').the_invite, ensure_ascii=False, indent=2)
-    # item = GroupInvite().all_item
-    # print json_util.dumps(item, ensure_ascii=False, indent=2)
-    # pass
-    data = GroupInvite('735178').invite_order
-    print data['friends']
-    uid_list = []
-    for user in data['friends']:
-        uid_list.append(ObjectId(user))
-    item = mongo_conn().webuser.find({"_id":{"$in":uid_list}})
-    headimage_list = []
-    for i in item:
-        json ={
-            'id':str(i['_id']),
-            'nickname':i['nickname'],
-            'headimage':i['headimage']
-        }
-        headimage_list.append(json)
-    print headimage_list
+    item = GroupInvite().all_item
+    print json_util.dumps(item, ensure_ascii=False, indent=2)
+    pass
