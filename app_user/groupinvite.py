@@ -2,6 +2,8 @@
 import datetime
 import time
 import json
+
+import pymongo
 from flask import Blueprint, render_template, request, abort
 import connect.settings as settings
 from connect import conn
@@ -17,7 +19,8 @@ __author__ = 'dolacmeo'
 restaurant = MongoHelp('restaurant')
 db_info = MongoHelp('qingke')
 db_order = MongoHelp('order_groupinvite')
-mongo=conn.mongo_conn()
+mongo = conn.mongo_conn()
+
 
 # 'wait_friends', 'wait_pay', 'already_payment', 'already_used', 'time_out'
 
@@ -26,7 +29,7 @@ class GroupInvite:
     def __init__(self, mod='list'):
         self.mod = mod
         if mod == 'list':
-            self.all_item = self.__item_list()
+            self.all_item = self.__item_list('un')
         elif len(mod) == 6:
             self.code = mod
             self.invite_order = self._find_code_invite(self.code)
@@ -85,20 +88,60 @@ class GroupInvite:
                                         'end_time': {"$gte": datetime.datetime.fromtimestamp(time.time())}})
         return the_invite
 
-    def __item_list(self):
-
-        # 展示定义: 展示时间 》 结束时间前一天
-        now_list = db_info.find_sort({
-            'time': {"$lt": datetime.datetime.fromtimestamp(time.time() - 86400)},
-            'time2': {"$gte": datetime.datetime.fromtimestamp(time.time() + 86400)}
-        }, 'time')
-        if now_list:
-            for n in range(len(now_list)):
-                self._check_all_order_time(now_list[n]['_id'])
-                now_list[n] = self.__format_db_info(now_list[n])
-            return now_list
-        else:
-            return []
+    def __item_list(self, when_start='now'):
+        if when_start == 'now':
+            # 展示定义: 展示时间 》 结束时间前一天
+            now_list = db_info.find_sort({
+                'time': {"$lt": datetime.datetime.fromtimestamp(time.time() - 86400)},
+                'time2': {"$gte": datetime.datetime.fromtimestamp(time.time() + 86400)}
+                # 'time': {"$lt": datetime.datetime.fromtimestamp(time.time())},
+                # 'time2': {"$gte": datetime.datetime.fromtimestamp(time.time())}
+            }, 'time', pymongo.DESCENDING)
+            if now_list:
+                for n in range(len(now_list)):
+                    self._check_all_order_time(now_list[n]['_id'])
+                    now_list[n] = self.__format_db_info(now_list[n])
+                return now_list
+            else:
+                return []
+        elif when_start == 'yet':
+            now_list = db_info.find_sort({
+                'time': {"$gte": datetime.datetime.fromtimestamp(time.time())},
+                'time2': {"$gte": datetime.datetime.fromtimestamp(time.time() + 86400)}
+            }, 'time')
+            if now_list:
+                for n in range(len(now_list)):
+                    self._check_all_order_time(now_list[n]['_id'])
+                    now_list[n] = self.__format_db_info(now_list[n])
+                return now_list
+            else:
+                return []
+        elif when_start == 'un':
+            now_list = db_info.find_sort({
+                'time': {"$lt": datetime.datetime.fromtimestamp(time.time() - 86400)},
+                'time2': {"$gte": datetime.datetime.fromtimestamp(time.time() + 86400)}
+                # 'time': {"$lt": datetime.datetime.fromtimestamp(time.time())},
+                # 'time2': {"$gte": datetime.datetime.fromtimestamp(time.time())}
+            }, 'time', pymongo.DESCENDING)
+            if now_list:
+                for n in range(len(now_list)):
+                    self._check_all_order_time(now_list[n]['_id'])
+                    now_list[n] = self.__format_db_info(now_list[n])
+                now_list = now_list[0:2]
+            else:
+                now_list = []
+            yet_list = db_info.find_sort({
+                'time': {"$gte": datetime.datetime.fromtimestamp(time.time())},
+                'time2': {"$gte": datetime.datetime.fromtimestamp(time.time() + 86400)}
+            }, 'time')
+            if yet_list:
+                for n in range(len(yet_list)):
+                    self._check_all_order_time(yet_list[n]['_id'])
+                    yet_list[n] = self.__format_db_info(yet_list[n])
+                yet_list = yet_list[0:2]
+            else:
+                yet_list = []
+            return now_list+yet_list
 
     @staticmethod
     def _get_invite(_id):
@@ -190,7 +233,7 @@ class GroupInvite:
 
     def _check_all_order_time(self, invent_id):
         all_data = db_order.find({'group_id': invent_id, 'status':
-                                 {'$in': ['wait_friends', 'wait_pay', 'already_payment']}})
+            {'$in': ['wait_friends', 'wait_pay', 'already_payment']}})
         for n in all_data:
             self.mark_timeout(n)
 
@@ -203,19 +246,19 @@ class GroupInvite:
         if self.invite_order['status'] == 'timeout':
             return {'success': False, 'error': 'timeout! start_time: %s' % self.invite_order['start_time']}
         if self.invite_order['max_group'] - len(self.invite_order['friends']) >= 2:
-            #song
+            # song
             get_in = mongo.order_groupinvite.update_one({'group_id': self._id, 'invite_code': self.code},
-                                        {"$addToSet": {"friends": user_id}})
+                                                        {"$addToSet": {"friends": user_id}})
             if self.invite_order['max_group'] - len(self.invite_order['friends']) == 2:
                 db_order.fix_one({'group_id': self._id, 'invite_code': self.code},
-                                 {'status': 'wait_pay'})#'addtime':datetime.datetime.now()
-                #推送9
-#mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
-# appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
+                                 {'status': 'wait_pay'})  # 'addtime':datetime.datetime.now()
+                # 推送9
+                # mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
+                # appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
                 content = '快去看看吧！'
                 tool.tuisong(mfrom='',
                              mto=self.invite_order['master_id'],
-                             title='您的'+self.invite_order['restaurant_info']['name']+'开团请客活动该付款了',
+                             title='您的' + self.invite_order['restaurant_info']['name'] + '开团请客活动该付款了',
                              info=content,
                              goto='9',
                              channel='支付开团',
@@ -224,7 +267,7 @@ class GroupInvite:
                              appname='foodmap_user',
                              msgtype='notice',
                              target='device',
-                             ext='{"goto":"9","id":"'+self.invite_order['group_id']+'"}',
+                             ext='{"goto":"9","id":"' + self.invite_order['group_id'] + '"}',
                              ispush=True)
             return {'success': True, 'error': ''}
         else:
@@ -315,7 +358,7 @@ group_invite_list.add_parameter(name='jwtstr', parametertype='formData', type='s
                                 description='jwt串',
                                 default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
 
-HOMEBASE = settings.app_user_url+'/fm/user/v1/groupinvite'
+HOMEBASE = settings.app_user_url + '/fm/user/v1/groupinvite'
 
 
 @group_invite.route(HOMEBASE, methods=['POST'])
@@ -331,7 +374,6 @@ group_invite_detail_json = {
     "auto": group_invite_detail.String(description='验证是否成功'),
     "message": group_invite_detail.String(description='SUCCESS/FIELD', default="SUCCESS"),
     "code": group_invite_detail.Integer(description='h', default=0),
-
 
 }
 group_invite_detail.add_parameter(name='jwtstr', parametertype='formData', type='string', required=True,
@@ -384,35 +426,36 @@ def groupinvite_neworder():
     if request.method == 'POST':
         if auto.decodejwt(request.form['jwtstr']):
             # try:
-                data = GroupInvite(request.form['group_id']).new_invite(request.form['user_id'])
-                info = GroupInvite(request.form['group_id']).the_invite
-                # print data
-                #消息3
-#mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
-# appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
-                webuser = mongo.webuser.find({"_id":ObjectId(request.form['user_id'])})
-                nickname = ''
-                phone = ''
-                for w in webuser:
-                    nickname = w['nickname']
-                    phone = w['phone']
-                content = '抢单人：'+nickname+'，抢单类型：'+str(info['group_info']['size'])+'人餐，抢单时间：'+datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+\
-                          '，联系电话：'+phone+',剩余开团请客名额：'+str(info['group_info']['available'])
-                tool.tuisong(mfrom=request.form['user_id'],
-                             mto=info['restaurant']['rid'],
-                             title='您发起的开团请客活动被抢了',
-                             info=content,
-                             goto='0',
-                             channel='开团抢优惠',
-                             type='0',
-                             totype='0',
-                             appname='foodmap_user',
-                             msgtype='message',
-                             target='device',
-                             ext='',
-                             ispush=False)
-                result = tool.return_json(0, "success", True, data)
-                return json_util.dumps(result, ensure_ascii=False, indent=2)
+            data = GroupInvite(request.form['group_id']).new_invite(request.form['user_id'])
+            info = GroupInvite(request.form['group_id']).the_invite
+            # print data
+            # 消息3
+            # mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
+            # appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
+            webuser = mongo.webuser.find({"_id": ObjectId(request.form['user_id'])})
+            nickname = ''
+            phone = ''
+            for w in webuser:
+                nickname = w['nickname']
+                phone = w['phone']
+            content = '抢单人：' + nickname + '，抢单类型：' + str(
+                info['group_info']['size']) + '人餐，抢单时间：' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + \
+                      '，联系电话：' + phone + ',剩余开团请客名额：' + str(info['group_info']['available'])
+            tool.tuisong(mfrom=request.form['user_id'],
+                         mto=info['restaurant']['rid'],
+                         title='您发起的开团请客活动被抢了',
+                         info=content,
+                         goto='0',
+                         channel='开团抢优惠',
+                         type='0',
+                         totype='0',
+                         appname='foodmap_user',
+                         msgtype='message',
+                         target='device',
+                         ext='',
+                         ispush=False)
+            result = tool.return_json(0, "success", True, data)
+            return json_util.dumps(result, ensure_ascii=False, indent=2)
             # except Exception, e:
             #     print e
             #     result = tool.return_json(0, "field", True, str(e))
@@ -447,29 +490,29 @@ def groupinvite_add_friend():
     if request.method == 'POST':
         if auto.decodejwt(request.form['jwtstr']):
             # try:
-                print request.form['code'],request.form['user_id']
-                data = GroupInvite(request.form['code']).follow(request.form['user_id'])
-                info = GroupInvite(request.form['code']).the_invite
-                info2 = GroupInvite(request.form['code']).invite_order
-                #推送8
-#mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
-# appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
-                content = '快去看看吧！'
-                tool.tuisong(mfrom='',
-                             mto=info2['master_id'],
-                             title='有人加入了您的'+info['restaurant']['name']+'开团请客活动',
-                             info=content,
-                             goto='1',
-                             channel='应邀开团',
-                             type='0',
-                             totype='1',
-                             appname='foodmap_user',
-                             msgtype='notice',
-                             target='device',
-                             ext='{"goto":"8","id":"'+info['code']+'"}',
-                             ispush=True)
-                result = tool.return_json(0, "success", True, data)
-                return json_util.dumps(result, ensure_ascii=False, indent=2)
+            print request.form['code'], request.form['user_id']
+            data = GroupInvite(request.form['code']).follow(request.form['user_id'])
+            info = GroupInvite(request.form['code']).the_invite
+            info2 = GroupInvite(request.form['code']).invite_order
+            # 推送8
+            # mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
+            # appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
+            content = '快去看看吧！'
+            tool.tuisong(mfrom='',
+                         mto=info2['master_id'],
+                         title='有人加入了您的' + info['restaurant']['name'] + '开团请客活动',
+                         info=content,
+                         goto='1',
+                         channel='应邀开团',
+                         type='0',
+                         totype='1',
+                         appname='foodmap_user',
+                         msgtype='notice',
+                         target='device',
+                         ext='{"goto":"8","id":"' + info['code'] + '"}',
+                         ispush=True)
+            result = tool.return_json(0, "success", True, data)
+            return json_util.dumps(result, ensure_ascii=False, indent=2)
             # except Exception, e:
             #     print e
             #     result = tool.return_json(0, "field", True, str(e))
@@ -486,26 +529,28 @@ groupinvite_order_json = {
     "auto": groupinvite_order.String(description='验证是否成功'),
     "message": groupinvite_order.String(description='SUCCESS/FIELD', default="SUCCESS"),
     "code": groupinvite_order.Integer(description='h', default=0),
-    "data":{
-        "status": groupinvite_order.String(description='wait_friends待邀请, wait_pay待支付, already_payment已支付, already_used已使用, time_out超时', default="timeout"),
+    "data": {
+        "status": groupinvite_order.String(
+            description='wait_friends待邀请, wait_pay待支付, already_payment已支付, already_used已使用, time_out超时',
+            default="timeout"),
         "master_id": groupinvite_order.String(description='发起人id', default="dola"),
         "dishes": [
-          {
-            "flname":  groupinvite_order.String(description='分类名', default="111"),
-            "allcount":  groupinvite_order.Integer(description='全部数量', default=2),
-            "flnum": groupinvite_order.String(description='分类数', default="0"),
-            "ff": groupinvite_order.String(description='1', default="1"),
-            "cp": [
-              {
-                "count": groupinvite_order.String(description='菜品数量', default="1"),
-                "price": groupinvite_order.String(description='价格', default="19.0"),
-                "allprice": groupinvite_order.String(description='总价', default="19.0"),
-                "id": groupinvite_order.String(description='菜品id', default="201605120931222746"),
-                "name": groupinvite_order.String(description='菜名', default="骨架")
-              }
-            ],
-            "fl": groupinvite_order.String(description='分类', default="fl1")
-          }
+            {
+                "flname": groupinvite_order.String(description='分类名', default="111"),
+                "allcount": groupinvite_order.Integer(description='全部数量', default=2),
+                "flnum": groupinvite_order.String(description='分类数', default="0"),
+                "ff": groupinvite_order.String(description='1', default="1"),
+                "cp": [
+                    {
+                        "count": groupinvite_order.String(description='菜品数量', default="1"),
+                        "price": groupinvite_order.String(description='价格', default="19.0"),
+                        "allprice": groupinvite_order.String(description='总价', default="19.0"),
+                        "id": groupinvite_order.String(description='菜品id', default="201605120931222746"),
+                        "name": groupinvite_order.String(description='菜名', default="骨架")
+                    }
+                ],
+                "fl": groupinvite_order.String(description='分类', default="fl1")
+            }
         ],
         "max_group": groupinvite_order.Integer(description='h', default=5),
         "order_id": groupinvite_order.String(description='订单id', default="MSDT1472541303927956"),
@@ -513,16 +558,16 @@ groupinvite_order_json = {
         "invite_code": groupinvite_order.String(description='邀请码', default="603101"),
         "_id": groupinvite_order.String(description='开团id', default="57c532770b0555090830ff50"),
         "restaurant_info": {
-          "rid": groupinvite_order.String(description='饭店id', default="5733dc610c1d9b310dd05549"),
-          "pic": groupinvite_order.String(description='饭店图', default="1a7f2ae4c0db98e3481f9670c0e6d7dc"),
-          "dist": groupinvite_order.String(description='商圈', default="抚顺街"),
-          "addr": groupinvite_order.String(description='地址', default="哈尔滨市道里区安平街18号"),
-          "name": groupinvite_order.String(description='饭店名', default="快捷熏酱饺子"),
+            "rid": groupinvite_order.String(description='饭店id', default="5733dc610c1d9b310dd05549"),
+            "pic": groupinvite_order.String(description='饭店图', default="1a7f2ae4c0db98e3481f9670c0e6d7dc"),
+            "dist": groupinvite_order.String(description='商圈', default="抚顺街"),
+            "addr": groupinvite_order.String(description='地址', default="哈尔滨市道里区安平街18号"),
+            "name": groupinvite_order.String(description='饭店名', default="快捷熏酱饺子"),
         },
         "end_time": groupinvite_order.String(description='结束时间', default="2017-09-30 10:35:00"),
         "group_id": groupinvite_order.String(description='分组id', default="57c4dc7c612c5e1a7435ec35"),
         "friends": groupinvite_order.String(description='朋友列表', default="['5747bd310b05552c4c571865']"),
-  }
+    }
 }
 
 groupinvite_order.add_parameter(name='jwtstr', parametertype='formData', type='string', required=True,
@@ -543,16 +588,19 @@ def groupinvite_order():
                 data = GroupInvite(request.form['code']).invite_order
                 print type(data)
                 # print time.strptime(data['addtime'], "%Y-%m-%d %H:%M:%S")
-                #song
+                # song
                 if data['status'] == 'wait_friends':
-                    data['msg'] ="还有"+str(45-int((datetime.datetime.now()-datetime.datetime.strptime(data['start_time'], "%Y-%m-%d %H:%M:%S")).total_seconds()/60))+"分钟，还需要"+str(data['max_group']-1-len(data['friends']))+"位客人"
+                    data['msg'] = "还有" + str(45 - int((datetime.datetime.now() - datetime.datetime.strptime(
+                        data['start_time'], "%Y-%m-%d %H:%M:%S")).total_seconds() / 60)) + "分钟，还需要" + str(
+                        data['max_group'] - 1 - len(data['friends'])) + "位客人"
                 elif data['status'] == 'wait_pay':
-                    data['msg'] ="还有"+str(45-int((datetime.datetime.now()-datetime.datetime.strptime(data['start_time'], "%Y-%m-%d %H:%M:%S")).total_seconds()/60))+"分钟付款时间"
+                    data['msg'] = "还有" + str(45 - int((datetime.datetime.now() - datetime.datetime.strptime(
+                        data['start_time'], "%Y-%m-%d %H:%M:%S")).total_seconds() / 60)) + "分钟付款时间"
                 elif data['status'] == 'timeout':
-                    if data['max_group']-1-len(data['friends']) == 0:
-                        data['msg'] ="付款超时"
+                    if data['max_group'] - 1 - len(data['friends']) == 0:
+                        data['msg'] = "付款超时"
                     else:
-                        data['msg'] ="45分钟内未邀请到"+str(data['max_group'])+"位好友"
+                        data['msg'] = "45分钟内未邀请到" + str(data['max_group']) + "位好友"
                 result = tool.return_json(0, "success", True, data)
                 return json_util.dumps(result, ensure_ascii=False, indent=2)
             except Exception, e:
@@ -613,5 +661,7 @@ if __name__ == '__main__':
     # print GroupInvite('205314').follow('dolacmeo')
     # print GroupInvite('205314').mark_used()
     # print json_util.dumps(GroupInvite().all_item,ensure_ascii=False,indent=2)
-    print json_util.dumps(GroupInvite('588692').the_invite,ensure_ascii=False,indent=2)
+    # print json_util.dumps(GroupInvite('588692').the_invite, ensure_ascii=False, indent=2)
+    item = GroupInvite().all_item
+    print json_util.dumps(item, ensure_ascii=False, indent=2)
     pass

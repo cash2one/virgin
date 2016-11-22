@@ -821,3 +821,42 @@ def about_us():
 @me_user_api.route('/fm/user/v1/me/abouthtml/',methods=["GET"])
 def abouthtml():
     return render_template("/test/about.html")
+#分享
+fenxiang = swagger("分享","分享")
+fenxiang.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+fenxiang.add_parameter(name='type',parametertype='formData',type='string',required= True,description='1饭店详情,2店粉儿优惠详情,3特色名小吃详情,4开团请客详情,5开团请客邀请好友',default='1')
+
+fenxiang_json = {
+    "auto": fenxiang.String(description='验证是否成功'),
+    "message": fenxiang.String(description='SUCCESS/FIELD',default="SUCCESS"),
+    "code": fenxiang.Integer(description='',default=0),
+    "data": {
+        fenxiang.String(description='url',default="SUCCESS")
+        }
+}
+
+@me_user_api.route(settings.app_user_url+'/fm/user/v1/me/fenxiang/',methods=['POST'])
+@swag_from(fenxiang.mylpath(schemaid='fenxiang',result=fenxiang_json))
+def fenxiang():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+
+            try:
+                item = mongo.user_fenxiang.find({"type":request.form["type"]})
+                json = {}
+                for i in item:
+                    json['title'] = i['Title']
+                    json['content'] = i['Content']
+                    json['img'] = i['img']
+                    json['url'] = i['url']
+                result=tool.return_json(0,"success",True,json)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
