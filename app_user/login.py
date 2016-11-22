@@ -204,7 +204,7 @@ def register():
                                 result=tool.return_json(0,"success",True,{'ispass':True,'_id': str(webuser_add),'info': '注册成功'})
                                 return json_util.dumps(result,ensure_ascii=False,indent=2)
                             else:
-                                result=tool.return_json(0,"success",True,{'ispass':False})
+                                result=tool.return_json(0,"success",True,{'ispass':False,'_id': '','info': '注册失败'})
                                 return json_util.dumps(result,ensure_ascii=False,indent=2)
                     elif  '2' not in user_web[0]['appid']:
                         #非用户
