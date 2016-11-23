@@ -2,6 +2,7 @@
 import random
 import time
 import pymongo
+import requests
 from flasgger import swag_from
 
 from app_merchant import auto
@@ -114,3 +115,44 @@ def payorder():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
+update_order = swagger("支付","发起支付")
+update_order_json = {
+    "auto": update_order.String(description='验证是否成功'),
+    "message": update_order.String(description='SUCCESS/FIELD',default="SUCCESS"),
+    "code": update_order.Integer(description='',default=0),
+    "data": {
+          "status": update_order.String(description='状态',default="new")
+    }
+}
+update_order.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+update_order.add_parameter(name='payment_id',parametertype='formData',type='string',required= True,description='支付订单id',default='1479883957816')
+
+@pay_user_api.route(settings.app_user_url+'/fm/user/v1/pay/update_order/',methods=['POST'])
+@swag_from(update_order.mylpath(schemaid='update_order',result=update_order_json))
+def update_order():
+    if request.method=='POST':
+        if auto.decodejwt(request.form['jwtstr']):
+
+            try:
+                payment_id = request.form['payment_id']
+                data = requests.get("http://127.0.0.1:10036/payment/"+payment_id).json()
+                flag = {"success":"0"}
+                if data['status'] =='SUECCSS_PAY':
+                    mongo.order.update({"order_id":data["OrderID"]},{"$set":{"status":3}})
+                    flag = {"success":"1"}
+                else:
+                    pass
+                result=tool.return_json(0,"success",True,flag)
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            except Exception,e:
+                print e
+                result=tool.return_json(0,"field",True,str(e))
+                return json_util.dumps(result,ensure_ascii=False,indent=2)
+        else:
+            result=tool.return_json(0,"field",False,None)
+            return json_util.dumps(result,ensure_ascii=False,indent=2)
+    else:
+        return abort(403)
+if __name__ == '__main__':
+    data = requests.get("http://125.211.222.237:11036/api/v1/payment/1479883957816").json()
+    print json_util.dumps(data,ensure_ascii=False,indent=2)
