@@ -531,6 +531,72 @@ def restaurant_type():
             return json_util.dumps(result, ensure_ascii=False, indent=2)
     else:
         return abort(403)
+restaurant_type_ios = swagger("1 美食地图.jpg", "查询类别标签_ios")
+restaurant_type_ios.add_parameter(name='jwtstr', parametertype='formData', type='string', required=True, description='jwt串',
+                              default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+restaurant_type_ios_json = {
+    "auto": restaurant_type_ios.String(description='验证是否成功'),
+    "code": restaurant_type_ios.Integer(description='', default=0),
+    "message": restaurant_type_ios.String(description='SUCCESS/FIELD', default="SUCCESS")}
+@restaurant_user_api.route(settings.app_user_url + '/fm/user/v1/restaurant/restaurant_type_ios/', methods=['POST'])
+@swag_from(restaurant_type_ios.mylpath(schemaid='restaurant_type_ios', result=restaurant_type_ios_json))
+def restaurant_type_ios():
+    if request.method == 'POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                data = {}
+                f_list = [{"id":"-1","name":"全部"}]
+                b_list = []
+                t_list = []
+                z_list = []
+                bt_list = [{"id":"-1","name":"全部"}]
+                item = mongo.assortment.find({"parent": {"$in": [1, 35, 59, 50, 46]}})
+                for i in item:
+                    f_json = {}
+                    b_json = {}
+                    t_json = {}
+                    z_json = {}
+                    bt_json = {}
+                    if i['parent'] == 1:
+                        f_json['id'] = str(i['_id'])
+                        f_json['name'] = i['name']
+                        f_list.append(f_json)
+                    elif i['parent'] == 35:
+                        b_json['id'] = str(i['_id'])
+                        b_json['name'] = i['name']
+                        b_list.append(b_json)
+                    elif i['parent'] == 59:
+                        bt_json['id'] = str(i['_id'])
+                        bt_json['name'] = i['name']
+                        bt_list.append(bt_json)
+                    elif i['parent'] == 50:
+                        t_json['id'] = str(i['_id'])
+                        t_json['name'] = i['name']
+                        t_list.append(t_json)
+                    elif i['parent'] == 46:
+                        z_json['id'] = str(i['_id'])
+                        z_json['name'] = i['name']
+                        z_list.append(z_json)
+                    else:
+                        pass
+                data['fenlei'] = f_list
+                data['baofang'] = b_list
+                data['baofangtese'] = bt_list
+                data['tese'] = t_list
+                data['zhifu'] = z_list
+                data['youhui'] = [{"id":"-1","name":"全部"},{'id': 'dish', 'name': '菜品优惠'}, {'id': 'wine', 'name': '酒水优惠'},
+                                  {'id': 'other', 'name': '其他优惠'}]
+                result = tool.return_json(0, "success", True, data)
+                return json_util.dumps(result, ensure_ascii=False, indent=2)
+            except Exception, e:
+                print e
+                result = tool.return_json(0, "field", True, str(e))
+                return json_util.dumps(result, ensure_ascii=False, indent=2)
+        else:
+            result = tool.return_json(0, "field", False, None)
+            return json_util.dumps(result, ensure_ascii=False, indent=2)
+    else:
+        return abort(403)
 
 
 # 根据坐标查询商圈
