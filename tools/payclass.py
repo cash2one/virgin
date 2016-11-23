@@ -57,7 +57,7 @@ class PayOrder:
             subject='美食地图饭店订单' + order_id,
             body='',
             reqfrom='MSDT_order_app',
-            total_fee=int(yingfu) * 100,
+            total_fee=float(yingfu) * 100,
             order_id=order_data['_id'],
             ext_data={
                 'restaurant_id': order_data['restaurant_id'],
@@ -107,4 +107,4 @@ class PayOrder:
 if __name__ == '__main__':
     pass
     # print PayOrder().link_order('573153c4e0fdb78f29b42826')
-    print PayOrder('57ecb5f0fb98a411d0a03c0c').payorder['subject']
+    print round(float(86.0 - 0.0) * 0.1,2)
