@@ -40,15 +40,24 @@ class PayOrder:
         the_order['_id'] = self.payorder_id
         self.payorder = the_order
 
-    def link_order(self, order_id):
+    def link_order(self, order_id,dingjin=True):
         if self.payorder != {}:
             raise Exception('payOrder already linked!')
         order_data = self.__order_conn.find_one({'_id': order_id})
+
+        yingfu = 0
+        if dingjin:
+            dis_amounts = 0.0
+            for dis in order_data['dis_message']:
+                dis_amounts += dis['dis_amount']
+            yingfu = round(float(order_data['total'] - dis_amounts) * 0.1,2)
+        else:
+            yingfu = order_data['total'] - order_data['deposit']
         the_data = dict(
             subject='美食地图饭店订单' + order_id,
             body='',
             reqfrom='MSDT_order_app',
-            total_fee=int(order_data['total'] - order_data['deposit']) * 100,
+            total_fee=int(yingfu) * 100,
             order_id=order_data['_id'],
             ext_data={
                 'restaurant_id': order_data['restaurant_id'],
