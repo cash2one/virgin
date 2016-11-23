@@ -546,10 +546,10 @@ def restaurant_type_ios():
             try:
                 data = {}
                 f_list = [{"id":"-1","name":"全部"}]
-                b_list = []
+                b_list = [{"id":"-1","name":"全部"}]
                 t_list = []
                 z_list = []
-                bt_list = [{"id":"-1","name":"全部"}]
+                bt_list = []
                 item = mongo.assortment.find({"parent": {"$in": [1, 35, 59, 50, 46]}})
                 for i in item:
                     f_json = {}
