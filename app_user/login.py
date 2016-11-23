@@ -95,13 +95,13 @@ def send_sms2():
                                 'ex': '#foodmap.mobile'
                                 }
                         req = requests.post(SMSnetgate + '/sms.send', data)
-                        result=tool.return_json(0,"success",True,{"ispass":req.json()['success'],"message":"成功","info":"成功"})
+                        result=tool.return_json(0,"success",True,{"ispass":req.json()['success'],"message":"成功"})
                     else:
-                        result=tool.return_json(0,"field",True,{"ispass":False,"message":"请先注册","info":"请先注册"})
+                        result=tool.return_json(0,"field",True,{"ispass":False,"message":"请先注册"})
                     pass
                 elif flag == 'user_register':
                     if mongo.find({"phone":request.form['phone'],"appid.2":True}):
-                        result=tool.return_json(0,"field",True,{"ispass":False,"message":"已注册，请登录","info":"已注册，请登录"})
+                        result=tool.return_json(0,"field",True,{"ispass":False,"message":"已注册，请登录"})
                     else:
                         data = {'sign': '美食地图',
                                 'tpl': 'SMS_8161119',
@@ -110,10 +110,10 @@ def send_sms2():
                                 'ex': '#foodmap.mobile'
                                 }
                         req = requests.post(SMSnetgate + '/sms.send', data)
-                        result=tool.return_json(0,"success",True,{"ispass":req.json()['success'],"message":"成功","info":"成功"})
+                        result=tool.return_json(0,"success",True,{"ispass":req.json()['success'],"message":"成功"})
 
                 else:
-                    result=tool.return_json(0,"field",True,{"ispass":False,"message":"请使用正确的type","info":"请使用正确的type"})
+                    result=tool.return_json(0,"field",True,{"ispass":False,"message":"请使用正确的type"})
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
                 print e
