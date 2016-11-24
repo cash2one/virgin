@@ -1650,7 +1650,7 @@ def getroom():
             json['preset_time'] = datetime.datetime.strptime(request.form['preset_time'], "%Y-%m-%d %H:%M:%S")
             content = '联系人：' + request.form['username'] + '，联系电话：' + request.form['phone'] + \
                       '，用餐人数：' + request.form['numpeople'] + '，包房/大厅：' + is_room + '，时间：' + \
-                      request.form['preset_time'] + '，要求：' + request.form['demand'] + '。'
+                      request.form['preset_time'] + '，要求：' + request.form['demand']
             item = mongo.order.find({'webuser_id': ObjectId(request.form['webuser_id']),
                                      "restaurant_id": ObjectId(request.form['restaurant_id']), 'status': 8})
             flag = True
