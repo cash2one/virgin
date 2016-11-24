@@ -1509,7 +1509,7 @@ dish_menu_list_json = {
 def dish_menu_list():
     if request.method == 'POST':
         if auto.decodejwt(request.form['jwtstr']):
-            try:
+            # try:
                 checkdish(request.form['webuser_id'])
                 item2 = mongo.order.find({'webuser_id': ObjectId(request.form['webuser_id']), 'status': 8})
                 data = {}
@@ -1572,7 +1572,7 @@ def dish_menu_list():
                         else:
                             pass
                     json['youhui'] = y_list
-                    json['yingfu'] =str(float(round(i['total']) - dis_amounts,2))
+                    json['yingfu'] =str(float(round(i['total']) - dis_amounts))
                     json['yajin'] = str(round(float(i['total'] - dis_amounts) * 0.1,2))
                     json['dianfu'] = str(round(float(i['total'] - dis_amounts) * 0.9,2))
                     json['preset_dishs'] = i['preset_dishs']
@@ -1585,10 +1585,10 @@ def dish_menu_list():
                 data['menu'] = list
                 result = tool.return_json(0, "success", True, data)
                 return json_util.dumps(result, ensure_ascii=False, indent=2)
-            except Exception, e:
-                print e
-                result = tool.return_json(0, "field", True, str(e))
-                return json_util.dumps(result, ensure_ascii=False, indent=2)
+            # except Exception, e:
+            #     print e
+            #     result = tool.return_json(0, "field", True, str(e))
+            #     return json_util.dumps(result, ensure_ascii=False, indent=2)
         else:
             result = tool.return_json(0, "field", False, None)
             return json_util.dumps(result, ensure_ascii=False, indent=2)
