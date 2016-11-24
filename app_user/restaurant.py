@@ -1572,7 +1572,7 @@ def dish_menu_list():
                         else:
                             pass
                     json['youhui'] = y_list
-                    json['yingfu'] =str(round(i['total'] - dis_amounts,2))
+                    json['yingfu'] =str(float(round(i['total']) - dis_amounts,2))
                     json['yajin'] = str(round(float(i['total'] - dis_amounts) * 0.1,2))
                     json['dianfu'] = str(round(float(i['total'] - dis_amounts) * 0.9,2))
                     json['preset_dishs'] = i['preset_dishs']
