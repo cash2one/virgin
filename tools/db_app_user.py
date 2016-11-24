@@ -111,7 +111,6 @@ def business_dist(lon1=126.593666, lat1=45.706477):
     return sorted(biz_areas_list)[0][0],sorted(biz_areas_list)[0][1],sorted(biz_areas_list)[0][2]
 #根据获取的经纬度查询若干条距离最近的饭店信息
 def guess(first={},lat1=45.76196769636328,lon1=126.65381534034498,start=0,end=3,webuser_id=''):
-    print first
     if lat1!='y':
         item = mongo.restaurant.find(first,{"zuobiao":1})
         rsetaurant_list = []
