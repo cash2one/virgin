@@ -464,7 +464,7 @@ def special_restaurant():
                         elif key == 'dishes_type':
                             json['dishes_type'] = i[key][0]['name']
                         else:
-                            if i['dishes_discount']['message'] != '':
+                            if i['dishes_discount']['message'] != '' or i['wine_discount']['message'] != '' or i['restaurant_discount']['message'] != '':
                                 json['hui'] = '1'
                             else:
                                 json['hui'] = '0'

@@ -668,13 +668,13 @@ def groupinvite_order_used():
 
 
 if __name__ == '__main__':
-    # print json_util.dumps(GroupInvite('57c53441612c5e14344b3fec').the_invite,ensure_ascii=False,indent=2)
+    print json_util.dumps(GroupInvite('57c53441612c5e14344b3fec').the_invite,ensure_ascii=False,indent=2)
     # print GroupInvite.get_invite('57c4dc7c612c5e1a7435ec35')
     # print GroupInvite('57c4dc7c612c5e1a7435ec35').new_invite('dola')
     # print GroupInvite('205314').follow('dolacmeo')
     # print GroupInvite('205314').mark_used()
     # print json_util.dumps(GroupInvite().all_item,ensure_ascii=False,indent=2)
     # print json_util.dumps(GroupInvite('588692').the_invite, ensure_ascii=False, indent=2)
-    item = GroupInvite().all_item
-    print json_util.dumps(item, ensure_ascii=False, indent=2)
+    # item = GroupInvite().all_item
+    # print json_util.dumps(item, ensure_ascii=False, indent=2)
     pass
