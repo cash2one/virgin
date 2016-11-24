@@ -200,7 +200,7 @@ getcoupon.add_parameter(name='coupons_id',parametertype='formData',type='string'
 def getcoupon():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
-            try:
+            # try:
                 restaurant_id = request.form['restaurant_id']
                 webuser_id = request.form['webuser_id']
                 coupons_id = request.form['coupons_id']
@@ -211,13 +211,13 @@ def getcoupon():
                     }
                     result=tool.return_json(0,"success",True,json)
                     return json_util.dumps(result,ensure_ascii=False,indent=2)
-                mycoupons = mongo.mycoupons.find({"coupons_id":ObjectId(coupons_id)})
+                mycoupons = mongo.mycoupons.find({"coupons_id":ObjectId(coupons_id),"webuser_id":ObjectId("webuser_id")})
                 m_flag = True
                 for m in mycoupons:
                     m_flag = False
                 coupons = coupons_by({"_id":ObjectId(coupons_id)})
                 print coupons,m_flag
-                if coupons and m_flag and not coupons['num'] == 0 :
+                if coupons and m_flag and int(coupons['num']) != 0 :
                     restaurant = mongo.restaurant.find({"_id":ObjectId(restaurant_id)})
                     for i in restaurant:
                         json = {
@@ -253,7 +253,7 @@ def getcoupon():
                         nickname = w['nickname']
                         phone = w['phone']
                     content = '抢单人：'+nickname+'，抢单类型：'+coupons['content']+'，抢单时间：'+datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+\
-                              '，联系电话：'+phone+'，剩余店粉儿优惠名额：'+coupons['num']+'。'
+                              '，联系电话：'+phone+'，剩余店粉儿优惠名额：'+str(coupons['num'])
                     tool.tuisong(mfrom=webuser_id,
                              mto=restaurant_id,
                              title='您发布的店粉儿抢优惠被抢了',
@@ -276,10 +276,10 @@ def getcoupon():
 
                 result=tool.return_json(0,"success",True,json)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
-            except Exception,e:
-                print e
-                result=tool.return_json(0,"field",True,str(e))
-                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            # except Exception,e:
+            #     print e
+            #     result=tool.return_json(0,"field",True,str(e))
+            #     return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
