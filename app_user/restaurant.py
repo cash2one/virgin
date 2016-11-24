@@ -1547,7 +1547,7 @@ def dish_menu_list():
                     y_list = []
                     dis_amounts = 0.0
                     for dis in i['dis_message']:
-                        dis_amounts += dis['dis_amount']
+                        dis_amounts += float(dis['dis_amount'])
                         if dis['dis_type'] == '1':
                             y_list.append({
                                 'msg': '<font size=\"3\">' + '关注即享:' + '<font size=\"3\" color=\"red\">' + str(
