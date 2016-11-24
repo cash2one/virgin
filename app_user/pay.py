@@ -135,7 +135,7 @@ def update_order():
 
             try:
                 payment_id = request.form['payment_id']
-                data = requests.get("http://127.0.0.1:10036/payment/"+payment_id).json()
+                data = requests.get("http://127.0.0.1:10036/api/v1/payment/"+payment_id).json()
                 flag = {"success":"0"}
                 if data['status'] =='SUECCSS_PAY':
                     mongo.order.update({"order_id":data["OrderID"]},{"$set":{"status":3}})
