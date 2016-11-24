@@ -1286,7 +1286,7 @@ dish_menu_count_json = {
 def dish_menu_count():
     if request.method == 'POST':
         if auto.decodejwt(request.form['jwtstr']):
-            try:
+            # try:
                 data = {}
                 pdict = {'webuser_id': ObjectId(request.form['webuser_id']),
                          "restaurant_id": ObjectId(request.form['restaurant_id']), 'status': 8}
@@ -1403,7 +1403,7 @@ def dish_menu_count():
                     if mycoupons:
                         for m in mycoupons[1]:
                             deposit += m[0]
-                            coupons = mongo.coupons.find({"_id": ObjectId(m[4])})
+                            coupons = mongo.coupons.find({"_id": ObjectId(m[3])})
                             for c in coupons:
                                 content = ''
                                 if c['type'] == '1':
@@ -1435,7 +1435,7 @@ def dish_menu_count():
                                         "dis_type": c['kind'],
                                         "content": content,
                                         "coupons_id": str(c['_id']),
-                                        "dis_amount": float("%.2f" % m[3])
+                                        "dis_amount": float("%.2f" % float(m[2]))
                                     }
                                 )
                     mongo.order.update_one(pdict, {
@@ -1447,10 +1447,10 @@ def dish_menu_count():
                     }
                 result = tool.return_json(0, "success", True, data)
                 return json_util.dumps(result, ensure_ascii=False, indent=2)
-            except Exception, e:
-                print e
-                result = tool.return_json(0, "field", True, str(e))
-                return json_util.dumps(result, ensure_ascii=False, indent=2)
+            # except Exception, e:
+            #     print e
+            #     result = tool.return_json(0, "field", True, str(e))
+            #     return json_util.dumps(result, ensure_ascii=False, indent=2)
         else:
             result = tool.return_json(0, "field", False, None)
             return json_util.dumps(result, ensure_ascii=False, indent=2)
