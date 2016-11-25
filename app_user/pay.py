@@ -142,7 +142,7 @@ def update_order():
                     oid = ""
                     for p in pay_order:
                         oid = p['req_order_id']
-                    mongo.order.update({"order_id":oid},{"$set":{"status":3}})
+                    mongo.order.update({"_id":ObjectId(oid)},{"$set":{"status":3}})
                     flag = {"success":"1"}
                 else:
                     pass
