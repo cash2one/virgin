@@ -211,7 +211,7 @@ def getcoupon():
                     }
                     result=tool.return_json(0,"success",True,json)
                     return json_util.dumps(result,ensure_ascii=False,indent=2)
-                mycoupons = mongo.mycoupons.find({"coupons_id":ObjectId(coupons_id),"webuser_id":ObjectId("webuser_id")})
+                mycoupons = mongo.mycoupons.find({"coupons_id":ObjectId(coupons_id),"webuser_id":ObjectId(webuser_id)})
                 m_flag = True
                 for m in mycoupons:
                     m_flag = False
