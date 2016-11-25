@@ -115,7 +115,7 @@ def payorder():
             return json_util.dumps(result,ensure_ascii=False,indent=2)
     else:
         return abort(403)
-update_order = swagger("支付","发起支付")
+update_order = swagger("支付","回调")
 update_order_json = {
     "auto": update_order.String(description='验证是否成功'),
     "message": update_order.String(description='SUCCESS/FIELD',default="SUCCESS"),
@@ -138,7 +138,11 @@ def update_order():
                 data = requests.get("http://127.0.0.1:10036/api/v1/payment/"+payment_id).json()
                 flag = {"success":"0"}
                 if data['status'] =='SUCCESS_PAY':
-                    mongo.order.update({"order_id":data["OrderID"]},{"$set":{"status":3}})
+                    pay_order = mongo.payOrder.find({"orderid":data["OrderID"]})
+                    oid = ""
+                    for p in pay_order:
+                        oid = p['req_order_id']
+                    mongo.order.update({"order_id":oid},{"$set":{"status":3}})
                     flag = {"success":"1"}
                 else:
                     pass
