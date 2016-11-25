@@ -1572,9 +1572,9 @@ def dish_menu_list():
                         else:
                             pass
                     json['youhui'] = y_list
-                    json['yingfu'] =str(float(round(i['total']) - dis_amounts))
-                    json['yajin'] = str(round(float(i['total'] - dis_amounts) * 0.1,2))
-                    json['dianfu'] = str(round(float(i['total'] - dis_amounts) * 0.9,2))
+                    json['yingfu'] = str('%.2f' % (float(i['total']) - float(dis_amounts)))
+                    json['yajin'] =  str('%.2f' % (float('%.2f' % (float(i['total']) - float(dis_amounts))) * 0.1))
+                    json['dianfu'] = str('%.2f' % (float('%.2f' % (float(i['total']) - float(dis_amounts))) * 0.9))
                     json['preset_dishs'] = i['preset_dishs']
                     json['preset_wine'] = i['preset_wine']
                     json['tishi'] = mycoupons[0]
@@ -1839,9 +1839,9 @@ def settlement():
                     else:
                         pass
                 json['youhui'] = y_list
-                json['yingfu'] =str(round(i['total'] - dis_amounts,2))
-                json['yajin'] = str(round(float(i['total'] - dis_amounts) * 0.1,2))
-                json['dianfu'] = str(round(float(i['total'] - dis_amounts) * 0.9,2))
+                json['yingfu'] = str('%.2f' % (float(i['total']) - float(dis_amounts)))
+                json['yajin'] =  str('%.2f' % (float('%.2f' % (float(i['total']) - float(dis_amounts))) * 0.1))
+                json['dianfu'] = str('%.2f' % (float('%.2f' % (float(i['total']) - float(dis_amounts))) * 0.9))
             result = tool.return_json(0, "success", True, json)
             return json_util.dumps(result, ensure_ascii=False, indent=2)
             # except Exception,e:
@@ -2012,9 +2012,9 @@ def dish_menu_one():
                         else:
                             pass
                     json['youhui'] = y_list
-                    json['yingfu'] =str(round(i['total'] - dis_amounts,2))
-                    json['yajin'] = str(round(float(i['total'] - dis_amounts) * 0.1,2))
-                    json['dianfu'] = str(round(float(i['total'] - dis_amounts) * 0.9,2))
+                    json['yingfu'] = str('%.2f' % (float(i['total']) - float(dis_amounts)))
+                    json['yajin'] =  str('%.2f' % (float('%.2f' % (float(i['total']) - float(dis_amounts))) * 0.1))
+                    json['dianfu'] = str('%.2f' % (float('%.2f' % (float(i['total']) - float(dis_amounts))) * 0.9))
                     json['preset_dishs'] = i['preset_dishs']
                     json['preset_wine'] = i['preset_wine']
                     json['tishi'] = mycoupons[0]
@@ -2267,8 +2267,143 @@ def wap_dish_menu():
             return json_util.dumps(result, ensure_ascii=False, indent=2)
     else:
         return abort(403)
+# 扫码
+getorder = swagger("扫码", "扫码")
+getorder.add_parameter(name='jwtstr', parametertype='formData', type='string', required=True, description='jwt串',
+                     default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+getorder.add_parameter(name='webuser_id', parametertype='formData', type='string', required=True, description='用户id',default='5747bd310b05552c4c571809')
+getorder.add_parameter(name='restaurant_id', parametertype='formData', type='string', required=True, description='饭店id',default='5733de9b0c1d9b312321b6f5')
+getorder_json = {
+    "auto": getorder.String(description='验证是否成功'),
+    "message": getorder.String(description='SUCCESS/FIELD', default="SUCCESS"),
+    "code": getorder.Integer(description='', default=0),
 
 
+}
+
+
+# 扫码
+@restaurant_user_api.route(settings.app_user_url + '/fm/user/v1/restaurant/getorder/', methods=['POST'])
+@swag_from(getorder.mylpath(schemaid='getorder', result=getorder_json))
+def getorder():
+    if request.method == 'POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                webuser_id = request.form['webuser_id']
+                restaurant_id = request.form['restaurant_id']
+                data = {}
+                data['kaituan'] = {}
+                data['order'] = []
+                kaituan_item = conn.mongo_conn().order_groupinvite.find({"master_id":webuser_id,"restaurant_info.rid":restaurant_id,"status":"already_payment"})
+                for k in kaituan_item:
+                    data['kaituan'] = GroupInvite(k['group_id']).the_invite
+                    # print json_util.dumps(GroupInvite(k['group_id']).the_invite, ensure_ascii=False, indent=2)
+                #.sort("preset_time",pymongo.DESCENDING)[0:1]
+                order_item = conn.mongo_conn().order.find({"webuser_id":ObjectId(webuser_id),"restaurant_id":ObjectId(restaurant_id),"status":3})
+                list = []
+                for i in order_item:
+                    json = {}
+                    for key in i.keys():
+                        if key == '_id':
+                            json['id'] = str(i[key])
+                        elif key == 'total':
+                            json['total'] = str(i[key])
+                        elif key == 'demand':
+                            json['demand'] = i[key]
+                        elif key == 'dis_message':
+                            json['dis_message'] = i[key]
+                        elif key == 'preset_time':
+                            json['preset_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                        elif key == 'add_time':
+                            json['add_time'] = i[key].strftime('%Y年%m月%d日 %H:%M')
+                        elif key == 'webuser_id':
+                            json['webuser_id'] = str(i[key])
+                        elif key == 'restaurant_id':
+                            json['restaurant_id'] = str(i[key])
+                            json['roomlist'] = public.getroomslist(i[key],i['preset_time'].strftime("%Y-%m-%d"))['list']
+                        else:
+                            json[key] = i[key]
+                        dis_amounts = 0.0
+                        for dis in i['dis_message']:
+                            dis_amounts += float(dis['dis_amount'])
+                        json['yingfu'] = str('%.2f' % (float(i['total']) - float(dis_amounts)))
+                        json['yajin'] =  str('%.2f' % (float('%.2f' % (float(i['total']) - float(dis_amounts))) * 0.1))
+                        json['dianfu'] = str('%.2f' % (float('%.2f' % (float(i['total']) - float(dis_amounts))) * 0.9))
+                    order_coupons_list = []
+                    json2 = {}
+                    for dis in i['dis_message']:
+                        order_coupons_list.append(dis['coupons_id'])
+                    mycoupons = conn.mongo_conn().mycoupons.find({"webuser_id":ObjectId(webuser_id),"restaurant_id":ObjectId(restaurant_id),"status":"1"})
+                    mycoupons_list = []
+                    for m in mycoupons:
+                        mycoupons_json = {}
+                        if str(m['coupons_id']) not in order_coupons_list:
+                            mycoupons_json['content'] = m['content']
+                            mycoupons_json['coupons_id'] = str(m['coupons_id'])
+                            mycoupons_json['dis_type'] = m['kind']
+                            mycoupons_list.append(mycoupons_json)
+                    json['mycoupons_list'] = mycoupons_list
+                    list.append(json)
+                    data['order'] = list
+                result = tool.return_json(0, "success", True, data)
+                return json_util.dumps(result, ensure_ascii=False, indent=2)
+            except Exception, e:
+                print e
+                result = tool.return_json(0, "field", True, str(e))
+                return json_util.dumps(result, ensure_ascii=False, indent=2)
+        else:
+            result = tool.return_json(0, "field", False, None)
+            return json_util.dumps(result, ensure_ascii=False, indent=2)
+    else:
+        return abort(403)
+# 扫码提交修改
+update_status = swagger("扫码提交修改", "扫码提交修改")
+update_status.add_parameter(name='jwtstr', parametertype='formData', type='string', required=True, description='jwt串',
+                     default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
+update_status.add_parameter(name='webuser_id', parametertype='formData', type='string', required=True, description='用户id',default='5747bd310b05552c4c571809')
+update_status.add_parameter(name='restaurant_id', parametertype='formData', type='string', required=True, description='饭店id',default='5733de9b0c1d9b312321b6f5')
+update_status.add_parameter(name='order_id', parametertype='formData', type='string', required=True, description='饭店id',default='5785f09e7c1f6cda0641b93b')
+update_status.add_parameter(name='coupons_id', parametertype='formData', type='string', required=True, description='饭店id',default='578890770c1d9b38861e6371')
+update_status.add_parameter(name='kaituan_id', parametertype='formData', type='string', required=True, description='饭店id',default='57c53441612c5e14344b3fec')
+update_status_json = {
+    "auto": update_status.String(description='验证是否成功'),
+    "message": update_status.String(description='SUCCESS/FIELD', default="SUCCESS"),
+    "code": update_status.Integer(description='', default=0),
+}
+# 扫码提交修改
+@restaurant_user_api.route(settings.app_user_url + '/fm/user/v1/restaurant/update_status/', methods=['POST'])
+@swag_from(update_status.mylpath(schemaid='update_status', result=update_status_json))
+def update_status():
+    if request.method == 'POST':
+        if auto.decodejwt(request.form['jwtstr']):
+            try:
+                webuser_id = request.form['webuser_id']
+                restaurant_id = request.form['restaurant_id']
+                order_id = request.form['order_id']
+                coupons_id = request.form['coupons_id']
+                kaituan_id = request.form['kaituan_id']
+                data = {}
+                b_idlist = coupons_id.split('_')
+                bidlist = []
+                for mid in b_idlist:
+                    if mid != '' and mid != None:
+                        bidlist.append(ObjectId(mid))
+                mycoupons = conn.mongo_conn().mycoupons.update({"webuser_id":ObjectId(webuser_id),"restaurant_id":ObjectId(restaurant_id),"coupons_id":{"$in":bidlist}},{"$set":{"status":"2"}},False,True)
+                if kaituan_id !="":
+                    kaituan = conn.mongo_conn().order_groupinvite.update({"group_id":kaituan_id,"master_id":webuser_id,"restaurant_info.rid":restaurant_id},{"$set":{"status":"already_used"}},False,True)
+                else:
+                    order = conn.mongo_conn().order.update({"_id":ObjectId(order_id)},{"$set":{"status":4}})
+                result = tool.return_json(0, "success", True, data)
+                return json_util.dumps(result, ensure_ascii=False, indent=2)
+            except Exception, e:
+                print e
+                result = tool.return_json(0, "field", True, str(e))
+                return json_util.dumps(result, ensure_ascii=False, indent=2)
+        else:
+            result = tool.return_json(0, "field", False, None)
+            return json_util.dumps(result, ensure_ascii=False, indent=2)
+    else:
+        return abort(403)
 if __name__ == '__main__':
     kaituan = GroupInvite().all_item
     print json_util.dumps(kaituan, ensure_ascii=False, indent=2)

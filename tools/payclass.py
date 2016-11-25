@@ -50,7 +50,7 @@ class PayOrder:
             dis_amounts = 0.0
             for dis in order_data['dis_message']:
                 dis_amounts += dis['dis_amount']
-            yingfu = round(float(order_data['total'] - dis_amounts) * 0.1,2)
+            yingfu = str('%.2f' % (float('%.2f' % (float(order_data['total']) - float(dis_amounts))) * 0.1))
         else:
             yingfu = order_data['total'] - order_data['deposit']
         the_data = dict(
