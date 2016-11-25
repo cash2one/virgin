@@ -1403,7 +1403,7 @@ def dish_menu_count():
                     if mycoupons:
                         for m in mycoupons[1]:
                             deposit += m[0]
-                            coupons = mongo.coupons.find({"_id": ObjectId(m[3])})
+                            coupons = mongo.coupons.find({"_id": ObjectId(m[4])})
                             for c in coupons:
                                 content = ''
                                 if c['type'] == '1':
@@ -1435,7 +1435,7 @@ def dish_menu_count():
                                         "dis_type": c['kind'],
                                         "content": content,
                                         "coupons_id": str(c['_id']),
-                                        "dis_amount": float("%.2f" % float(m[2]))
+                                        "dis_amount": float("%.2f" % float(m[3]))
                                     }
                                 )
                     mongo.order.update_one(pdict, {
