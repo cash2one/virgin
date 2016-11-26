@@ -1401,6 +1401,7 @@ def dish_menu_count():
                     dis_message = []
                     deposit = 0.0
                     if mycoupons:
+                        print mycoupons
                         for m in mycoupons[1]:
                             deposit += m[0]
                             coupons = mongo.coupons.find({"_id": ObjectId(m[4])})
