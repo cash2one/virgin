@@ -64,6 +64,7 @@ def getcoupons(kind, restaurant_id, flag='1'):
 #获取首页店粉优惠大图
 def getimg(restaurant_id):
     item = mongo.restaurant.find({"_id":ObjectId(restaurant_id)},{'guide_image':1})
+    img = ""
     for i in item:
         for key in i.keys():
             if key == 'guide_image':
@@ -585,4 +586,4 @@ if __name__ == '__main__':
     # list = coupons_by({"restaurant_id":ObjectId("57329e300c1d9b2f4c85f8e6"),"kind":"2","button":"0"})
     # print json_util.dumps(list,ensure_ascii=False,indent=2)
     # print json_util.dumps(use_coupons(total = 50.0,dish_total = 40.0,wine_total = 10.0,restaurant_id='57329e300c1d9b2f4c85f8e6',webuser_id='57396ec17c1f31a9cce960f4'),ensure_ascii=False,indent=2)
-    print getxingzhengqu_id(4193433)
+    print getimg('5816e7fb0c1d9bd5630b4f85')

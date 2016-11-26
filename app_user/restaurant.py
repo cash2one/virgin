@@ -152,7 +152,7 @@ def index():
                     coupons['id2'] = getcoupons('2',idlist[num])['id']
                     coupons['title3'] = getcoupons('3',idlist[num])['content']
                     coupons['id3'] = getcoupons('3',idlist[num])['id']
-                    # coupons['img'] = getimg(idlist[num])
+                    coupons['img'] = getimg(idlist[num])
                     num+=1
                     couponslist.append(coupons)
                 data['coupons'] = couponslist
