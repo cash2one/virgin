@@ -13,7 +13,9 @@ mongo=conn.mongo_conn()
 
 def getroomslist(restaurant_id, preset_time):
     start=datetime.datetime(*time.strptime(preset_time,'%Y-%m-%d')[:6])
+    print start
     end = datetime.datetime(*time.strptime(preset_time,'%Y-%m-%d')[:6])+datetime.timedelta(days = 1)
+    print end
     rooms=mongo.restaurant.find_one({"_id":ObjectId(restaurant_id)},{"rooms":1})
     a=json_util.loads(json_util.dumps(rooms))
     b = a["rooms"]
@@ -35,11 +37,12 @@ def getroomslist(restaurant_id, preset_time):
                 item={}
                 item["room_id"]=i1["room_id"]
                 item["room_name"]=i1["room_name"]
-                pdict = {'room_id':i1['room_id'],'status':3,'preset_time': {'$gte': start, '$lt': end}}
+                pdict = {'room_id':i1['room_id'],'status':{"$in":[1,3]},'preset_time': {'$gte': start, '$lt': end}}
                 orderbyroom = mongo.order.find(pdict).sort('add_time', pymongo.DESCENDING)
                 orderlist = []
 
                 for order in orderbyroom:
+                    print order
                     orderdict = {}
                     for inorder in order.keys():
                         if inorder == '_id':
@@ -94,4 +97,4 @@ def getroomorderlist(restaurant_id,preset_time):
         data.append(jsontitle)
     print json_util.dumps(data,ensure_ascii=False,indent=2)
 if __name__ == '__main__':
-    print json_util.dumps(getroomslist("5816e7fb0c1d9bd5630b4f85","2016-11-29"),ensure_ascii=False,indent=2)
+    print json_util.dumps(getroomslist("5816e7fb0c1d9bd5630b4f85","2016-11-28"),ensure_ascii=False,indent=2)
