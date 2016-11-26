@@ -1692,11 +1692,12 @@ def getroom():
                              ext='{"goto":"1","id":"' + str(orderid) + '"}',
                              ispush=True)
             else:
+                myorder = mongo.order.find({'webuser_id': ObjectId(request.form['webuser_id']),
+                                            "restaurant_id": ObjectId(request.form['restaurant_id']), 'status': 8})
                 mongo.order.update({'webuser_id': ObjectId(request.form['webuser_id']),
                                     "restaurant_id": ObjectId(request.form['restaurant_id']), 'status': 8},
                                    {"$set": json})
-                myorder = mongo.order.find({'webuser_id': ObjectId(request.form['webuser_id']),
-                                            "restaurant_id": ObjectId(request.form['restaurant_id']), 'status': 8})
+
                 orderid = ''
                 for o in myorder:
                     orderid = o['_id']

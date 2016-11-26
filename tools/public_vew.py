@@ -1,11 +1,14 @@
 #--coding:utf-8--#
 import pymongo
+import sys
 from flask import request
 import datetime
 _author_='hcy'
 from connect import conn
 from bson import ObjectId,json_util
 import time
+reload(sys)
+sys.setdefaultencoding('utf8')
 mongo=conn.mongo_conn()
 
 def getroomslist(restaurant_id, preset_time):
@@ -90,3 +93,5 @@ def getroomorderlist(restaurant_id,preset_time):
         jsontitle = {i['room_people_name']:json}
         data.append(jsontitle)
     print json_util.dumps(data,ensure_ascii=False,indent=2)
+if __name__ == '__main__':
+    print json_util.dumps(getroomslist("5816e7fb0c1d9bd5630b4f85","2016-11-29"),ensure_ascii=False,indent=2)
