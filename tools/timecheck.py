@@ -27,15 +27,15 @@ class TimeCheck():
     def update_order(self, status=None):
         try:
             print self.list
-            self.mongo.update({"_id":{"$in":self.list}},{"$set":{"status":status,"add_time":datetime.datetime.now()}},False,True)
+            print self.mongo.update({"_id":{"$in":self.list}},{"$set":{"status":status,"add_time":datetime.datetime.now()}},multi=True)
             return True
         except Exception,e:
             print e
             return False
 if __name__ == '__main__':
     pass
-    # TimeCheck(status= [0,2], source=[2], timeout=45).update_order(7)
-    # TimeCheck(status= [1], source=[2], timeout=45).update_order(6)
+    TimeCheck(status= [0,2], source=[2], timeout=45).update_order(7)
+    TimeCheck(status= [1], source=[2], timeout=45).update_order(6)
     # TimeCheck(status= [0,2], source=[2], timeout=45)
     # TimeCheck(status= [1], source=[2], timeout=45)
 

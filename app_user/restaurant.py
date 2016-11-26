@@ -131,7 +131,7 @@ def index():
                 #店粉优惠 随机两个饭店 开始
                 count = len(mongo.coupons.distinct('restaurant_id',{'showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()},"$or":[{"button":"0"}, {"button":0}]}))
                 if count>=2:
-                    randomnum = random.randint(count-2, count)
+                    randomnum = random.randint(0, count-2)
                 else:
                     randomnum = 0
                 restaurant_id = mongo.coupons.distinct('restaurant_id',{'showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()},"$or":[{"button":"0"}, {"button":0}]})[randomnum:randomnum+2]
@@ -152,7 +152,7 @@ def index():
                     coupons['id2'] = getcoupons('2',idlist[num])['id']
                     coupons['title3'] = getcoupons('3',idlist[num])['content']
                     coupons['id3'] = getcoupons('3',idlist[num])['id']
-                    coupons['img'] = getimg(idlist[num])
+                    # coupons['img'] = getimg(idlist[num])
                     num+=1
                     couponslist.append(coupons)
                 data['coupons'] = couponslist

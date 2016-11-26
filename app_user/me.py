@@ -578,8 +578,8 @@ def order_info():
         if auto.decodejwt(request.form['jwtstr']):
 
             # try:
-                TimeCheck(status= [0,2], source=[2], timeout=45)
-                TimeCheck(status= [1], source=[2], timeout=45)
+                TimeCheck(status= [0,2], source=[2], timeout=45).update_order(7)
+                TimeCheck(status= [1], source=[2], timeout=45).update_order(6)
 
                 item = mongo.order.find({"_id":ObjectId(request.form['order_id'])})
                 data = {}

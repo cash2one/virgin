@@ -189,7 +189,7 @@ def allorder():
                     'restaurant_id':ObjectId(request.form["restaurant_id"]),
                     'source':2
                 }
-                if int(request.form["status"]) != -1 and int(request.form["status"])!=8:
+                if int(request.form["status"]) not in [-1,8]:
                     pdict['status'] = int(request.form["status"])
                 if int(request.form["type"]) != -1:
                     pdict['type'] = int(request.form["type"])
