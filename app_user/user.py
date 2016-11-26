@@ -185,6 +185,7 @@ def make_sure_sms_send(phone, ident):
                        'tpl': 'SMS_'+tpl,
                        'code': ''})
         result = req.send_sms('SMS_'+tpl)['callback']
+        print result
         if 'result' in result:
             result['success'] = True
             return result
