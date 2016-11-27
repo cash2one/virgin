@@ -188,8 +188,9 @@ def make_sure_sms_send(phone, ident):
                 'ex': '#foodmap.mobile'
                 }
         req = requests.post(settings.SMSnetgate + '/sms.send', data)
-        result = req.json().get('callback')
-        if 'success' in result:
+        result = req.json().get('callback',{})
+        if 'success' in result.get("result"):
+            result['success'] = True
             return result
     result['success'] = False
     return result

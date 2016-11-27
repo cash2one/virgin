@@ -2305,6 +2305,7 @@ def getorder():
                 #.sort("preset_time",pymongo.DESCENDING)[0:1]
                 order_item = conn.mongo_conn().order.find({"webuser_id":ObjectId(webuser_id),"restaurant_id":ObjectId(restaurant_id),"status":3})
                 list = []
+                restaurant_name = ''
                 for i in order_item:
                     json = {}
                     for key in i.keys():
@@ -2325,14 +2326,13 @@ def getorder():
                         elif key == 'restaurant_id':
                             json['restaurant_id'] = str(i[key])
                             item = mongo.restaurant.find({"_id": ObjectId(str(i[key]))})
-                            restaurant_name = ''
+
                             rnanme = ''
                             for j in item:
                                 restaurant_name = j['name']
                                 for r in j['rooms']:
                                     if i['room_id'] == r['room_id']:
                                         rnanme = r['room_name']
-                            json['restaurant_name'] = restaurant_name
                             json['roomname'] = rnanme
                         else:
                             json[key] = i[key]
@@ -2359,6 +2359,7 @@ def getorder():
                     json['mycoupons_list'] = mycoupons_list
                     list.append(json)
                     data['order'] = list
+                    data['restaurant_name'] = restaurant_name
                 result = tool.return_json(0, "success", True, data)
                 return json_util.dumps(result, ensure_ascii=False, indent=2)
             # except Exception, e:

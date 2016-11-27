@@ -117,6 +117,7 @@ def send_sms2():
                         # req = requests.post(SMSnetgate + '/sms.send', data)
                         # result=tool.return_json(0,"success",True,{"ispass":req.json()['success'],"message":"成功"})
                         send = make_sure_sms_send(request.form['phone'], "")
+                        print send
                         result=tool.return_json(0,"success",True,{"ispass":send['success']})
 
                 else:
