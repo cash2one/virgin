@@ -414,11 +414,11 @@ def mycoupons():
                 star = (int(pageindex)-1)*pagenum
                 end = (pagenum*int(pageindex))
                 if int(status) == 1:
-                    first = {"webuser_id":ObjectId(request.form["webuser_id"]),"indate_end":{"$lt":datetime.datetime.now()},"status":str(status)}
+                    first = {"webuser_id":ObjectId(request.form["webuser_id"]),"indate_end":{"$gt":datetime.datetime.now()},"status":str(status)}
                 elif int(status) == 2:
                     first = {"webuser_id":ObjectId(request.form["webuser_id"]),"status":str(status)}
                 else:
-                    first = {}
+                    first = {"webuser_id":ObjectId(request.form["webuser_id"]),"indate_end":{"$lt":datetime.datetime.now()}}
                 item = mongo.mycoupons.find(first).sort("indate_end", pymongo.DESCENDING)[star:end]
                 data = {}
                 list = []
