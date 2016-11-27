@@ -1394,7 +1394,7 @@ def dish_menu_count():
                         wine_total += (w[2] * w[1])
                     total = wine_total + dish_total
                     order_num = wine_num + dish_num
-                    print wine_num, dish_num, dish_total, wine_total
+                    # print wine_num, dish_num, dish_total, wine_total
                     mycoupons = use_coupons(total=total, dish_total=dish_total, wine_total=wine_total,
                                             restaurant_id=request.form['restaurant_id'],
                                             webuser_id=request.form['webuser_id'])
@@ -1404,7 +1404,7 @@ def dish_menu_count():
                         print mycoupons
                         for m in mycoupons[1]:
                             deposit += m[0]
-                            print m[4]
+                            # print m
                             coupons = mongo.coupons.find({"_id": ObjectId(m[4])})
                             for c in coupons:
                                 content = ''

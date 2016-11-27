@@ -241,7 +241,7 @@ class GroupInvite:
         if not self.the_invite:
             return {'success': False, 'error': 'code error'}
         if not user_id or (user_id == self.invite_order['master_id']):
-            raise Exception('mod need user_id inside or the user is master')
+            return {'success': False, 'error': 'mod need user_id inside or the user is master'}
         self.mark_timeout()
         if self.invite_order['status'] == 'timeout':
             return {'success': False, 'error': 'timeout! start_time: %s' % self.invite_order['start_time']}

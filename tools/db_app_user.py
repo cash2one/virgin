@@ -382,11 +382,11 @@ def use_coupons(total = 50.0,dish_total = 40.0,wine_total = 10.0,restaurant_id='
                                  "restaurant_id": ObjectId(restaurant_id)})
     for m in mycoupons:
         mycoupons_list.append(ObjectId(m['coupons_id']))
-    print 'mycoupons_list',mycoupons_list
+    # print 'mycoupons_list',mycoupons_list
     list = []
     coupons = mongo.coupons.find({"_id":{"$in":mycoupons_list},"$or":[{"button":"0"}, {"button":0}],"type":{"$in":["1","2"]}})
     for c in coupons:
-        print c
+        # print c
         if c['indate_start']<datetime.datetime.now()<c['indate_end']:
             if c['type'] == '1':
                 list.append([c['cross-claim'],'1',c['rule'],c['money'],str(c['_id'])])
@@ -394,8 +394,8 @@ def use_coupons(total = 50.0,dish_total = 40.0,wine_total = 10.0,restaurant_id='
                 list.append([total - total * c['cross-claim'],'2',c['rule'],c['money'],str(c['_id'])])
         else:
             pass
-    print 'kind1', kind1
-    print 'sorted(list,reverse=1)',sorted(list,reverse=1)
+    # print 'kind1', kind1
+    # print 'sorted(list,reverse=1)',sorted(list,reverse=1)
     list = sorted(list,reverse=1)
     if kind1 !=[]:
         if kind1[2] == '0':
@@ -471,7 +471,7 @@ def use_coupons(total = 50.0,dish_total = 40.0,wine_total = 10.0,restaurant_id='
                 pass
     # print finel
     tishi = ''
-    print list,'11111111111111'
+    # print list,'11111111111111'
     for l in list:
         if l[2] == '1' and l[3]>total:
             if l[1] == '1':

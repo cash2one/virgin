@@ -676,7 +676,8 @@ kaituan_json = {
               "invite_code":kaituan.String(description='邀请码',default="123645"),
               "status": kaituan.String(description='开团状态',default="已超时"),
               "rest_name": kaituan.String(description='饭店名',default="10号熏酱骨头馆"),
-              "time": kaituan.String(description='开团时效',default="活动已结束")
+              "time": kaituan.String(description='开团时效',default="活动已结束"),
+                "is_master": kaituan.String(description='1是0否我发起的开团',default="1")
             }
         ]
         }
