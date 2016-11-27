@@ -201,7 +201,7 @@ coupons_info1_json = {
             "address": coupons_info1.String(description='地址',default="哈尔滨市南岗区马家街132-2号"),
             "id": coupons_info1.String(description='饭店id',default="57329e300c1d9b2f4c85f8e6"),
             "name": coupons_info1.String(description='饭店名',default="阿东海鲜老菜馆"),
-
+            "isget": coupons_info1.String(description='1是0否抢过优惠',default="1"),
     }
 }
 coupons_info1.add_parameter(name='jwtstr',parametertype='formData',type='string',required= True,description='jwt串',default='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW9taW5nIjoiY29tLnhtdC5jYXRlbWFwc2hvcCIsImlkZW50IjoiOUM3MzgxMzIzOEFERjcwOEY3MkI3QzE3RDFEMDYzNDlFNjlENUQ2NiIsInR5cGUiOiIxIn0.pVbbQ5qxDbCFHQgJA_0_rDMxmzQZaTlmqsTjjWawMPs')
