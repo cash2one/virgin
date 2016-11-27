@@ -420,7 +420,7 @@ def ordercounts1():
                         "allcount": 0.0,
                         "mcount": 0.0
                       }
-                pdict = {'status':{'$in': [0, 2, 3, 4, 5, 6, 7]},'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
+                pdict = {'status':{'$in': [0,1, 2, 3, 4, 5, 6, 7]},'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
                 ndict = { '$group' : { '_id' : "$restaurant_id", 'numpeople': {'$sum': "$numpeople"} }}
                 allcount = mongo.order.find(pdict).count()
                 anumpeoples = mongo.order.aggregate([{ '$match' : pdict}, ndict])
@@ -440,7 +440,7 @@ def ordercounts1():
                 for i in mnumpeople:
                     data['mnumpeople'] = i['numpeople']
                 gdict = { '$group' : { '_id' : "$restaurant_id", 'total': {'$sum': "$total"} }}
-                pdict['status'] = {'$in': [0, 2, 3, 4]}
+                pdict['status'] = {'$in': [0,1, 2, 3, 4]}
                 atotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
                 for a in atotal:
                     data['atotal'] = a['total']
@@ -453,7 +453,7 @@ def ordercounts1():
                 for a in amtotal:
                     data['amtotal'] = a['total']
                 pdict = {'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
-                pdict['status'] = {'$in': [0, 2, 3]}
+                pdict['status'] = {'$in': [0,1, 2, 3]}
 
                 watotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
                 for a in watotal:
@@ -524,7 +524,7 @@ def ordercounts():
                         "allcount": 0.0,
                         "mcount": 0.0
                       }
-                pdict = {'status':{'$in': [0, 2, 3, 4, 5, 6, 7]},'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
+                pdict = {'status':{'$in': [0,1, 2, 3, 4, 5, 6, 7]},'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
                 ndict = { '$group' : { '_id' : "$restaurant_id", 'numpeople': {'$sum': "$numpeople"} }}
                 allcount = mongo.order.find(pdict).count()
                 anumpeoples = mongo.order.aggregate([{ '$match' : pdict}, ndict])
@@ -544,7 +544,7 @@ def ordercounts():
                 for i in mnumpeople:
                     data['mnumpeople'] = i['numpeople']
                 gdict = { '$group' : { '_id' : "$restaurant_id", 'total': {'$sum': "$total"} }}
-                pdict['status'] = {'$in': [0, 2, 3, 4]}
+                pdict['status'] = {'$in': [0,1, 2, 3, 4]}
                 atotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
                 for a in atotal:
                     data['atotal'] = a['total']
@@ -557,7 +557,7 @@ def ordercounts():
                 for a in amtotal:
                     data['amtotal'] = a['total']
                 pdict = {'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
-                pdict['status'] = {'$in': [0, 2, 3]}
+                pdict['status'] = {'$in': [0,1, 2, 3]}
 
                 watotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
                 for a in watotal:

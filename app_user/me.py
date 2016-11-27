@@ -141,10 +141,10 @@ def infos_update():
                 webuser_id = request.form['webuser_id']
                 nickname = request.form['nickname']
                 headimage = request.form['headimage']
-                mongo.webuser.update_one({"_id":ObjectId(webuser_id)},{"$set":{"nickname":nickname, "headimage":headimage}})
+                webuser = mongo.webuser.update_one({"_id":ObjectId(webuser_id)},{"$set":{"nickname":nickname, "headimage":headimage}}).raw_result
                 json = {
-                        "status": 1,
-                        "msg":"修改成功"
+                    'status': 1 if webuser['updatedExisting'] else 0,
+                    'msg': '修改成功' if webuser['updatedExisting'] else '修改失败'
                 }
                 result=tool.return_json(0,"success",True,json)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
@@ -408,14 +408,20 @@ def mycoupons():
 
             try:
                 pass
+                status = request.form['status']
                 pageindex = request.form["pageindex"]
                 pagenum = 10
                 star = (int(pageindex)-1)*pagenum
                 end = (pagenum*int(pageindex))
-                item = mongo.mycoupons.find({"webuser_id":ObjectId(request.form["webuser_id"])}).sort("indate_end", pymongo.DESCENDING)[star:end]
+                if int(status) == 1:
+                    first = {"webuser_id":ObjectId(request.form["webuser_id"]),"indate_end":{"$lt":datetime.datetime.now()},"status":str(status)}
+                elif int(status) == 2:
+                    first = {"webuser_id":ObjectId(request.form["webuser_id"]),"status":str(status)}
+                else:
+                    first = {}
+                item = mongo.mycoupons.find(first).sort("indate_end", pymongo.DESCENDING)[star:end]
                 data = {}
                 list = []
-                status = request.form['status']
                 for i in item:
                     json = {
                         "r_name" : i['r_name'],
@@ -426,13 +432,7 @@ def mycoupons():
                         "role" : i['role'],
                         "rest_id":str(i['restaurant_id'])
                     }
-                    if i['status'] == status and i['indate_end']>datetime.datetime.now():
-                        print 'in'
-                        list.append(json)
-                    elif i['status'] == status:
-                        list.append(json)
-                    else:
-                        list.append(json)
+                    list.append(json)
                 data['list'] = list
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
