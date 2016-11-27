@@ -2325,11 +2325,14 @@ def getorder():
                         elif key == 'restaurant_id':
                             json['restaurant_id'] = str(i[key])
                             item = mongo.restaurant.find({"_id": ObjectId(str(i[key]))})
+                            restaurant_name = ''
                             rnanme = ''
                             for j in item:
+                                restaurant_name = j['name']
                                 for r in j['rooms']:
                                     if i['room_id'] == r['room_id']:
                                         rnanme = r['room_name']
+                            json['restaurant_name'] = restaurant_name
                             json['roomname'] = rnanme
                         else:
                             json[key] = i[key]
