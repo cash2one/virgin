@@ -363,7 +363,7 @@ def coupons_by(first={}):
             else:
                 json['num'] = -1
     return json
-def use_coupons(total = 50.0,dish_total = 40.0,wine_total = 10.0,restaurant_id='57329e300c1d9b2f4c85f8e6',webuser_id='57396fd67c1f31a9cce960f8'):
+def use_coupons(total = 50.0,dish_total = 40.0,wine_total = 10.0,restaurant_id='5816e7fb0c1d9bd5630b4f85',webuser_id='5817fb490c1d9b95951b72a2'):
     finel = []
     # total = 50
     # dish_total = 40
@@ -471,7 +471,7 @@ def use_coupons(total = 50.0,dish_total = 40.0,wine_total = 10.0,restaurant_id='
                 pass
     # print finel
     tishi = ''
-    print list
+    print list,'11111111111111'
     for l in list:
         if l[2] == '1' and l[3]>total:
             if l[1] == '1':
@@ -586,4 +586,4 @@ if __name__ == '__main__':
     # list = coupons_by({"restaurant_id":ObjectId("57329e300c1d9b2f4c85f8e6"),"kind":"2","button":"0"})
     # print json_util.dumps(list,ensure_ascii=False,indent=2)
     # print json_util.dumps(use_coupons(total = 50.0,dish_total = 40.0,wine_total = 10.0,restaurant_id='57329e300c1d9b2f4c85f8e6',webuser_id='57396ec17c1f31a9cce960f4'),ensure_ascii=False,indent=2)
-    print getimg('5816e7fb0c1d9bd5630b4f85')
+    print use_coupons()

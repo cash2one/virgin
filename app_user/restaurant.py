@@ -1404,6 +1404,7 @@ def dish_menu_count():
                         print mycoupons
                         for m in mycoupons[1]:
                             deposit += m[0]
+                            print m[4]
                             coupons = mongo.coupons.find({"_id": ObjectId(m[4])})
                             for c in coupons:
                                 content = ''
@@ -1548,7 +1549,8 @@ def dish_menu_list():
                     y_list = []
                     dis_amounts = 0.0
                     for dis in i['dis_message']:
-                        dis_amounts += float(dis['dis_amount'])
+                        if dis['dis_amount']!= '':
+                            dis_amounts += float(dis['dis_amount'])
                         if dis['dis_type'] == '1':
                             y_list.append({
                                 'msg': '<font size=\"3\">' + '关注即享:' + '<font size=\"3\" color=\"red\">' + str(
@@ -2290,7 +2292,7 @@ getorder_json = {
 def getorder():
     if request.method == 'POST':
         if auto.decodejwt(request.form['jwtstr']):
-            try:
+            # try:
                 webuser_id = request.form['webuser_id']
                 restaurant_id = request.form['restaurant_id']
                 data = {}
@@ -2322,12 +2324,19 @@ def getorder():
                             json['webuser_id'] = str(i[key])
                         elif key == 'restaurant_id':
                             json['restaurant_id'] = str(i[key])
-                            json['roomlist'] = public.getroomslist(i[key],i['preset_time'].strftime("%Y-%m-%d"))['list']
+                            item = mongo.restaurant.find({"_id": ObjectId(str(i[key]))})
+                            rnanme = ''
+                            for j in item:
+                                for r in j['rooms']:
+                                    if i['room_id'] == r['room_id']:
+                                        rnanme = r['room_name']
+                            json['roomname'] = rnanme
                         else:
                             json[key] = i[key]
                         dis_amounts = 0.0
                         for dis in i['dis_message']:
-                            dis_amounts += float(dis['dis_amount'])
+                            if dis['dis_amount'] !="":
+                                dis_amounts += float(dis['dis_amount'])
                         json['yingfu'] = str('%.2f' % (float(i['total']) - float(dis_amounts)))
                         json['yajin'] =  str('%.2f' % (float('%.2f' % (float(i['total']) - float(dis_amounts))) * 0.1))
                         json['dianfu'] = str('%.2f' % (float('%.2f' % (float(i['total']) - float(dis_amounts))) * 0.9))
@@ -2349,10 +2358,10 @@ def getorder():
                     data['order'] = list
                 result = tool.return_json(0, "success", True, data)
                 return json_util.dumps(result, ensure_ascii=False, indent=2)
-            except Exception, e:
-                print e
-                result = tool.return_json(0, "field", True, str(e))
-                return json_util.dumps(result, ensure_ascii=False, indent=2)
+            # except Exception, e:
+            #     print e
+            #     result = tool.return_json(0, "field", True, str(e))
+            #     return json_util.dumps(result, ensure_ascii=False, indent=2)
         else:
             result = tool.return_json(0, "field", False, None)
             return json_util.dumps(result, ensure_ascii=False, indent=2)
@@ -2407,5 +2416,6 @@ def update_status():
     else:
         return abort(403)
 if __name__ == '__main__':
-    kaituan = GroupInvite().all_item
-    print json_util.dumps(kaituan, ensure_ascii=False, indent=2)
+    # kaituan = GroupInvite().all_item
+    # print json_util.dumps(kaituan, ensure_ascii=False, indent=2)
+    print float("")

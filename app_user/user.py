@@ -176,22 +176,25 @@ def password_reset():
 
 def make_sure_sms_send(phone, ident):
     tpl_list = ['8161119', '7945138', '16040003', '16035004']
-    result = None
-    from tools.user_infos import GetUser
+    result = {}
+    from connect import settings
+    import requests
+    import random
     for tpl in tpl_list:
-        req = GetUser({'phone': phone,
-                       'ident': ident,
-                       'ex': '#foodmap.mobile',
-                       'tpl': 'SMS_'+tpl,
-                       'code': ''})
-        result = req.send_sms('SMS_'+tpl)['callback']
-        print result
-        if 'result' in result:
-            result['success'] = True
+        data = {'sign': '美食地图',
+                'tpl': 'SMS_%s' % tpl,
+                'param': json.dumps({"code": str(random.randint(1000000, 9999999))[1:]}),
+                'tel': phone,
+                'ex': '#foodmap.mobile'
+                }
+        req = requests.post(settings.SMSnetgate + '/sms.send', data)
+        result = req.json().get('callback')
+        if 'success' in result:
             return result
     result['success'] = False
     return result
     pass
+
 @user_api.route('/admin/v1/login/', methods=['POST'])
 def admin_login():
     if request.method == 'POST':
