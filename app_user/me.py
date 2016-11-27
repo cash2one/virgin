@@ -406,7 +406,7 @@ def mycoupons():
     if request.method=='POST':
         if auto.decodejwt(request.form['jwtstr']):
 
-            try:
+            # try:
                 pass
                 status = request.form['status']
                 pageindex = request.form["pageindex"]
@@ -436,10 +436,10 @@ def mycoupons():
                 data['list'] = list
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
-            except Exception,e:
-                print e
-                result=tool.return_json(0,"field",True,str(e))
-                return json_util.dumps(result,ensure_ascii=False,indent=2)
+            # except Exception,e:
+            #     print e
+            #     result=tool.return_json(0,"field",True,str(e))
+            #     return json_util.dumps(result,ensure_ascii=False,indent=2)
         else:
             result=tool.return_json(0,"field",False,None)
             return json_util.dumps(result,ensure_ascii=False,indent=2)
