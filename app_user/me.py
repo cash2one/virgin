@@ -695,12 +695,16 @@ def kaituan():
                 pagenum = 10
                 star = (int(pageindex)-1)*pagenum
                 end = (pagenum*int(pageindex))
-                item = mongo.order_groupinvite.find({"master_id":request.form['master_id']}).sort("add_time", pymongo.DESCENDING)[star:end]
+                item = mongo.order_groupinvite.find({"$or":[{"master_id":request.form['master_id']},{"friends":{"$in":[request.form['master_id']]}}]}).sort("add_time", pymongo.DESCENDING)[star:end]
                 data = {}
                 list = []
                 # 'wait_friends', 'wait_pay', 'already_payment', 'already_used', 'time_out'
                 for i in item:
                     json = {}
+                    if i['master_id'] == request.form['master_id']:
+                        json['is_master'] = '1'
+                    else:
+                        json['is_master'] = '0'
                     json["rest_name"] = i['restaurant_info']['name']
                     # json["rest_id"] = i['restaurant_info']['rid']
                     json['status'] = i['status']
