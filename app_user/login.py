@@ -100,7 +100,10 @@ def send_sms2():
                         # req = requests.post(SMSnetgate + '/sms.send', data)
                         # result=tool.return_json(0,"success",True,{"ispass":req.json()['success'],"message":"成功"})
                         send = make_sure_sms_send(request.form['phone'], "")
-                        result=tool.return_json(0,"success",True,{"ispass":send['success'],"message":"成功"})
+                        if send['success']:
+                            result=tool.return_json(0,"success",True,{"ispass":send['success'],"message":"成功"})
+                        else:
+                            result=tool.return_json(0,"success",True,{"ispass":send['success'],"message":"系统繁忙，请稍后重试"})
                     else:
                         result=tool.return_json(0,"field",True,{"ispass":False,"message":"请先注册"})
                     pass
@@ -117,8 +120,10 @@ def send_sms2():
                         # req = requests.post(SMSnetgate + '/sms.send', data)
                         # result=tool.return_json(0,"success",True,{"ispass":req.json()['success'],"message":"成功"})
                         send = make_sure_sms_send(request.form['phone'], "")
-                        print send
-                        result=tool.return_json(0,"success",True,{"ispass":send['success'],"message":"成功"})
+                        if send['success']:
+                            result=tool.return_json(0,"success",True,{"ispass":send['success'],"message":"成功"})
+                        else:
+                            result=tool.return_json(0,"success",True,{"ispass":send['success'],"message":"系统繁忙，请稍后重试"})
 
                 else:
                     result=tool.return_json(0,"field",True,{"ispass":False,"message":"请使用正确的type"})
@@ -165,7 +170,10 @@ def register():
                 # 'code': code}
                 # req = requests.post(SMSnetgate + '/sms.validate', data)
                 send = make_sure_sms_send(request.form['phone'], "")
-                result=tool.return_json(0,"success",True,{"ispass":send['success'],"message":"成功"})
+                if send['success']:
+                    result=tool.return_json(0,"success",True,{"ispass":send['success'],"message":"成功"})
+                else:
+                    result=tool.return_json(0,"success",True,{"ispass":send['success'],"message":"系统繁忙，请稍后重试"})
                 if send['success']:
                     data = {
                         "status": 1,
@@ -401,7 +409,10 @@ def code_login():
                     #     'code': code}
                     # req = requests.post(SMSnetgate + '/sms.validate', data)
                     send = make_sure_sms_send(request.form['phone'], "")
-                    result=tool.return_json(0,"success",True,{"ispass":send['success'],"message":"成功"})
+                    if send['success']:
+                        result=tool.return_json(0,"success",True,{"ispass":send['success'],"message":"成功"})
+                    else:
+                        result=tool.return_json(0,"success",True,{"ispass":send['success'],"message":"系统繁忙，请稍后重试"})
                     if send['success']:
                         found['_id'] = str(found['_id']['$oid'])
                         user = conn.mongo_conn().webuser.find({"automembers_id":found['_id']})
@@ -460,7 +471,10 @@ def resetpassword():
                 #         'code': code}
                 # req = requests.post(SMSnetgate + '/sms.validate', data)
                 send = make_sure_sms_send(request.form['phone'], "")
-                result=tool.return_json(0,"success",True,{"ispass":send['success'],"message":"成功"})
+                if send['success']:
+                    result=tool.return_json(0,"success",True,{"ispass":send['success'],"message":"成功"})
+                else:
+                    result=tool.return_json(0,"success",True,{"ispass":send['success'],"message":"系统繁忙，请稍后重试"})
                 if send['success']:
                     found = mongo.find({'phone': phone, 'appid.2':True})
                     if found:
