@@ -164,17 +164,12 @@ def register():
                 phone = request.form['phone']
                 password = request.form['password']
                 code = request.form['code']
-                # data = {'tel': phone,
-                # 'ex': '#foodmap.mobile',
-                # 'tpl': 'SMS_8161119',
-                # 'code': code}
-                # req = requests.post(SMSnetgate + '/sms.validate', data)
-                send = make_sure_sms_send(request.form['phone'], "")
-                if send['success']:
-                    result=tool.return_json(0,"success",True,{"ispass":send['success'],"message":"成功"})
-                else:
-                    result=tool.return_json(0,"success",True,{"ispass":send['success'],"message":"系统繁忙，请稍后重试"})
-                if send['success']:
+                data = {'tel': phone,
+                'ex': '#foodmap.mobile',
+                'tpl': 'SMS_8161119',
+                'code': code}
+                req = requests.post(SMSnetgate + '/sms.validate', data)
+                if req.json()['success']:
                     data = {
                         "status": 1,
                         "identification": "",
@@ -403,17 +398,12 @@ def code_login():
                         }
                     })
                     found = found[0]
-                    # data = {'tel': phone,
-                    #     'ex': '#foodmap.mobile',
-                    #     'tpl': 'SMS_8161119',
-                    #     'code': code}
-                    # req = requests.post(SMSnetgate + '/sms.validate', data)
-                    send = make_sure_sms_send(request.form['phone'], "")
-                    if send['success']:
-                        result=tool.return_json(0,"success",True,{"ispass":send['success'],"message":"成功"})
-                    else:
-                        result=tool.return_json(0,"success",True,{"ispass":send['success'],"message":"系统繁忙，请稍后重试"})
-                    if send['success']:
+                    data = {'tel': phone,
+                        'ex': '#foodmap.mobile',
+                        'tpl': 'SMS_8161119',
+                        'code': code}
+                    req = requests.post(SMSnetgate + '/sms.validate', data)
+                    if req.json()['success']:
                         found['_id'] = str(found['_id']['$oid'])
                         user = conn.mongo_conn().webuser.find({"automembers_id":found['_id']})
                         user_id = ''
@@ -465,17 +455,12 @@ def resetpassword():
                 phone = request.form['phone']
                 code = request.form['code']
                 password = request.form['password']
-                # data = {'tel': phone,
-                #         'ex': '#foodmap.mobile',
-                #         'tpl': 'SMS_8161119',
-                #         'code': code}
-                # req = requests.post(SMSnetgate + '/sms.validate', data)
-                send = make_sure_sms_send(request.form['phone'], "")
-                if send['success']:
-                    result=tool.return_json(0,"success",True,{"ispass":send['success'],"message":"成功"})
-                else:
-                    result=tool.return_json(0,"success",True,{"ispass":send['success'],"message":"系统繁忙，请稍后重试"})
-                if send['success']:
+                data = {'tel': phone,
+                        'ex': '#foodmap.mobile',
+                        'tpl': 'SMS_8161119',
+                        'code': code}
+                req = requests.post(SMSnetgate + '/sms.validate', data)
+                if req.json()['success']:
                     found = mongo.find({'phone': phone, 'appid.2':True})
                     if found:
                         found = found[0]
