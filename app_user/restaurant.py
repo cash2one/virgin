@@ -913,6 +913,7 @@ def restaurant_info():
             item = mongo.restaurant.find({"_id": ObjectId(request.form['restaurant_id'])})
             data = {}
             for i in item:
+                data['zuobiao'] = i['zuobiao'][0]
                 data['id'] = str(i['_id'])
                 data['zc1'] = i['zc1']
                 data['zc2'] = i['zc2']
