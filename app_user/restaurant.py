@@ -2405,9 +2405,10 @@ def update_status():
                         bidlist.append(ObjectId(mid))
                 mycoupons = conn.mongo_conn().mycoupons.update({"webuser_id":ObjectId(webuser_id),"restaurant_id":ObjectId(restaurant_id),"coupons_id":{"$in":bidlist}},{"$set":{"status":"2"}},False,True)
                 if kaituan_id !="":
-                    kaituan = conn.mongo_conn().order_groupinvite.update({"group_id":kaituan_id,"master_id":webuser_id,"restaurant_info.rid":restaurant_id},{"$set":{"status":"already_used"}},False,True)
+                    item = conn.mongo_conn().order_groupinvite.update({"group_id":kaituan_id,"master_id":webuser_id,"restaurant_info.rid":restaurant_id},{"$set":{"status":"already_used"}},False,True)
                 else:
-                    order = conn.mongo_conn().order.update({"_id":ObjectId(order_id)},{"$set":{"status":4}})
+                    item = conn.mongo_conn().order.update({"_id":ObjectId(order_id)},{"$set":{"status":4}})
+                data['success'] = item['updatedExisting']
                 result = tool.return_json(0, "success", True, data)
                 return json_util.dumps(result, ensure_ascii=False, indent=2)
             except Exception, e:
