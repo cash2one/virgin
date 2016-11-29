@@ -557,6 +557,7 @@ def ordercounts():
                 pdict['source'] = 2
                 amtotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
                 for a in amtotal:
+                    print a,'11111111111111111111'
                     data['amtotal'] = a['total']
                 pdict = {'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
                 pdict['status'] = {'$in': [0,1, 2, 3]}

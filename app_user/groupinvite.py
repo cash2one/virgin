@@ -208,13 +208,13 @@ class GroupInvite:
             if not self._is_invited(master_id):
                 is_insert = db_order.insert(insert_data)
             else:
-                return {'_id': '', 'code': '', 'error': 'already in the invite'}
+                return {'_id': '', 'code': '', 'error': 'already in the invite','status':'1'}
         else:
-            return {'_id': '', 'code': '', 'error': 'available_num is %s' % available_num}
+            return {'_id': '', 'code': '', 'error': 'available_num is %s' % available_num,'status':'2'}
         if is_insert:
-            return {'_id': is_insert, 'code': insert_data['invite_code'], 'error': ''}
+            return {'_id': is_insert, 'code': insert_data['invite_code'], 'error': '','status':'0'}
         else:
-            return {'_id': '', 'code': '', 'error': 'cant inster: %s' % is_insert}
+            return {'_id': '', 'code': '', 'error': 'cant inster: %s' % is_insert,'status':'3'}
 
     def mark_timeout(self, order_data=None):
         if not order_data:
@@ -494,7 +494,7 @@ def groupinvite_add_friend():
                 kaituan = GroupInvite(request.form['code'])
                 info = kaituan.the_invite
                 info2 = kaituan.invite_order
-                if  request.form['user_id'] not in info2['friends']:
+                if  request.form['user_id'] not in info2['friends'] and request.form['user_id'] != info2['master_id']:
                     data = kaituan.follow(request.form['user_id'])
                     print data
                     if data['success']:
