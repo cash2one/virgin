@@ -450,7 +450,9 @@ def ordercounts1():
                     data['aytotal'] = a['total']
                 pdict['source'] = 2
                 amtotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
+                total2 = 0.0
                 for a in amtotal:
+                    total2 = a['total']
                     data['amtotal'] = a['total']
                 pdict = {'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
                 pdict['status'] = {'$in': [0,1, 2, 3]}
@@ -484,7 +486,7 @@ def ordercounts1():
                     content="<p style=\"margin-left: 20px;\">共接收座位预定订单&nbsp;<span style=\"color:red\">"+str(data['allcount'])+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+str(data['anumpeople'])+"</span>&nbsp;人；</p><p style=\"margin-left: 20px;\">美食地图预定&nbsp;<span style=\"color:red\">"+str(data['mcount'])+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+str(data['mnumpeople'])+"</span>&nbsp;人；</p><p style=\"margin-left: 20px;\">其它方式预定&nbsp;<span style=\"color:red\">"+str(data['ycount'])+"</span>&nbsp;桌，就餐人数&nbsp;<span style=\"color:red\">"+str(data['yanumpeople'])+"</span>&nbsp;人。</p>"
 
                 else:
-                    content = "<p style=\"margin-left: 20px;\">共消费"+str(amtotal)+"</p>"
+                    content = "<p style=\"margin-left: 20px;\">共消费"+str(total2)+"</p>"
                 json={
                     "content":content
                 }

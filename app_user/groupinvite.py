@@ -489,35 +489,42 @@ def groupinvite_add_friend():
     # 接受邀请
     if request.method == 'POST':
         if auto.decodejwt(request.form['jwtstr']):
-            try:
+            # try:
                 print request.form['code'], request.form['user_id']
-                data = GroupInvite(request.form['code']).follow(request.form['user_id'])
-                info = GroupInvite(request.form['code']).the_invite
-                info2 = GroupInvite(request.form['code']).invite_order
-                print info2
-                # 推送8
-                # mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
-                # appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
-                content = '快去看看吧！'
-                tool.tuisong(mfrom='',
-                             mto='' if info2 == None else info2['master_id'],
-                             title='有人加入了您的' + info['restaurant']['name'] + '开团请客活动',
-                             info=content,
-                             goto='1',
-                             channel='应邀开团',
-                             type='0',
-                             totype='1',
-                             appname='foodmap_user',
-                             msgtype='notice',
-                             target='device',
-                             ext='{"goto":"8","id":"' + request.form['code'] + '"}',
-                             ispush=True)
+                kaituan = GroupInvite(request.form['code'])
+                info = kaituan.the_invite
+                info2 = kaituan.invite_order
+                if  request.form['user_id'] not in info2['friends']:
+                    data = kaituan.follow(request.form['user_id'])
+                    print data
+                    if data['success']:
+                    # 推送8
+                    # mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
+                    # appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
+                        content = '快去看看吧！'
+                        tool.tuisong(mfrom='',
+                                     mto='' if info2 == None else info2['master_id'],
+                                     title='有人加入了您的' + info.get("restaurant",{}).get("name","") + '开团请客活动',
+                                     info=content,
+                                     goto='1',
+                                     channel='应邀开团',
+                                     type='0',
+                                     totype='1',
+                                     appname='foodmap_user',
+                                     msgtype='notice',
+                                     target='device',
+                                     ext='{"goto":"8","id":"' + request.form['code'] + '"}',
+                                     ispush=True)
+                    else:
+                        pass
+                else:
+                    data = {"success":False,"error":"已加入该活动，勿重复操作"}
                 result = tool.return_json(0, "success", True, data)
                 return json_util.dumps(result, ensure_ascii=False, indent=2)
-            except Exception, e:
-                print e
-                result = tool.return_json(0, "field", True, str(e))
-                return json_util.dumps(result, ensure_ascii=False, indent=2)
+            # except Exception, e:
+            #     print e
+            #     result = tool.return_json(0, "field", True, str(e))
+            #     return json_util.dumps(result, ensure_ascii=False, indent=2)
         else:
             result = tool.return_json(0, "field", False, None)
             return json_util.dumps(result, ensure_ascii=False, indent=2)

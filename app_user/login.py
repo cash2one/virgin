@@ -467,7 +467,7 @@ def resetpassword():
                         fix_psw = {'registeruser.password': hashlib.md5(password).hexdigest().upper()}
                         is_fix = mongo.fix({'_id': str(found['_id']['$oid']), 'fix_data': fix_psw})
                         is_fix['_id'] = str(found['_id']['$oid'])
-                        result=tool.return_json(0,"success",True,{'ispass':True,'_id': is_fix['_id'],'info': '找回密码成功'})
+                        result=tool.return_json(0,"success",True,{'ispass':True,'_id': is_fix['_id'],'info': '操作成功'})
                         return json_util.dumps(result,ensure_ascii=False,indent=2)
                         pass
                     else:
