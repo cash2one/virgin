@@ -134,10 +134,12 @@ def index():
                     randomnum = random.randint(0, count-2)
                 else:
                     randomnum = 0
-                restaurant_id = mongo.coupons.distinct('restaurant_id',{'showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()},"$or":[{"button":"0"}, {"button":0}]})[randomnum:randomnum+2]
+                restaurant_id = mongo.coupons.find({'showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()},"$or":[{"button":"0"}, {"button":0}]}).skip(randomnum).limit(2)
+
                 idlist = []
                 for i in restaurant_id:
-                    idlist.append(i)
+                    print i
+                    idlist.append(i['restaurant_id'])
                 coupons = {}
                 couponslist = []
                 num = 0

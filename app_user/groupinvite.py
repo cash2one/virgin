@@ -428,7 +428,9 @@ def groupinvite_neworder():
             # try:
             data = GroupInvite(request.form['group_id']).new_invite(request.form['user_id'])
             info = GroupInvite(request.form['group_id']).the_invite
-            # print data
+            data['size'] = info['group_info']['size'] - 1
+            print data
+            print info
             # 消息3
             # mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
             # appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
