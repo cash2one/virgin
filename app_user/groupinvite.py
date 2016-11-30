@@ -269,9 +269,9 @@ class GroupInvite:
                              target='device',
                              ext='{"goto":"9","id":"' + self.invite_order['group_id'] + '"}',
                              ispush=True)
-            return {'success': True, 'error': '',"code":''}
+            return {'success': True, 'error': ''}
         else:
-            return {'success': False, 'error': 'max group',"code":''}
+            return {'success': False, 'error': 'max group'}
 
     def make_payment(self, service='alipay'):
         self.mark_timeout()
@@ -495,12 +495,14 @@ def groupinvite_add_friend():
     if request.method == 'POST':
         if auto.decodejwt(request.form['jwtstr']):
             # try:
+                print request.form['code'], request.form['user_id']
                 kaituan = GroupInvite(request.form['code'])
                 info = kaituan.the_invite
                 info2 = kaituan.invite_order
                 if  request.form['user_id'] not in info2['friends']:
                     if request.form['user_id'] != info2['master_id']:
                         data = kaituan.follow(request.form['user_id'])
+                        print data
                         if data['success']:
                         # 推送8
                         # mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
@@ -520,11 +522,11 @@ def groupinvite_add_friend():
                                          ext='{"goto":"8","id":"' + request.form['code'] + '"}',
                                          ispush=True)
                         else:
-                            pass
+                            data = {"success":False,"error":"邀请码错误"}
                     else:
-                        data = {"success":False,"error":"您是此活动的发起人，快去邀请好友吧","code":request.form['code']}
+                        data = {"success":False,"error":"您是此活动的发起人，快去邀请好友吧"}
                 else:
-                    data = {"success":False,"error":"已加入该活动，勿重复操作","code":request.form['code']}
+                    data = {"success":False,"error":"已加入该活动，勿重复操作"}
                 result = tool.return_json(0, "success", True, data)
                 return json_util.dumps(result, ensure_ascii=False, indent=2)
             # except Exception, e:
