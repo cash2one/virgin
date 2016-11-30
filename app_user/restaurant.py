@@ -168,7 +168,7 @@ def index():
                 data['img'] = imgjson
                 #店粉优惠专用图片 结束
                 #今日范儿店 开始
-                shop_recommend = mongo.shop_recommend.find({'type':2}).sort("addtime", pymongo.DESCENDING)[0:1]
+                shop_recommend = mongo.shop_recommend.find({'type':2,'get_top':'1'}).sort("addtime", pymongo.DESCENDING)[0:1]
                 recommend = {}
                 for i in shop_recommend:
 
