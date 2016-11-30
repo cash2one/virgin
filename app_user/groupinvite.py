@@ -428,6 +428,9 @@ def groupinvite_neworder():
             # try:
             data = GroupInvite(request.form['group_id']).new_invite(request.form['user_id'])
             info = GroupInvite(request.form['group_id']).the_invite
+            code = mongo.order_groupinvite.find({"master_id":request.form['user_id'],"group_id":request.form['group_id']})
+            for c in code:
+                data['code'] = c['invite_code']
             data['size'] = info['group_info']['size'] - 1
             print data
             print info
@@ -496,29 +499,32 @@ def groupinvite_add_friend():
                 kaituan = GroupInvite(request.form['code'])
                 info = kaituan.the_invite
                 info2 = kaituan.invite_order
-                if  request.form['user_id'] not in info2['friends'] and request.form['user_id'] != info2['master_id']:
-                    data = kaituan.follow(request.form['user_id'])
-                    print data
-                    if data['success']:
-                    # 推送8
-                    # mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
-                    # appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
-                        content = '快去看看吧！'
-                        tool.tuisong(mfrom='',
-                                     mto='' if info2 == None else info2['master_id'],
-                                     title='有人加入了您的' + info.get("restaurant",{}).get("name","") + '开团请客活动',
-                                     info=content,
-                                     goto='1',
-                                     channel='应邀开团',
-                                     type='0',
-                                     totype='1',
-                                     appname='foodmap_user',
-                                     msgtype='notice',
-                                     target='device',
-                                     ext='{"goto":"8","id":"' + request.form['code'] + '"}',
-                                     ispush=True)
+                if  request.form['user_id'] not in info2['friends']:
+                    if request.form['user_id'] != info2['master_id']:
+                        data = kaituan.follow(request.form['user_id'])
+                        print data
+                        if data['success']:
+                        # 推送8
+                        # mfrom-消息来源id|mto-发送给谁id数组，下划线分隔|title-消息标题|info-消息内容|goto（"0"）-跳转页位置|channel（订单）-调用位置|type-0系统发 1商家发 2用户发|totype-0发给商家 1发给用户
+                        # appname（foodmap_user，foodmap_shop）-调用的APP|msgtype（message，notice）-是消息还是通知|target（all，device）-全推或单推|ispush（True，False）-是否发送推送|
+                            content = '快去看看吧！'
+                            tool.tuisong(mfrom='',
+                                         mto='' if info2 == None else info2['master_id'],
+                                         title='有人加入了您的' + info.get("restaurant",{}).get("name","") + '开团请客活动',
+                                         info=content,
+                                         goto='1',
+                                         channel='应邀开团',
+                                         type='0',
+                                         totype='1',
+                                         appname='foodmap_user',
+                                         msgtype='notice',
+                                         target='device',
+                                         ext='{"goto":"8","id":"' + request.form['code'] + '"}',
+                                         ispush=True)
+                        else:
+                            pass
                     else:
-                        pass
+                        data = {"success":False,"error":"您是此活动的发起人，快去邀请好友吧"}
                 else:
                     data = {"success":False,"error":"已加入该活动，勿重复操作"}
                 result = tool.return_json(0, "success", True, data)
@@ -677,7 +683,7 @@ def groupinvite_order_used():
 
 
 if __name__ == '__main__':
-    print json_util.dumps(GroupInvite('57c53441612c5e14344b3fec').the_invite,ensure_ascii=False,indent=2)
+    print json_util.dumps(GroupInvite('583d1b18612c5e18b0c50d1f').the_invite,ensure_ascii=False,indent=2)
     # print GroupInvite.get_invite('57c4dc7c612c5e1a7435ec35')
     # print GroupInvite('57c4dc7c612c5e1a7435ec35').new_invite('dola')
     # print GroupInvite('205314').follow('dolacmeo')
