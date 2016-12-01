@@ -216,11 +216,14 @@ def coupons_info1():
                 item = mongo.restaurant.find({"_id":ObjectId(request.form['restaurant_id'])})
                 data = {}
                 for i in item:
-                    mycoupons = mongo.mycoupons.find({"webuser_id":ObjectId(request.form["webuser_id"]),"coupons_id":ObjectId(str(i["_id"]))})
-                    if mycoupons:
-                        data['isget'] = "1"
+                    if request.form["webuser_id"] != '-1':
+                        mycoupons = mongo.mycoupons.find({"webuser_id":ObjectId(request.form["webuser_id"]),"coupons_id":ObjectId(str(i["_id"]))})
+                        if mycoupons:
+                            data['isget'] = "1"
+                        else:
+                            data['isget'] = "0"
                     else:
-                        data['isget'] = "0"
+                        data['isget'] = "1"
                     data['id'] = str(i['_id'])
                     data['open'] = i['open']
                     data['guide_image'] = i['guide_image']
