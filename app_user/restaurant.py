@@ -2405,9 +2405,9 @@ def update_status():
                 for mid in b_idlist:
                     if mid != '' and mid != None:
                         bidlist.append(ObjectId(mid))
-                if coupons_id !="":
+                if coupons_id !="-1":
                     mycoupons = conn.mongo_conn().mycoupons.update({"webuser_id":ObjectId(webuser_id),"restaurant_id":ObjectId(restaurant_id),"coupons_id":{"$in":bidlist}},{"$set":{"status":"2"}},False,True)
-                if kaituan_id !="":
+                if kaituan_id !="-1":
                     item = conn.mongo_conn().order_groupinvite.update({"group_id":kaituan_id,"master_id":webuser_id,"restaurant_info.rid":restaurant_id},{"$set":{"status":"already_used"}},False,True)
                 else:
                     item = conn.mongo_conn().order.update({"_id":ObjectId(order_id)},{"$set":{"status":4}})
