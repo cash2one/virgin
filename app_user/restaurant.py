@@ -2400,12 +2400,12 @@ def update_status():
                 coupons_id = request.form.get('coupons_id','')
                 kaituan_id = request.form.get('kaituan_id','')
                 data = {}
-                b_idlist = coupons_id.split('_')
-                bidlist = []
-                for mid in b_idlist:
-                    if mid != '' and mid != None:
-                        bidlist.append(ObjectId(mid))
                 if coupons_id !="-1":
+                    b_idlist = coupons_id.split('_')
+                    bidlist = []
+                    for mid in b_idlist:
+                        if mid != '' and mid != None:
+                            bidlist.append(ObjectId(mid))
                     mycoupons = conn.mongo_conn().mycoupons.update({"webuser_id":ObjectId(webuser_id),"restaurant_id":ObjectId(restaurant_id),"coupons_id":{"$in":bidlist}},{"$set":{"status":"2"}},False,True)
                 if kaituan_id !="-1":
                     item = conn.mongo_conn().order_groupinvite.update({"group_id":kaituan_id,"master_id":webuser_id,"restaurant_info.rid":restaurant_id},{"$set":{"status":"already_used"}},False,True)
