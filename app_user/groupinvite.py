@@ -523,7 +523,7 @@ def groupinvite_add_friend():
                                          ext='{"goto":"8","id":"' + request.form['code'] + '"}',
                                          ispush=True)
                         else:
-                            data = {"success":False,"error":"邀请码错误"}
+                            data = {"success":False,"error":"邀请码错误或已满"}
                     else:
                         data = {"success":False,"error":"您是此活动的发起人，快去邀请好友吧"}
                 else:
@@ -604,7 +604,7 @@ def groupinvite_order():
                 # 'wait_friends', 'wait_pay', 'already_payment', 'already_used', 'time_out'
                 data = GroupInvite(request.form['code']).invite_order
                 kaituan = GroupInvite(data['group_id']).the_invite
-                data['price'] = kaituan['price']
+                data['price'] = kaituan['price']['now']
                 # print type(data)
                 # print time.strptime(data['addtime'], "%Y-%m-%d %H:%M:%S")
                 # song
@@ -620,7 +620,7 @@ def groupinvite_order():
                         data['msg'] = "付款超时"
                     else:
                         data['msg'] = "45分钟内未邀请到" + str(data['max_group']) + "位好友"
-                uid_list = []
+                uid_list = [data['master_id']]
                 for user in data['friends']:
                     uid_list.append(ObjectId(user))
                 item = mongo_conn().webuser.find({"_id":{"$in":uid_list}})
@@ -686,7 +686,7 @@ def groupinvite_order_used():
 
 
 if __name__ == '__main__':
-    print json_util.dumps(GroupInvite('583d1b18612c5e18b0c50d1f').the_invite,ensure_ascii=False,indent=2)
+    print json_util.dumps(GroupInvite('583f8f8a0c1d9bb9ae9278d0').the_invite,ensure_ascii=False,indent=2)
     # print GroupInvite.get_invite('57c4dc7c612c5e1a7435ec35')
     # print GroupInvite('57c4dc7c612c5e1a7435ec35').new_invite('dola')
     # print GroupInvite('205314').follow('dolacmeo')

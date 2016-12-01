@@ -248,7 +248,7 @@ def getqrcode():
 def webuserqrcode():
     if auto.decodejwt(request.form['jwtstr']):
         json={
-            "url":"/fm/merchant/v1/me/webuserqrcodehtml/",
+            "url":"/m/userQRCode/",
             "restaurant_id": request.form['restaurant_id'],
             "webuser_id" : request.form['webuser_id']
         }
@@ -261,9 +261,6 @@ def webuserqrcode():
         return json_util.dumps(result,ensure_ascii=False,indent=2)
 
 
-@other_api.route('/fm/merchant/v1/me/webuserqrcodehtml/',methods=["GET"])
-def abouthtml():
-    return render_template("/test/webuserqrcode.html")
 
 #分享
 @other_api.route('/fm/merchant/v1/share/',methods=['POST'])
