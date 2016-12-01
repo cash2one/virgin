@@ -286,7 +286,8 @@ def checkdish(webuser_id='57396ec17c1f31a9cce960f4'):
                                 dish_dict['num'] = int(preset_wine['num'])
                                 dish_dict['id'] = preset_wine['id']
                                 wine_list.append(dish_dict)
-        mongo.order.update_one({"restaurant_id":ObjectId(restaurant_id),"webuser_id":ObjectId(webuser_id),"status":8},{"$set": {"preset_dishs":dish_list,"preset_wine": wine_list}})
+        if dish_list != [] or wine_list != []:
+            mongo.order.update_one({"restaurant_id":ObjectId(restaurant_id),"webuser_id":ObjectId(webuser_id),"status":8},{"$set": {"preset_dishs":dish_list,"preset_wine": wine_list}})
 def coupons_by(first={}):
     item = mongo.coupons.find(first)
     json = {}
