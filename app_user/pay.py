@@ -59,7 +59,16 @@ def deal():
                 if type == 'order':
                     pay.link_order(request.form['deal_id'])
                 elif type == 'group':
-                    pay.link_group(request.form['deal_id'])
+                    status = ""
+                    group = mongo.order_groupinvite.find({"_id":ObjectId(request.form['deal_id'])})
+                    for g in group:
+                        status = g['status']
+                    if status == "wait_pay":
+                        pay.link_group(request.form['deal_id'])
+                    else:
+                        data = "无法支付该订单"
+                        result=tool.return_json(0,"success",True,data)
+                        return json_util.dumps(result,ensure_ascii=False,indent=2)
                 else:
                     pass
 

@@ -140,22 +140,21 @@ def index():
                 for i in restaurant_id:
                     print i
                     idlist.append(i['restaurant_id'])
-                coupons = {}
+
                 couponslist = []
-                num = 0
                 for i in idlist:
-                    rest = mongo.restaurant.find({"_id":ObjectId(idlist[num])})
+                    coupons = {}
+                    rest = mongo.restaurant.find({"_id":i})
                     for r in rest:
                         coupons['rest_name'] = r['name']
                         coupons['rest_id'] = str(r['_id'])
-                    coupons['title1'] = getcoupons('1',idlist[num])['content']
-                    coupons['id1'] = getcoupons('1',idlist[num])['id']
-                    coupons['title2'] = getcoupons('2',idlist[num])['content']
-                    coupons['id2'] = getcoupons('2',idlist[num])['id']
-                    coupons['title3'] = getcoupons('3',idlist[num])['content']
-                    coupons['id3'] = getcoupons('3',idlist[num])['id']
-                    coupons['img'] = getimg(idlist[num])
-                    num+=1
+                    coupons['title1'] = getcoupons('1',str(i))['content']
+                    coupons['id1'] = getcoupons('1',str(i))['id']
+                    coupons['title2'] = getcoupons('2',str(i))['content']
+                    coupons['id2'] = getcoupons('2',str(i))['id']
+                    coupons['title3'] = getcoupons('3',str(i))['content']
+                    coupons['id3'] = getcoupons('3',str(i))['id']
+                    coupons['img'] = getimg(str(i))
                     couponslist.append(coupons)
                 data['coupons'] = couponslist
                 #店粉优惠 随机两个饭店 结束
