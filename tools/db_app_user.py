@@ -255,13 +255,14 @@ def checkdish(webuser_id='57396ec17c1f31a9cce960f4'):
     for o in order:
         order_dict = o
         restaurant_id = o['restaurant_id']
+        print restaurant_id
         restaurant = mongo.restaurant.find({'_id':ObjectId(restaurant_id)})
         restaurant_dict = {}
         for r in restaurant:
             restaurant_dict = r
         dish_list = []
         wine_list = []
-        for menu in restaurant_dict['menu']:
+        for menu in restaurant_dict.get("menu",[]):
             if menu['dishs'] != [] and menu['dish_type'] == '1':
                 for dish in menu['dishs']:
                     if menu['name'] != '酒水':
@@ -586,4 +587,4 @@ if __name__ == '__main__':
     # list = coupons_by({"restaurant_id":ObjectId("57329e300c1d9b2f4c85f8e6"),"kind":"2","button":"0"})
     # print json_util.dumps(list,ensure_ascii=False,indent=2)
     # print json_util.dumps(use_coupons(total = 50.0,dish_total = 40.0,wine_total = 10.0,restaurant_id='57329e300c1d9b2f4c85f8e6',webuser_id='57396ec17c1f31a9cce960f4'),ensure_ascii=False,indent=2)
-    print use_coupons()
+    print checkdish()
