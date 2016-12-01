@@ -36,7 +36,7 @@ class GroupInvite:
             if self.invite_order:
                 self._id = self.invite_order['group_id']
                 self.the_invite = self.__format_db_info(db_info.find_one({'_id': self._id}))
-                self.the_invite = self.mark_timeout(self.the_invite)
+                self.mark_timeout(self.invite_order)
             else:
                 self._id = ''
                 self.the_invite = {}
@@ -603,7 +603,9 @@ def groupinvite_order():
             try:
                 # 'wait_friends', 'wait_pay', 'already_payment', 'already_used', 'time_out'
                 data = GroupInvite(request.form['code']).invite_order
-                print type(data)
+                kaituan = GroupInvite(data['group_id']).the_invite
+                data['price'] = kaituan['price']
+                # print type(data)
                 # print time.strptime(data['addtime'], "%Y-%m-%d %H:%M:%S")
                 # song
                 if data['status'] == 'wait_friends':
