@@ -26,7 +26,7 @@ from app_user.comment import user_comment
 from app_merchant.comment import restaurant_comment
 from app_user.groupinvite import group_invite
 from flasgger import Swagger
-from tools import alimsg
+# from tools import alimsg
 app = Flask(__name__)
 Swagger(app)
 app.config['DEBUG'] = True
