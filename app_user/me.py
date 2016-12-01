@@ -419,6 +419,7 @@ def mycoupons():
                     first = {"webuser_id":ObjectId(request.form["webuser_id"]),"status":str(status)}
                 else:
                     first = {"webuser_id":ObjectId(request.form["webuser_id"]),"indate_end":{"$lt":datetime.datetime.now()}}
+                print first
                 item = mongo.mycoupons.find(first).sort("indate_end", pymongo.DESCENDING)[star:end]
                 data = {}
                 list = []

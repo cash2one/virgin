@@ -84,7 +84,7 @@ class PayOrder:
             subject='美食地图开团请客' + group_data['invite_code'],
             body='',
             reqfrom='MSDT_groupinvite_app',
-            total_fee=str(int(MongoHelp('qingke').find_one({'_id': group_data['group_id']})['zj']) * 100),
+            total_fee=str(int(MongoHelp('qingke').find_one({'_id': group_data['group_id']})['price']) * 100),
             order_id=group_data['_id'],
             ext_data=infos
         )

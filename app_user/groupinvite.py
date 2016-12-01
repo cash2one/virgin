@@ -268,7 +268,7 @@ class GroupInvite:
                              appname='foodmap_user',
                              msgtype='notice',
                              target='device',
-                             ext='{"goto":"9","id":"' + self.invite_order['group_id'] + '"}',
+                             ext='{"goto":"9","id":"' + self.code + '"}',
                              ispush=True)
             return {'success': True, 'error': ''}
         else:

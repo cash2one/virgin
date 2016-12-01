@@ -369,7 +369,7 @@ def send10():
                     appname='foodmap_user',
                     msgtype='notice',
                     target='device',
-                    ext='{"goto":"10","id":"' + str(i['_id']) + '"}',
+                    ext='{"goto":"10","id":"' + str(i['invite_code']) + '"}',
                     ispush=True,
                     data_id=str(i['_id']))
     print 'send10:开团请客失败'
