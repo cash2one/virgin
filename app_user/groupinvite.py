@@ -36,6 +36,7 @@ class GroupInvite:
             if self.invite_order:
                 self._id = self.invite_order['group_id']
                 self.the_invite = self.__format_db_info(db_info.find_one({'_id': self._id}))
+                self.the_invite = self.mark_timeout(self.the_invite)
             else:
                 self._id = ''
                 self.the_invite = {}
@@ -224,7 +225,7 @@ class GroupInvite:
         else:
             _id = order_data['group_id']
             code = order_data['invite_code']
-        if time.time() - time.mktime(time.strptime(order_data['start_time'], "%Y-%m-%d %H:%M:%S")) >= 2700:
+        if time.time() - time.mktime(time.strptime(order_data['start_time'], "%Y-%m-%d %H:%M:%S")) >= 2600:
             db_order.fix_one({'group_id': _id, 'invite_code': code}, {'status': 'timeout'})
             if not order_data:
                 self.invite_order = self._find_code_invite(code)
