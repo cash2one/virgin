@@ -36,7 +36,7 @@ class GroupInvite:
             if self.invite_order:
                 self._id = self.invite_order['group_id']
                 self.the_invite = self.__format_db_info(db_info.find_one({'_id': self._id}))
-                self.mark_timeout(self.invite_order)
+                self._check_all_order_time(self.invite_order['group_id'])
             else:
                 self._id = ''
                 self.the_invite = {}
@@ -234,7 +234,7 @@ class GroupInvite:
 
     def _check_all_order_time(self, invent_id):
         all_data = db_order.find({'group_id': invent_id, 'status':
-            {'$in': ['wait_friends', 'wait_pay', 'already_payment']}})
+            {'$in': ['wait_friends', 'wait_pay']}})
         for n in all_data:
             self.mark_timeout(n)
 
@@ -295,7 +295,7 @@ class GroupInvite:
             return {'success': False, 'error': 'status: %s' % self.invite_order['status']}
 
     @property
-    def app_invite_list(self):
+    def app_invite_list(self,flag=''):
         new_data = dict(time_range=[])
         data = self.__item_list()
         for n in data:
@@ -315,8 +315,12 @@ class GroupInvite:
             else:
                 pass
         # del new_data['time_range']
-        return [{'time': '10:30', 'data': new_data['10:30']},
-                {'time': '16:00', 'data': new_data['16:00'] if '16:00' in new_data['time_range'] else []}]
+        if flag == 'index':
+            return [{'time': '10:30', 'data': new_data['10:30'][0:2]},
+                    {'time': '16:00', 'data': new_data['16:00'][0:2] if '16:00' in new_data['time_range'] else []}]
+        else:
+            return [{'time': '10:30', 'data': new_data['10:30']},
+                    {'time': '16:00', 'data': new_data['16:00'] if '16:00' in new_data['time_range'] else []}]
 
     pass
 
