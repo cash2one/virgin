@@ -294,8 +294,35 @@ class GroupInvite:
         else:
             return {'success': False, 'error': 'status: %s' % self.invite_order['status']}
 
+    def app_invite_list_index(self,flag=''):
+        new_data = dict(time_range=[])
+        data = self.__item_list()
+        for n in data:
+            m = dict(group_id=n['_id'],
+                     detail=n['detail'],
+                     pic=n['restaurant']['pic'],
+                     restaurant_name=n['restaurant']['name'],
+                     dist=n['restaurant']['dist'],
+                     new_price=n['price']['now'],
+                     old_price=n['price']['old'],
+                     size=n['group_info']['size'],
+                     available=n['group_info']['available'])
+            if n['time_range'] not in new_data['time_range']:
+                m['time_range'] = n['time_range']
+                new_data['time_range'].append(n['time_range'])
+                new_data[n['time_range']] = [m]
+            elif n['time_range'] in new_data['time_range']:
+                m['time_range'] = n['time_range']
+                new_data[n['time_range']].append(m)
+            else:
+                pass
+        # del new_data['time_range']
+        if flag == 'index':
+            return new_data['10:30'][0:2]+new_data['16:00'][0:2]
+
+    pass
     @property
-    def app_invite_list(self,flag=''):
+    def app_invite_list(self):
         new_data = dict(time_range=[])
         data = self.__item_list()
         for n in data:
@@ -315,14 +342,8 @@ class GroupInvite:
             else:
                 pass
         # del new_data['time_range']
-        if flag == 'index':
-            return [{'time': '10:30', 'data': new_data['10:30'][0:2]},
-                    {'time': '16:00', 'data': new_data['16:00'][0:2] if '16:00' in new_data['time_range'] else []}]
-        else:
-            return [{'time': '10:30', 'data': new_data['10:30']},
-                    {'time': '16:00', 'data': new_data['16:00'] if '16:00' in new_data['time_range'] else []}]
-
-    pass
+        return [{'time': '10:30', 'data': new_data['10:30']},
+                {'time': '16:00', 'data': new_data['16:00'] if '16:00' in new_data['time_range'] else []}]
 
 
 # jwt装饰器 只支持‘post’
