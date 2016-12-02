@@ -112,7 +112,7 @@ def index():
                     data['turnsimg'] = t['huodong']
                 #轮换图结束
                 #开团请客 开始
-                data['kaituan'] = kaituan = GroupInvite().app_invite_list_index("index")
+                data['kaituan'] =  GroupInvite().app_invite_list_index("index")
                 #开团请客 结束
                 #店粉优惠 随机两个饭店 开始
                 count = len(mongo.coupons.distinct('restaurant_id',{'showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()},"$or":[{"button":"0"}, {"button":0}]}))
