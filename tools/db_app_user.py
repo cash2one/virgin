@@ -1,4 +1,6 @@
 #--coding:utf-8--#
+import random
+
 import pymongo
 import sys
 from math import radians, cos, sin, asin, sqrt
@@ -566,6 +568,39 @@ def hobby(first={},lat1=None,lon1=None,start=0,end=3):
                     json['name'] = rest[key]
             list.append(json)
     return list
+def hobby2(first={},lat1=None,lon1=None,start=0,end=3):
+    count = len(mongo.restaurant.distinct("_id",first))
+    print count
+    if count>=2:
+        randomnum = random.randint(0, count-2)
+    else:
+        randomnum = 0
+    restaurant = mongo.restaurant.find(first).skip(randomnum).limit(end)
+    list = []
+    for rest in restaurant:
+        json = {}
+        for key in rest.keys():
+            if key == '_id':
+                json['id'] = str(rest[key])
+            elif key == 'restaurant_id':
+                json['restaurant_id'] = str(rest[key])
+            elif key == 'dishes_discount':
+                json['dishes_discount'] = rest[key]['message']
+            elif key == 'business_dist':
+                json['district_name'] = getxingzhengqu(rest[key][0]['id'])
+                json['business_name'] = rest[key][0]['name']
+            elif key == 'wine_discount':
+                json['wine_discount'] = rest[key]['message']
+            elif key == 'zuobiao':
+                json['distance'] = ''
+            elif key == 'address':
+                json['address'] = rest[key]
+            elif key == 'guide_image':
+                json['guide_image'] = rest[key]
+            elif key == 'name':
+                json['name'] = rest[key]
+        list.append(json)
+    return list
 if __name__ == '__main__':
     pass
     # print json_util.dumps(guess(),ensure_ascii=False,indent=2)
@@ -588,4 +623,4 @@ if __name__ == '__main__':
     # list = coupons_by({"restaurant_id":ObjectId("57329e300c1d9b2f4c85f8e6"),"kind":"2","button":"0"})
     # print json_util.dumps(list,ensure_ascii=False,indent=2)
     # print json_util.dumps(use_coupons(total = 50.0,dish_total = 40.0,wine_total = 10.0,restaurant_id='57329e300c1d9b2f4c85f8e6',webuser_id='57396ec17c1f31a9cce960f4'),ensure_ascii=False,indent=2)
-    print checkdish()
+    print json_util.dumps(hobby2(),ensure_ascii=False,indent=2)

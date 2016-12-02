@@ -12,7 +12,7 @@ import sys
 
 from tools.db_app_user import guess, business_dist, district_list, business_dist_byid, getcoupons, getconcern, \
     checkdish, \
-    coupons_by, use_coupons, getimg, hobby
+    coupons_by, use_coupons, getimg, hobby, hobby2
 from tools.message_template import mgs_template
 from tools.swagger import swagger
 
@@ -2206,14 +2206,16 @@ def hobbys():
     if request.method == 'POST':
         if auto.decodejwt(request.form['jwtstr']):
             try:
+                # data = {}
+                # item = mongo.hobby.find()[0:3]
+                # list = []
+                # for i in item:
+                #     list.append(ObjectId(i['nid']))
+                #
+                # data['list'] = hobby(first={"_id": {"$in": list}}, lat1=request.form['lat'], lon1=request.form['lon'],
+                #                      start=0, end=3)
                 data = {}
-                item = mongo.hobby.find()[0:3]
-                list = []
-                for i in item:
-                    list.append(ObjectId(i['nid']))
-
-                data['list'] = hobby(first={"_id": {"$in": list}}, lat1=request.form['lat'], lon1=request.form['lon'],
-                                     start=0, end=3)
+                data['list'] = hobby2(first={}, start=0, end=3)
                 result = tool.return_json(0, "success", True, data)
                 return json_util.dumps(result, ensure_ascii=False, indent=2)
             except Exception, e:
