@@ -1685,9 +1685,7 @@ def getroom():
             else:
                 myorder = mongo.order.find({'webuser_id': ObjectId(request.form['webuser_id']),
                                             "restaurant_id": ObjectId(request.form['restaurant_id']), 'status': 8})
-                mongo.order.update({'webuser_id': ObjectId(request.form['webuser_id']),
-                                    "restaurant_id": ObjectId(request.form['restaurant_id']), 'status': 8},
-                                   {"$set": json})
+
 
                 orderid = ''
                 for o in myorder:
@@ -1706,6 +1704,9 @@ def getroom():
                              target='device',
                              ext='{"goto":"2","id":"' + str(orderid) + '"}',
                              ispush=True)
+                mongo.order.update({'webuser_id': ObjectId(request.form['webuser_id']),
+                                    "restaurant_id": ObjectId(request.form['restaurant_id']), 'status': 8},
+                                   {"$set": json})
             data = {
                 "status": 1,
                 "msg": "订座申请成功"
