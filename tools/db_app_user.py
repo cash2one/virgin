@@ -568,7 +568,7 @@ def hobby(first={},lat1=None,lon1=None,start=0,end=3):
                     json['name'] = rest[key]
             list.append(json)
     return list
-def hobby2(first={},lat1=None,lon1=None,start=0,end=3):
+def hobby2(first={},lat1=None,lon1=None,start=0,end=10):
     count = len(mongo.restaurant.distinct("_id",first))
     print count
     if count>=2:

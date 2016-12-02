@@ -2201,7 +2201,7 @@ def hobbys():
                 # data['list'] = hobby(first={"_id": {"$in": list}}, lat1=request.form['lat'], lon1=request.form['lon'],
                 #                      start=0, end=3)
                 data = {}
-                data['list'] = hobby2(first={}, start=0, end=3)
+                data['list'] = hobby2(first={}, start=0, end=10)
                 result = tool.return_json(0, "success", True, data)
                 return json_util.dumps(result, ensure_ascii=False, indent=2)
             except Exception, e:
