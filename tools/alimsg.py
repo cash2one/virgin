@@ -147,6 +147,10 @@ def tuisong(mfrom='', mto='', title='', info='', goto='', channel='', type='', t
     else:
         insertjson['data_id'] = '-1'
     # if issave:
+    if goto in ['1','2','5','6','8','9','10','11','12','13','14','16','17','18','19']:
+        insertjson['type'] = 1
+    else:
+        insertjson['type'] = 2
     mes = mongo.message.insert(insertjson)
     if goto in ['5','6','9','17','19']:
         ext = '{"goto":"'+goto+'","id":"'+str(mes)+'"}'

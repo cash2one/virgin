@@ -20,7 +20,7 @@ def getcoupons(kind, restaurant_id, flag='1'):
         title = '新粉享：'
     else:
         title = '抢优惠：'
-    item = mongo.coupons.find({"$or":[{"button":"0"}, {"button":0}],'restaurant_id':ObjectId(restaurant_id),'kind':kind,'showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()}}).sort("showtime_start", pymongo.DESCENDING)[0:1]
+    item = mongo.coupons.find({"$or":[{"button":"0"}, {"button":0}],'restaurant_id':ObjectId(restaurant_id),'kind':kind,'showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()}}).sort("addtime", pymongo.DESCENDING)[0:1]
     json = {
         'id':'',
         'content':'',

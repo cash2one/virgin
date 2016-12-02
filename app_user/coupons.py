@@ -216,8 +216,8 @@ def coupons_info1():
                 item = mongo.restaurant.find({"_id":ObjectId(request.form['restaurant_id'])})
                 data = {}
                 for i in item:
-                    if request.form["webuser_id"] != '-1':
-                        mycoupons = mongo.mycoupons.find({"webuser_id":ObjectId(request.form["webuser_id"]),"coupons_id":ObjectId(str(i["_id"]))})
+                    if request.form["webuser_id"] != '-1' and getcoupons('3',str(i['_id']),flag='0')['id'] !='':
+                        mycoupons = mongo.mycoupons.find({"webuser_id":ObjectId(request.form["webuser_id"]),"coupons_id":ObjectId(getcoupons('3',str(i['_id']),flag='0')['id'])})
                         if mycoupons:
                             data['isget'] = "1"
                         else:
