@@ -520,7 +520,7 @@ def groupinvite_add_friend():
     # 接受邀请
     if request.method == 'POST':
         if auto.decodejwt(request.form['jwtstr']):
-            # try:
+            try:
                 print request.form['code'], request.form['user_id']
                 kaituan = GroupInvite(request.form['code'])
                 info = kaituan.the_invite
@@ -555,10 +555,11 @@ def groupinvite_add_friend():
                     data = {"success":False,"error":"已加入该活动，勿重复操作"}
                 result = tool.return_json(0, "success", True, data)
                 return json_util.dumps(result, ensure_ascii=False, indent=2)
-            # except Exception, e:
-            #     print e
-            #     result = tool.return_json(0, "field", True, str(e))
-            #     return json_util.dumps(result, ensure_ascii=False, indent=2)
+            except Exception, e:
+                print e
+                data = {"success":False,"error":"邀请码错误或已满"}
+                result = tool.return_json(0, "success", True, data)
+                return json_util.dumps(result, ensure_ascii=False, indent=2)
         else:
             result = tool.return_json(0, "field", False, None)
             return json_util.dumps(result, ensure_ascii=False, indent=2)
