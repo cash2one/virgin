@@ -1685,11 +1685,13 @@ def getroom():
             else:
                 myorder = mongo.order.find({'webuser_id': ObjectId(request.form['webuser_id']),
                                             "restaurant_id": ObjectId(request.form['restaurant_id']), 'status': 8})
-
-
                 orderid = ''
                 for o in myorder:
                     orderid = o['_id']
+                mongo.order.update_one({'webuser_id': ObjectId(request.form['webuser_id']),
+                                    "restaurant_id": ObjectId(request.form['restaurant_id']), 'status': 8},
+                                   {"$set": json})
+
                 # 推送2 /fm/merchant/v1/order/orderinfos/
                 tool.tuisong(mfrom=request.form['webuser_id'],
                              mto=request.form['restaurant_id'],
@@ -1704,9 +1706,7 @@ def getroom():
                              target='device',
                              ext='{"goto":"2","id":"' + str(orderid) + '"}',
                              ispush=True)
-                mongo.order.update({'webuser_id': ObjectId(request.form['webuser_id']),
-                                    "restaurant_id": ObjectId(request.form['restaurant_id']), 'status': 8},
-                                   {"$set": json})
+
             data = {
                 "status": 1,
                 "msg": "订座申请成功"
