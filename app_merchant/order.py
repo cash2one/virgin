@@ -351,8 +351,9 @@ def orderinfos():
                             json['webuser_id'] = str(i[key])
                         elif key == 'total':
                             json['total'] = str(i[key])
+
                         elif key == 'deposit':
-                            json['deposit'] = str(i[key])
+                            json['deposit'] = str('%.2f' % (float('%.2f' % (float(i['total']) - float(i['deposit']))) * 0.1))
                         elif key == 'preset_dishs':
                             pdlist = []
 
