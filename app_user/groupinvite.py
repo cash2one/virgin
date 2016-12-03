@@ -301,12 +301,11 @@ class GroupInvite:
             m = dict(group_id=n['_id'],
                      detail=n['detail'],
                      pic=n['restaurant']['pic'],
+                     restaurant_id=n['restaurant']['rid'],
                      restaurant_name=n['restaurant']['name'],
-                     dist=n['restaurant']['dist'],
-                     new_price=n['price']['now'],
+                     now_price=n['price']['now'],
                      old_price=n['price']['old'],
-                     size=n['group_info']['size'],
-                     available=n['group_info']['available'])
+                     size=n['group_info']['size'])
             if n['time_range'] not in new_data['time_range']:
                 m['time_range'] = n['time_range']
                 new_data['time_range'].append(n['time_range'])
