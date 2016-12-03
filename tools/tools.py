@@ -473,7 +473,7 @@ def tuisong(mfrom='', mto='', title='', info='', goto='', channel='', type='', t
     else:
         insertjson['type'] = 2
     mes = mongo.message.insert(insertjson)
-    if goto in ['5','6','9','17','19']:
+    if goto in ['5','6','17','19']:
         ext = '{"goto":"'+goto+'","id":"'+str(mes)+'"}'
     # target是all表示发送给所有设备
     if target == 'device':
