@@ -28,7 +28,7 @@ class PayOrder:
             "body": body,
             "reqfrom": reqfrom,
             "return_url": "http://msdt.cn/",
-            "total_fee": int(total_fee),
+            "total_fee": float(total_fee),
             "client": "app",
             "show_url": "http://msdt.cn/",
             "ext": ext,

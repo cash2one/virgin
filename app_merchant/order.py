@@ -353,7 +353,10 @@ def orderinfos():
                             json['total'] = str(i[key])
 
                         elif key == 'deposit':
-                            json['deposit'] = str('%.2f' % (float('%.2f' % (float(i['total']) - float(i['deposit']))) * 0.1))
+                            if float(i['total']) - float(i['deposit'])<0:
+                                json['deposit'] =0
+                            else:
+                                json['deposit'] = str('%.2f' % (float('%.2f' % (float(i['total']) - float(i['deposit']))) * 0.1))
                         elif key == 'preset_dishs':
                             pdlist = []
 
