@@ -84,7 +84,7 @@ class PayOrder:
             subject='美食地图开团请客' + group_data['invite_code'],
             body='',
             reqfrom='MSDT_groupinvite_app',
-            total_fee=str(int(MongoHelp('qingke').find_one({'_id': group_data['group_id']})['price']) * 100),
+            total_fee=str(float(MongoHelp('qingke').find_one({'_id': group_data['group_id']})['price']) * 100),
             order_id=group_data['_id'],
             ext_data=infos
         )
@@ -107,4 +107,4 @@ class PayOrder:
 if __name__ == '__main__':
     pass
     # print PayOrder().link_order('573153c4e0fdb78f29b42826')
-    print round(float(86.0 - 0.0) * 0.1,2)
+    print int(1.1)
