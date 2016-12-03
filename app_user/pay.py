@@ -155,9 +155,11 @@ def update_order():
                         oid = p['req_order_id']
                     if reqfrom == 'MSDT_order_app':
                         mongo.order.update({"_id":ObjectId(oid)},{"$set":{"status":3}})
+                        flag = {"success":"1"}
                     else:
                         mongo.order_groupinvite.update({"_id":ObjectId(oid)},{"$set":{"status":"already_payment"}})
-                    flag = {"success":"1"}
+                        flag = {"success":"1"}
+
                 else:
                     pass
                 result=tool.return_json(0,"success",True,flag)
