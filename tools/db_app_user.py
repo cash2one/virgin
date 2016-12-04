@@ -376,7 +376,7 @@ def use_coupons(total = 50.0,dish_total = 40.0,wine_total = 10.0,restaurant_id='
     guanzhu = mongo.coupons.find({"restaurant_id":ObjectId(restaurant_id),"$or":[{"button":"0"}, {"button":0}],"kind":"1"})
     for g in guanzhu:
         if g['type'] == '1':
-            kind1 = [g['cross-claim'],'1','0',g['money'],str(g['_id'])]
+            kind1 = [g['cross-claim'],'1',g['rule'],g['money'],str(g['_id'])]
         elif g['type'] == '2':
             kind1 = [total - total * g['cross-claim'],'2',g['rule'],g['money'],str(g['_id'])]
         else:
