@@ -304,6 +304,7 @@ def restaurant():
                 pagenum = 10
                 star = (int(pageindex) - 1) * pagenum
                 end = (pagenum * int(pageindex))
+                first['status'] = {"$ne":9}
                 list = guess(first=first, lat1=request.form['y'], lon1=request.form['x'], start=star, end=end,
                              webuser_id=request.form['webuser_id'])
                 data['list'] = list
@@ -2078,9 +2079,9 @@ def liansuo():
                 for dist in district:
                     for biz in dist['biz_areas']:
                         dist_list.append(str(biz['biz_area_id']))
-                first = {"fendian.id": fendian, "business_dist.id": {"$in": dist_list}}
+                first = {"fendian.id": fendian, "business_dist.id": {"$in": dist_list},"status":{"$ne":9}}
             else:
-                first = {"fendian.id": fendian}
+                first = {"fendian.id": fendian,"status":{"$ne":9}}
             item = mongo.restaurant.find(first)
             for i in item:
                 json = {
@@ -2135,7 +2136,7 @@ def search():
             try:
                 data = {}
                 list = []
-                restaurant = mongo.restaurant.find({"name": {"$regex": request.form['str']}})
+                restaurant = mongo.restaurant.find({"name": {"$regex": request.form['str']},"status":{"$ne":9}})
                 for rest in restaurant:
                     json = {}
                     json['name'] = rest['name']

@@ -723,7 +723,10 @@ def pic_num(restaurant_id):
     dishs_list[0:0] = photo_list
     return len(dishs_list)
 if __name__ == '__main__':
-    print pic_num('57329b1f0c1d9b2f4c85f8e3')
+    rest = mongo.restaurant.find({"open" : "9:00-22:00","status":{"$ne":9}})
+    for i in rest:
+        print i
+    # print pic_num('57329b1f0c1d9b2f4c85f8e3')
     # test()
     # adddating()
     # a = [1, 2]
