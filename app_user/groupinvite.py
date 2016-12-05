@@ -155,7 +155,7 @@ class GroupInvite:
             the_id = self._id
         orders = db_order.find({'group_id': the_id})
         for n in orders:
-            if time.time() - time.mktime(time.strptime(n['start_time'], "%Y-%m-%d %H:%M:%S")) >= 2700:
+            if n['status'] not in['already_payment','already_used'] and time.time() - time.mktime(time.strptime(n['start_time'], "%Y-%m-%d %H:%M:%S")) >= 2700:
                 db_order.fix_one({'group_id': the_id, 'invite_code': n['invite_code']}, {'status': 'timeout'})
         all_info = self.__format_db_info(db_info.find_one({'_id': the_id}))
         if time.mktime(time.strptime(all_info['the_time']['end'], '%Y-%m-%d %H:%M:%S')) - time.time() <= 0:
@@ -225,7 +225,7 @@ class GroupInvite:
         else:
             _id = order_data['group_id']
             code = order_data['invite_code']
-        if time.time() - time.mktime(time.strptime(order_data['start_time'], "%Y-%m-%d %H:%M:%S")) >= 2600:
+        if order_data['status'] not in['already_payment','already_used'] and time.time() - time.mktime(time.strptime(order_data['start_time'], "%Y-%m-%d %H:%M:%S")) >= 2600:
             db_order.fix_one({'group_id': _id, 'invite_code': code}, {'status': 'timeout'})
             if not order_data:
                 self.invite_order = self._find_code_invite(code)
@@ -630,6 +630,7 @@ def groupinvite_order():
                 data = GroupInvite(request.form['code']).invite_order
                 kaituan = GroupInvite(data['group_id']).the_invite
                 data['price'] = kaituan['price']['now']
+                data['msg'] = ''
                 # print type(data)
                 # print time.strptime(data['addtime'], "%Y-%m-%d %H:%M:%S")
                 # song

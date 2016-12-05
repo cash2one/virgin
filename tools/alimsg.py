@@ -240,7 +240,7 @@ def tuisong(mfrom='', mto='', title='', info='', goto='', channel='', type='', t
                     print 'IOS通知全推推送失败！原因' + str(iosreq['Message'])
     else:
         pass
-    mongo.message.update_one({"_id": str(mes)}, {"$set": {"androidmsg": androidmsg, "iosmsg": iosmsg}})
+    mongo.message.update_one({"_id": ObjectId(str(mes))}, {"$set": {"androidmsg": androidmsg, "iosmsg": iosmsg}})
     return True
     #     return True
     # else:
