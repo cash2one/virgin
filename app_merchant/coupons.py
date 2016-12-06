@@ -12,6 +12,9 @@ from connect import conn
 from bson import ObjectId,json_util
 import tools.tools as tool
 import  pymongo
+
+from tools.db_app_user import getcoupons
+
 mongo=conn.mongo_conn()
 table = {'status': 'int',
          'type': 'int',
@@ -215,6 +218,7 @@ def findcoupons():
                     end = (pagenum*int(pageindex))
                     item = mongo.coupons.find(tools.orderformate(pdict, table)).sort("addtime",pymongo.DESCENDING)[star:end]
 
+                    status = []
                     list = []
                     for i in item:
                         data = {}
@@ -277,12 +281,19 @@ def findcoupons():
                                 data[key] = i[key]
                             if datetime.datetime.now()<i['indate_start']:
                                 data['status'] = '未开始'
+                                status.append('未开始')
                             elif i['indate_start']<datetime.datetime.now()<i['indate_end']:
                                 data['status'] = '进行中'
+                                status.append('进行中')
                             else:
                                 data['status'] = '已结束'
+                                status.append('已结束')
                         list.append(data)
+                    flag = False
+                    if not ('进行中'  in status and '未开始'  in status):
+                        flag = True
                     json['list'] = list
+                    json['isinsert'] = flag
                 result=tool.return_json(0,"success",True,json)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             else:
@@ -413,11 +424,25 @@ def insertcoupons():
                         if type(float(request.form['content'])) == float:
                             print '1'
                             pdict['cross-claim'] = float(request.form['content'])
-                            item = mongo.coupons.insert(pdict)
-                            json = {
-                                "status": 1,
-                                "msg":""
-                            }
+                            item = mongo.coupons.find({"$or":[{"button":"0"}, {"button":0}],'restaurant_id':ObjectId(request.form['restaurant_id']),'kind':'3','showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()}}).sort("addtime", pymongo.DESCENDING)[0:1]
+                            flag = True
+                            for i in item:
+                                if i['showtime_end']<datetime.datetime.strptime(request.form["indate_end"], "%Y-%m-%d"):
+                                    flag = True
+                                else:
+                                    flag =  False
+                            if flag:
+                                mongo.coupons.insert(pdict)
+                                json = {
+                                    "status": 1,
+                                    "msg":"添加成功"
+                                }
+                            else:
+                                json = {
+                                    "status": 0,
+                                    "msg":"已有进行中的优惠，请勿重复添加"
+                                }
+
                             result=tool.return_json(0,"success",True,json)
                             return json_util.dumps(result,ensure_ascii=False,indent=2)
                         else:
@@ -446,6 +471,14 @@ def insertcoupons():
 
     else:
         return abort(403)
+if __name__ == '__main__':
+    pass
+    item = mongo.coupons.find({"$or":[{"button":"0"}, {"button":0}],'restaurant_id':ObjectId('5816e7fb0c1d9bd5630b4f85'),'kind':'3','showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()}})
+    for i in item:
+        if i['showtime_end']<datetime.datetime.strptime("2016-12-11", "%Y-%m-%d"):
+            print True
+        else:
+            print False
 #店粉优惠 修改
 @coupons_api.route('/fm/merchant/v1/coupons/updatecoupons/', methods=['POST'])
 def updatecoupons():
@@ -466,16 +499,42 @@ def updatecoupons():
                             # "status" : request.form['status']
                             "addtime":datetime.datetime.now()   #hancuiyi
                         }
+                coupons = mongo.coupons.find({"_id":ObjectId(request.form['coupons_id'])})
+                kind = ''
+                for c in coupons:
+                    kind = c['kind']
+                item = mongo.coupons.find({"$or":[{"button":"0"}, {"button":0}],'restaurant_id':ObjectId(request.form['restaurant_id']),'kind':'3','showtime_start': {'$lt': datetime.datetime.now()},'showtime_end': {'$gte': datetime.datetime.now()}}).sort("addtime", pymongo.DESCENDING)[0:1]
+                flag = True
+                for i in item:
+                    if i['showtime_end']<datetime.datetime.strptime(request.form["indate_end"], "%Y-%m-%d"):
+                        flag = True
+                    else:
+                        flag =  False
                 if int(request.form['type']) == 1 or int(request.form['type']) == 2:
                     try:
                         if type(float(request.form['content'])) == float:
                             pdict['cross-claim'] = float(request.form['content'])
                             print '1'
-                            item = mongo.coupons.update({"_id":ObjectId(request.form["coupons_id"])},{"$set":pdict})
-                            json = {
-                                "status": 1,
-                                "msg":""
-                            }
+
+                            if kind == '3':
+                                pass
+                                if flag:
+                                    mongo.coupons.update({"_id":ObjectId(request.form["coupons_id"])},{"$set":pdict})
+                                    json = {
+                                        "status": 1,
+                                        "msg":"修改成功"
+                                    }
+                                else:
+                                    json = {
+                                        "status": 1,
+                                        "msg":"已有进行中的优惠，请勿重复添加"
+                                    }
+                            else:
+                                mongo.coupons.update({"_id":ObjectId(request.form["coupons_id"])},{"$set":pdict})
+                                json = {
+                                    "status": 1,
+                                    "msg":"修改成功"
+                                }
                             result=tool.return_json(0,"success",True,json)
                             return json_util.dumps(result,ensure_ascii=False,indent=2)
                         else:
@@ -486,11 +545,25 @@ def updatecoupons():
                         result=tool.return_json(0,"金额或折扣必须为数字格式",True,None)
                         return json_util.dumps(result,ensure_ascii=False,indent=2)
                 else:
-                    item = mongo.coupons.update({"_id":ObjectId(request.form["coupons_id"])},{"$set":pdict})
-                    json = {
-                        "status": 1,
-                        "msg":""
-                    }
+                    if kind == '3':
+                        pass
+                        if flag:
+                            mongo.coupons.update({"_id":ObjectId(request.form["coupons_id"])},{"$set":pdict})
+                            json = {
+                                "status": 1,
+                                "msg":"修改成功"
+                            }
+                        else:
+                            json = {
+                                "status": 1,
+                                "msg":"已有进行中的优惠，请勿重复添加"
+                            }
+                    else:
+                        mongo.coupons.update({"_id":ObjectId(request.form["coupons_id"])},{"$set":pdict})
+                        json = {
+                            "status": 1,
+                            "msg":"修改成功"
+                        }
                     result=tool.return_json(0,"success",True,json)
                     return json_util.dumps(result,ensure_ascii=False,indent=2)
 

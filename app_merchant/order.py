@@ -553,44 +553,44 @@ def ordercounts():
                 pdict['status'] = {'$in': [0,1, 2, 3, 4]}
                 atotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
                 for a in atotal:
-                    data['atotal'] = a['total']
+                    data['atotal'] = round(float(a['total']),2)
                 pdict['source'] = 1
                 aytotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
                 for a in aytotal:
-                    data['aytotal'] = a['total']
+                    data['aytotal'] = round(float(a['total']),2)
                 pdict['source'] = 2
                 amtotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
                 for a in amtotal:
                     print a,'11111111111111111111'
-                    data['amtotal'] = a['total']
+                    data['amtotal'] = round(float(a['total']),2)
                 pdict = {'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
                 pdict['status'] = {'$in': [0,1, 2, 3]}
 
                 watotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
                 for a in watotal:
-                    data['watotal'] = a['total']
+                    data['watotal'] = round(float(a['total']),2)
                 pdict['source'] = 1
                 wytotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
                 for a in wytotal:
-                    data['wytotal'] = a['total']
+                    data['wytotal'] = round(float(a['total']),2)
                 pdict['source'] = 2
                 wmtotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
                 for a in wmtotal:
-                    data['wmtotal'] = a['total']
+                    data['wmtotal'] = round(float(a['total']),2)
                 pdict = {'restaurant_id':ObjectId(request.form['restaurant_id']),'add_time': {'$gte': start, '$lt': end}}
                 pdict['status'] = 4
                 yatotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
                 for a in yatotal:
-                    data['yatotal'] = a['total']
+                    data['yatotal'] = round(float(a['total']),2)
                 pdict['source'] = 1
                 yytotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
                 for a in yytotal:
-                    data['yytotal'] = a['total']
+                    data['yytotal'] = round(float(a['total']),2)
                 pdict['source'] = 2
                 ymtotal = mongo.order.aggregate([{ '$match' : pdict}, gdict])
                 for a in ymtotal:
                     print a
-                    data['ymtotal'] = a['total']
+                    data['ymtotal'] = round(float(a['total']),2)
                 result=tool.return_json(0,"success",True,data)
                 return json_util.dumps(result,ensure_ascii=False,indent=2)
             except Exception,e:
